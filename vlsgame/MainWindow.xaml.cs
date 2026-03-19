@@ -92,7 +92,6 @@ namespace VLSGame
             var position = e.GetPosition(sender as IInputElement);
             string clickData = $"X={position.X:F0}, Y={position.Y:F0}";
 
-            ClickCoordinatesText.Text = $"{clickData}";
             await SendMouseClickAsync(clickData);
         }
 
@@ -195,6 +194,22 @@ namespace VLSGame
         {
             Disconnect();
             base.OnClosed(e);
+        }
+
+        private void OpenPanoramaButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Выберите HDRI панораму",
+                Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp;*.tiff;*.hdr;*.exr|Все файлы|*.*"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var viewerWindow = new Match(dialog.FileName);
+                viewerWindow.Show();
+                this.Close(); // Закрываем главное окно (опционально)
+            }
         }
     }
 }
