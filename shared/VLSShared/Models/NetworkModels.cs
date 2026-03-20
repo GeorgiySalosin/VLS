@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+
 namespace VLSShared.Models
 {
     public class ClientMessage
@@ -13,6 +9,9 @@ namespace VLSShared.Models
 
         [JsonPropertyName("data")]
         public object? Data { get; set; }
+
+        [JsonPropertyName("clientId")]
+        public string? ClientId { get; set; }
     }
 
     public class ServerResponse
@@ -26,5 +25,4 @@ namespace VLSShared.Models
         [JsonPropertyName("timestamp")]
         public DateTime Timestamp { get; set; }
     }
-    
 }

@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="content\ui\T_CrossAIM.png" />
+    <None Remove="Сontent\ui\T_CrossAIM.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="content\ui\T_CrossAIM.png">
+    <Content Include="Сontent\ui\T_CrossAIM.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -25,6 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\shared\VLSShared\VLSShared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>
