@@ -6,6 +6,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using VLSGame.Rendering.HUD.Elements;
+using VLSGame.Rendering;
+using VLSGame.Rendering.Layers;
 using VLSGame.ViewModels;
 
 namespace VLSGame
@@ -13,6 +16,8 @@ namespace VLSGame
     public partial class Match : Window
     {
         private readonly MatchViewModel _viewModel;
+        private readonly RenderManager _renderManager;
+
         private Point lastMousePosition;
         private DateTime _lastMoveTime;
 
@@ -21,12 +26,16 @@ namespace VLSGame
 
         private const float MOUSE_SENSITIVITY = 0.005f;
 
-        // Mouse adapting sensitivity, test
+        // Mouse adapting sensitivity
         private Queue<double> _speedBuffer = new Queue<double>();
         private const int SPEED_BUFFER_SIZE = 5;
-        private const double MIN_SPEED_THRESHOLD = 2.0; // minimal sensitivity is applied if the mouse move speed <= THIS,
-        private const double MAX_SPEED_THRESHOLD = 20.0; // maximal sensitivity is applied if the mouse move speed >= THIS,
-        private const double MIN_SENSITIVITY_SCALE = 0.1; // sensibility for micro moves
+        private const double MIN_SPEED_THRESHOLD = 2.0;
+        private const double MAX_SPEED_THRESHOLD = 20.0;
+        private const double MIN_SENSITIVITY_SCALE = 0.1;
+        private const double CLAMP_VROTATION_MIN = 0.5f;
+        private const double CLAMP_VROTATION_MAX = 0.5f;
+        // Для хранения спавна сферы
+        private ModelVisual3D? _sphereVisual;
 
         public Match(MatchViewModel viewModel)
         {
@@ -34,17 +43,19 @@ namespace VLSGame
             _viewModel = viewModel;
             this.DataContext = _viewModel;
 
-            Loaded += OnLoaded;
+            
+            _renderManager = RenderManager.Instance;
+            _renderManager.Initialize(MainViewport, HudPanel);
 
+            Loaded += OnLoaded;
 
             this.MouseDown += Match_MouseDown;
             this.MouseMove += Match_MouseMove;
             this.MouseUp += Match_MouseUp;
             this.MouseWheel += Match_MouseWheel;
+            this.KeyDown += Window_KeyDown;
 
-
-            // timer to update color detection in the center of screen
-            CompositionTarget.Rendering += UpdateCenterColor;
+            CompositionTarget.Rendering += OnRendering;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -59,26 +70,36 @@ namespace VLSGame
             _rotationX = _viewModel.RotationX;
             _rotationY = _viewModel.RotationY;
             UpdateCameraDirection();
+
+            // Настройка HUD
+            SetupHud();
         }
 
-        /* this is a test version to make sure everything works*/
+        private void SetupHud()
+        {
+            var hudLayer = _renderManager.GetLayer<HudLayer>();
+            if (hudLayer != null)
+            {
+                var hudManager = new HudManager(hudLayer);
+
+                // Добавляем прицел
+                var crosshair = new CrosshairElement();
+                hudManager.RegisterElement(crosshair);
+                hudManager.ShowAll();
+            }
+        }
+
         private void CreatePanoramaSphere(BitmapSource panoramaImage)
         {
-            // rmv old sphere mesh
-            MainViewport.Children.Clear();
-
-            
-            var light = new ModelVisual3D();
-            light.Content = new AmbientLight(Colors.White);
-            MainViewport.Children.Add(light);
+            var panoramaLayer = _renderManager.GetLayer<BackgroundLayer>();
+            panoramaLayer?.ClearPanorama(MainViewport);
 
             MeshGeometry3D mesh = new MeshGeometry3D();
 
             const int phiSegments = 128;
             const int thetaSegments = 256;
 
-
-            //manual sphere craetion
+            
             for (int i = 0; i <= phiSegments; i++)
             {
                 double phi = Math.PI * i / phiSegments;
@@ -100,6 +121,7 @@ namespace VLSGame
                 }
             }
 
+            
             for (int i = 0; i < phiSegments; i++)
             {
                 for (int j = 0; j < thetaSegments; j++)
@@ -131,14 +153,22 @@ namespace VLSGame
 
             GeometryModel3D geometryModel = new GeometryModel3D(mesh, material);
 
-            // transform the sphere (set the scale)
+            
             Transform3DGroup transformGroup = new Transform3DGroup();
             transformGroup.Children.Add(new ScaleTransform3D(100, 100, 100));
             geometryModel.Transform = transformGroup;
 
-            var sphereVisual = new ModelVisual3D();
-            sphereVisual.Content = geometryModel;
-            MainViewport.Children.Add(sphereVisual);
+            _sphereVisual = new ModelVisual3D();
+            _sphereVisual.Content = geometryModel;
+
+            panoramaLayer?.SetPanorama(_sphereVisual);
+        }
+
+        private void OnRendering(object? sender, EventArgs e)
+        {
+            _renderManager.Update();
+            _renderManager.Render();
+            _viewModel.UpdateCenterColor();
         }
 
         private void UpdateCameraDirection()
@@ -150,17 +180,9 @@ namespace VLSGame
             Vector3D direction = new Vector3D(x, y, z);
             direction.Normalize();
 
-
             MainCamera.LookDirection = direction;
             _viewModel.RotationX = _rotationX;
             _viewModel.RotationY = _rotationY;
-        }
-
-
-
-        private void UpdateCenterColor(object? sender, EventArgs e)
-        {
-            _viewModel.UpdateCenterColor();
         }
 
         private void Match_MouseDown(object sender, MouseButtonEventArgs e)
@@ -181,7 +203,7 @@ namespace VLSGame
                 Point currentPosition = e.GetPosition(this);
                 DateTime currentTime = DateTime.Now;
 
-                // calculate the mouse speed
+                // Вычисляем скорость движения мыши
                 double deltaX = currentPosition.X - lastMousePosition.X;
                 double deltaY = currentPosition.Y - lastMousePosition.Y;
                 double distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -190,9 +212,9 @@ namespace VLSGame
 
                 if (timeDelta > 0 && (Math.Abs(deltaX) > 0.1 || Math.Abs(deltaY) > 0.1))
                 {
-                    double speed = distance / timeDelta; // mouse speed v = pixels/ms
+                    double speed = distance / timeDelta; // скорость мыши в пикселях/мс
 
-                    
+                    // Сохраняем в буфер для сглаживания
                     _speedBuffer.Enqueue(speed);
                     if (_speedBuffer.Count > SPEED_BUFFER_SIZE)
                     {
@@ -201,44 +223,41 @@ namespace VLSGame
 
                     double smoothedSpeed = _speedBuffer.Average();
 
-                    // define sensibility by a speed
-
+                    // Определяем чувствительность в зависимости от скорости
                     double sensitivityScale;
 
                     if (smoothedSpeed <= MIN_SPEED_THRESHOLD)
                     {
-                        
+                        // Микро-движения - минимальная чувствительность
                         sensitivityScale = MIN_SENSITIVITY_SCALE;
                     }
                     else if (smoothedSpeed >= MAX_SPEED_THRESHOLD)
                     {
-                        
+                        // Быстрые движения - максимальная чувствительность
                         sensitivityScale = 1.0;
                     }
                     else
                     {
-                        
-                        // square interpolation for smooth sens transition
+                        // Плавный переход между минимальной и максимальной чувствительностью
                         double t = (smoothedSpeed - MIN_SPEED_THRESHOLD) /
                                   (MAX_SPEED_THRESHOLD - MIN_SPEED_THRESHOLD);
                         sensitivityScale = MIN_SENSITIVITY_SCALE +
                                          (1.0 - MIN_SENSITIVITY_SCALE) * (1 - Math.Pow(1 - t, 2));
                     }
 
-                    
+                    // Адаптивная чувствительность с учетом FOV
                     double adaptiveSensitivity = MOUSE_SENSITIVITY *
                                                 (MainCamera.FieldOfView / 60.0) *
                                                 sensitivityScale;
 
 
-                    deltaX = Math.Max(-20, Math.Min(20, deltaX));
-                    deltaY = Math.Max(-20, Math.Min(20, deltaY));
-
                     _rotationY -= deltaX * adaptiveSensitivity;
                     _rotationX -= deltaY * adaptiveSensitivity;
 
-                    _rotationX = Math.Max(-Math.PI / 2 + 0.01,
-                                         Math.Min(Math.PI / 2 - 0.01, _rotationX));
+
+                    // Ограничиваем вертикальный угол
+                    _rotationX = Math.Max(-Math.PI / 2 + CLAMP_VROTATION_MIN,
+                                         Math.Min(Math.PI / 2 - CLAMP_VROTATION_MAX, _rotationX));
 
                     UpdateCameraDirection();
                 }
@@ -261,7 +280,7 @@ namespace VLSGame
         {
             double zoomSpeed = 0.1;
             MainCamera.FieldOfView -= e.Delta * zoomSpeed;
-            MainCamera.FieldOfView = Math.Max(6, Math.Min(90, MainCamera.FieldOfView)); // Remember fov 11.25 (8x scope), 10 (9x scope), 6(15x scope)
+            MainCamera.FieldOfView = Math.Max(6, Math.Min(90, MainCamera.FieldOfView));
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -274,7 +293,11 @@ namespace VLSGame
 
         protected override void OnClosed(EventArgs e)
         {
-            CompositionTarget.Rendering -= UpdateCenterColor;
+            CompositionTarget.Rendering -= OnRendering;
+
+            var panoramaLayer = _renderManager.GetLayer<BackgroundLayer>();
+            panoramaLayer?.ClearPanorama(MainViewport);
+
             base.OnClosed(e);
         }
     }

@@ -8,13 +8,13 @@
         WindowState="Maximized"
         WindowStyle="None">
 
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Viewport3D -->
+        <!-- Viewport3D для 3D контента -->
         <Viewport3D x:Name="MainViewport" Grid.Row="0">
             <Viewport3D.Camera>
                 <PerspectiveCamera x:Name="MainCamera" 
@@ -23,45 +23,51 @@
                                    UpDirection="0,1,0"
                                    FieldOfView="90"/>
             </Viewport3D.Camera>
-
-            <ModelVisual3D>
-                <ModelVisual3D.Content>
-                    <AmbientLight Color="White"/>
-                </ModelVisual3D.Content>
-            </ModelVisual3D>
         </Viewport3D>
 
-        <!-- Aim -->
-        <Image Source="/content/ui/T_CrossAIM.png" 
-               Width="64" Height="64"
-               HorizontalAlignment="Center" VerticalAlignment="Center"
-               IsHitTestVisible="False" Panel.ZIndex="999"
-               RenderOptions.BitmapScalingMode="HighQuality">
-            <Image.Effect>
-                <DropShadowEffect ShadowDepth="2" BlurRadius="4" Opacity="0.5" Color="Black"/>
-            </Image.Effect>
-        </Image>
+        <!-- Панель для HUD элементов (поверх Viewport3D) -->
+        <Grid x:Name="HudPanel" Grid.Row="0" 
+              Background="Transparent"
+              IsHitTestVisible="False">
+            <!-- HUD элементы будут добавляться сюда через HudLayer -->
+        </Grid>
 
-        <!-- Color info panel -->
-        <Border Grid.Row="1" Background="#AA000000" Padding="15" CornerRadius="0" Panel.ZIndex="998">
+        <!-- Информационная панель (нижняя) -->
+        <Border Grid.Row="1" 
+                Background="#AA000000" 
+                Padding="15" 
+                CornerRadius="0"
+                Panel.ZIndex="998">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Border Width="50" Height="50" 
                         Background="{Binding CenterColor}"
-                        BorderBrush="White" BorderThickness="2" Margin="0,0,15,0"/>
+                        BorderBrush="White" 
+                        BorderThickness="2"
+                        Margin="0,0,15,0"/>
 
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Цвет в центре:" Foreground="White" FontSize="14"/>
+                    <TextBlock Text="Цвет в центре:" 
+                               Foreground="White" 
+                               FontSize="14"/>
                     <TextBlock Text="{Binding CenterColorText}" 
-                               Foreground="White" FontSize="16" FontWeight="Bold"/>
+                               Foreground="White" 
+                               FontSize="16" 
+                               FontWeight="Bold"/>
                     <TextBlock Text="{Binding PixelCoordinates}" 
-                               Foreground="LightGreen" FontSize="14"/>
+                               Foreground="LightGreen" 
+                               FontSize="14"/>
                 </StackPanel>
             </StackPanel>
         </Border>
 
-        <!-- Instructions -->
+        <!-- Инструкция -->
         <TextBlock Text="Управление: Мышь - вращение | ESC - выход" 
-                   Foreground="White" Background="#AA000000" Padding="10"
-                   HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Panel.ZIndex="998"/>
+                   Foreground="White" 
+                   Background="#AA000000"
+                   Padding="10"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   Margin="10"
+                   Panel.ZIndex="998"/>
     </Grid>
 </Window>

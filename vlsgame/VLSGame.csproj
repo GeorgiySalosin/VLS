@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Сontent\ui\T_CrossAIM.png" />
+    <None Remove="Content\ui\T_CrossAIM.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Сontent\ui\T_CrossAIM.png">
+    <Content Include="Content\ui\T_CrossAIM.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
