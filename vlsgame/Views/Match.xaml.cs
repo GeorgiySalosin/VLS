@@ -168,7 +168,7 @@ namespace VLSGame
         {
             _renderManager.Update();
             _renderManager.Render();
-            _viewModel.UpdateCenterColor();
+            _viewModel.UpdateCenterDistance();
         }
 
         private void UpdateCameraDirection()
@@ -297,6 +297,9 @@ namespace VLSGame
 
             var panoramaLayer = _renderManager.GetLayer<BackgroundLayer>();
             panoramaLayer?.ClearPanorama(MainViewport);
+
+            // Очищаем ресурсы OpenCV
+            _viewModel.Dispose();
 
             base.OnClosed(e);
         }

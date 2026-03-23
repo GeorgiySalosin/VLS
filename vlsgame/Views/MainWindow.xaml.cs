@@ -88,24 +88,39 @@ namespace VLSGame
             await _viewModel.SendMouseClickAsync(position.X, position.Y);
         }
 
-        private async void OpenPanoramaButton_Click(object sender, RoutedEventArgs e)
+        private async void SinglePlayerButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Microsoft.Win32.OpenFileDialog
-            {
-                Title = "Выберите HDRI панораму",
-                Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp;*.tiff;*.hdr;*.exr|Все файлы|*.*"
-            };
+            // Используем тестовые файлы без диалога
+            string panoramaPath = @"Content\Maps\Test_W.png";
+            string depthMapPath = @"Content\Maps\Test_D.png";
 
-            if (dialog.ShowDialog() == true)
-            {
-                await _viewModel.StartSinglePlayerAsync(dialog.FileName);
+            // Получаем абсолютный путь
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string fullPanoramaPath = System.IO.Path.Combine(basePath, panoramaPath);
+            string fullDepthMapPath = System.IO.Path.Combine(basePath, depthMapPath);
 
-                // Открываем окно Match
-                var matchViewModel = new MatchViewModel(_viewModel.CurrentGameMode!, dialog.FileName);
-                var matchWindow = new Match(matchViewModel);
-                matchWindow.Show();
-                this.Close();
+            // Проверяем существование файлов
+            if (!System.IO.File.Exists(fullPanoramaPath))
+            {
+                MessageBox.Show($"Панорама не найдена: {fullPanoramaPath}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
+
+            if (!System.IO.File.Exists(fullDepthMapPath))
+            {
+                MessageBox.Show($"Карта глубины не найдена: {fullDepthMapPath}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            await _viewModel.StartSinglePlayerAsync(fullPanoramaPath);
+
+            // Открываем окно Match с обоими путями
+            var matchViewModel = new MatchViewModel(_viewModel.CurrentGameMode!, fullPanoramaPath, fullDepthMapPath);
+            var matchWindow = new Match(matchViewModel);
+            matchWindow.Show();
+            this.Close();
         }
 
         private void AddMessage(string message)

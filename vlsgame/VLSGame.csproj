@@ -10,16 +10,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Content\Maps\Test_D.png" />
+    <None Remove="Content\Maps\Test_W.png" />
     <None Remove="Content\ui\T_CrossAIM.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Content\Maps\Test_D.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\Test_W.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\ui\T_CrossAIM.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.13.0.20260302" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 

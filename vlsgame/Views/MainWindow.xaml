@@ -67,10 +67,10 @@
                         MouseLeftButtonDown="ClickArea_MouseLeftButtonDown">
                 </Border>
 
-                <Button x:Name="OpenPanoramaButton" 
+                <Button x:Name="SinglePlayerButton" 
                         Content="Single Player" 
                         FontSize="16" Padding="10"
-                        Click="OpenPanoramaButton_Click"
+                        Click="SinglePlayerButton_Click"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom"
                         Margin="10"/>
             </Grid>

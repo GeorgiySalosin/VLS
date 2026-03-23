@@ -25,20 +25,16 @@
             </Viewport3D.Camera>
         </Viewport3D>
 
-        <!-- Панель для HUD элементов (поверх Viewport3D) -->
+        <!-- Панель для HUD элементов -->
         <Grid x:Name="HudPanel" Grid.Row="0" 
               Background="Transparent"
               IsHitTestVisible="False">
-            <!-- HUD элементы будут добавляться сюда через HudLayer -->
         </Grid>
 
-        <!-- Информационная панель (нижняя) -->
-        <Border Grid.Row="1" 
-                Background="#AA000000" 
-                Padding="15" 
-                CornerRadius="0"
-                Panel.ZIndex="998">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <!-- Информационная панель -->
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <!-- Отображение цвета -->
                 <Border Width="50" Height="50" 
                         Background="{Binding CenterColor}"
                         BorderBrush="White" 
@@ -56,11 +52,15 @@
                     <TextBlock Text="{Binding PixelCoordinates}" 
                                Foreground="LightGreen" 
                                FontSize="14"/>
+                    <TextBlock Text="{Binding DistanceText}" 
+                               Foreground="Yellow" 
+                               FontSize="16" 
+                               FontWeight="Bold"
+                               Margin="0,5,0,0"/>
                 </StackPanel>
             </StackPanel>
-        </Border>
 
-        <!-- Инструкция -->
+            <!-- Инструкция -->
         <TextBlock Text="Управление: Мышь - вращение | ESC - выход" 
                    Foreground="White" 
                    Background="#AA000000"
