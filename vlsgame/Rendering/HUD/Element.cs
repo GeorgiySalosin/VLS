@@ -3,13 +3,13 @@ using System.Windows.Controls;
 
 namespace VLSGame.HUD
 {
-    public abstract class HudElement
+    public abstract class Element
     {
         public string Name { get; protected set; }
         public UIElement? Visual { get; protected set; }
         public bool IsVisible { get; set; } = true;
         
-        protected HudElement(string name)
+        protected Element(string name)
         {
             Name = name;
         }

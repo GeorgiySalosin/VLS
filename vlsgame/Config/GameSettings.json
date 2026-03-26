@@ -1,0 +1,14 @@
+﻿{
+  "mouse_sensitivity": 0.005,
+  "speed_buffer_size": 5,
+  "min_speed_threshold": 2.0,
+  "max_speed_threshold": 20.0,
+  "min_sensitivity_scale": 0.1,
+  "clamp_vrotation_min": 0.5,
+  "clamp_vrotation_max": 0.5,
+  "zoom_speed": 0.1,
+  "min_fov": 6,
+  "max_fov": 90,
+  "max_sniping_distance": 2000.0,
+  "max_sniping_distance_thresold": 30.0
+}

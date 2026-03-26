@@ -10,6 +10,8 @@ namespace VLSGame.Services
         public event EventHandler<PlayerInput>? InputReceived;
         public event EventHandler<string>? GameEvent;
 
+
+        /*Here we can set all the stuff related to game start*/
         public Task StartAsync()
         {
             GameEvent?.Invoke(this, "Single player mode started");
@@ -24,8 +26,6 @@ namespace VLSGame.Services
 
         public Task ProcessInputAsync(PlayerInput input)
         {
-            // Логика обработки ввода в одиночном режиме
-            Console.WriteLine($"Single player input: {input.Type}");
             return Task.CompletedTask;
         }
 

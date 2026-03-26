@@ -4,13 +4,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using VLSGame.HUD;
 
-namespace VLSGame.Rendering.HUD.Elements
+namespace VLSGame.Rendering.HUD
 {
-    public class CrosshairElement : HudElement
+    public class CrosshairElement : Element
     {
         private Image _crosshairImage;
         
-        public CrosshairElement() : base("Crosshair")
+        public CrosshairElement(string name) : base(name)
         {
             _crosshairImage = new Image
             {

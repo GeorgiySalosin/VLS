@@ -90,34 +90,32 @@ namespace VLSGame
 
         private async void SinglePlayerButton_Click(object sender, RoutedEventArgs e)
         {
-            // Используем тестовые файлы без диалога
-            string panoramaPath = @"Content\Maps\Test_W.png";
-            string depthMapPath = @"Content\Maps\Test_D.png";
-
-            // Получаем абсолютный путь
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string fullPanoramaPath = System.IO.Path.Combine(basePath, panoramaPath);
-            string fullDepthMapPath = System.IO.Path.Combine(basePath, depthMapPath);
 
-            // Проверяем существование файлов
-            if (!System.IO.File.Exists(fullPanoramaPath))
+            // currently we only use the test panorama
+            
+            string ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Test_W.png");
+            string DepthMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Test_D.png");
+
+            
+            if (!System.IO.File.Exists(ColorMapPath))
             {
-                MessageBox.Show($"Панорама не найдена: {fullPanoramaPath}", "Ошибка",
+                MessageBox.Show($"Color map was not found from {ColorMapPath}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (!System.IO.File.Exists(fullDepthMapPath))
+            if (!System.IO.File.Exists(DepthMapPath))
             {
-                MessageBox.Show($"Карта глубины не найдена: {fullDepthMapPath}", "Ошибка",
+                MessageBox.Show($"Depth map was not found from {DepthMapPath}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            await _viewModel.StartSinglePlayerAsync(fullPanoramaPath);
+            await _viewModel.StartSinglePlayerAsync(ColorMapPath);
 
             // Открываем окно Match с обоими путями
-            var matchViewModel = new MatchViewModel(_viewModel.CurrentGameMode!, fullPanoramaPath, fullDepthMapPath);
+            var matchViewModel = new MatchViewModel(_viewModel.CurrentGameMode!, ColorMapPath, DepthMapPath);
             var matchWindow = new Match(matchViewModel);
             matchWindow.Show();
             this.Close();

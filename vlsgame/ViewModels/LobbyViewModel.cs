@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 using VLSGame.Services;
+using VLSShared.Enums;
 using VLSShared.Interfaces;
 using VLSShared.Models;
 
@@ -10,7 +11,7 @@ namespace VLSGame.ViewModels
 {
     public class LobbyViewModel : INotifyPropertyChanged
     {
-        private readonly GameModeFactory _gameModeFactory = GameModeFactory.Instance;
+        //private readonly GameModeFactory _gameModeFactory = GameModeFactory.Instance;
 
 
         private string _serverIp = "192.168.0.106";
@@ -19,6 +20,10 @@ namespace VLSGame.ViewModels
         private Brush _connectionStatusColor = Brushes.Red;
         private string _lastResponse = "The server has not replied";
         private List<string> _messages = new();
+
+
+
+
         private IGameMode? _currentGameMode;
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -29,6 +34,7 @@ namespace VLSGame.ViewModels
             NetworkService.Instance.MessageReceived += OnMessageReceived;
             NetworkService.Instance.ConnectionStatusChanged += OnConnectionStatusChanged;
         }
+
 
         public string ServerIp
         {
@@ -86,6 +92,21 @@ namespace VLSGame.ViewModels
 
         public IGameMode? CurrentGameMode => _currentGameMode;
 
+
+        /* The point where the singleplayer was assigned a panorama*/
+        public async Task StartSinglePlayerAsync(string panoramaPath)
+        {
+            _currentGameMode = new SinglePlayerGameMode();
+            await _currentGameMode.StartAsync();
+
+            if (_currentGameMode is SinglePlayerGameMode singlePlayer)
+            {
+                singlePlayer.SetPanoramaPath(panoramaPath);
+            }
+        }
+
+
+
         public async Task ConnectAsync()
         {
             if (IsConnected)
@@ -113,35 +134,19 @@ namespace VLSGame.ViewModels
                 AddMessage($"Error: {ex.Message}");
             }
         }
-
         public async Task DisconnectAsync()
         {
             await NetworkService.Instance.DisconnectAsync();
         }
-
         public void Disconnect()
         {
             NetworkService.Instance.DisconnectAsync().ConfigureAwait(false);
         }
-
         public async Task SendMouseClickAsync(double x, double y)
         {
             string clickData = $"X={x:F0}, Y={y:F0}";
             await NetworkService.Instance.SendMessageAsync("mouse_click", clickData);
         }
-
-        public async Task StartSinglePlayerAsync(string panoramaPath)
-        {
-            _currentGameMode = _gameModeFactory.CreateGameMode(GameMode.SinglePlayer);
-            await _currentGameMode.StartAsync();
-
-            // В одиночном режиме передаем путь к панораме
-            if (_currentGameMode is SinglePlayerGameMode singlePlayer)
-            {
-                singlePlayer.SetPanoramaPath(panoramaPath);
-            }
-        }
-
         private void OnConnectionStatusChanged(object? sender, bool isConnected)
         {
             ConnectionStatus = isConnected ? "Connected" : "Disconnected";
@@ -152,13 +157,11 @@ namespace VLSGame.ViewModels
                 AddMessage("Disconnected from server");
             }
         }
-
         private void OnMessageReceived(object? sender, ServerResponse response)
         {
             LastResponse = $"[{response.Timestamp:HH:mm:ss}] {response.Message}";
             AddMessage($"Response: {response.Message}");
         }
-
         private void AddMessage(string message)
         {
             _messages.Insert(0, $"[{DateTime.Now:HH:mm:ss}] {message}");
@@ -168,7 +171,6 @@ namespace VLSGame.ViewModels
             }
             MessageAdded?.Invoke(this, message);
         }
-
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VLSGame.Rendering
+namespace VLSShared.Enums
 {
-    public enum RenderOrder
+    public enum GameMode
     {
-        Background = 0,      
-        HUD = 1000          
+        SinglePlayer,
+        MultiPlayer
     }
 }

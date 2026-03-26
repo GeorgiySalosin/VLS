@@ -1,75 +1,94 @@
 using System.Windows;
 using System.Windows.Controls;
+using VLSGame.HUD;
 
 namespace VLSGame.Rendering.Layers
 {
-    public class HudLayer : IRenderLayer
+    /*contains a panel and a list of elements. also implements control over elements*/
+    public class HudLayer : Layer
     {
         private readonly Panel _parentPanel;
-        private readonly List<UIElement> _hudElements = new();
-        
-        public string Name => "HUD";
-        public RenderOrder Order => RenderOrder.HUD;
-        public bool IsVisible { get; set; } = true;
-        
+        private readonly Dictionary<string, Element> _elements = new();
+
         public HudLayer(Panel parentPanel)
+            : base("HUD", RenderOrder.HUD)
         {
             _parentPanel = parentPanel;
         }
-        
-        public void AddElement(UIElement element)
+
+        public void RegisterElement(Element element)
         {
-            _hudElements.Add(element);
-            if (IsVisible)
+            if (!_elements.ContainsKey(element.Name))
             {
-                _parentPanel.Children.Add(element);
-            }
-        }
-        
-        public void RemoveElement(UIElement element)
-        {
-            _hudElements.Remove(element);
-            _parentPanel.Children.Remove(element);
-        }
-        
-        public void Update(double deltaTime)
-        {
-            // Обновление HUD элементов
-        }
-        
-        public void Render(Viewport3D viewport)
-        {
-            // HUD рендерится через WPF, не через Viewport3D
-        }
-        
-        public void Show()
-        {
-            IsVisible = true;
-            foreach (var element in _hudElements)
-            {
-                if (!_parentPanel.Children.Contains(element))
+                _elements.Add(element.Name, element);
+                if (element.Visual != null && IsVisible && element.IsVisible)
                 {
-                    _parentPanel.Children.Add(element);
+                    _parentPanel.Children.Add(element.Visual);
                 }
             }
         }
-        
-        public void Hide()
+
+        public void ShowElement(string name)
         {
-            IsVisible = false;
-            foreach (var element in _hudElements)
+            if (_elements.TryGetValue(name, out var element))
             {
-                _parentPanel.Children.Remove(element);
+                element.Show();
+                if (IsVisible && element.Visual != null && !_parentPanel.Children.Contains(element.Visual))
+                {
+                    _parentPanel.Children.Add(element.Visual);
+                }
             }
         }
-        
+
+
+        public void HideElement(string name)
+        {
+            if (_elements.TryGetValue(name, out var element))
+            {
+                element.Hide();
+                if (element.Visual != null)
+                {
+                    _parentPanel.Children.Remove(element.Visual);
+                }
+            }
+        }
+
+
+        public void ShowAll()
+        {
+            foreach (var element in _elements.Values)
+            {
+                element.Show();
+            }
+        }
+
+        public void HideAll()
+        {
+            foreach (var element in _elements.Values)
+            {
+                element.Hide();
+            }
+        }
+
+        //public override void Update(double deltaTime)
+        //{
+        //    foreach (var element in _elements.Values)
+        //    {
+        //        element.Update(deltaTime);
+        //    }
+        //}
+
+        // Очистка всех элементов
         public void Clear()
         {
-            foreach (var element in _hudElements)
+            foreach (var element in _elements.Values)
             {
-                _parentPanel.Children.Remove(element);
+                if (element.Visual != null)
+                {
+                    _parentPanel.Children.Remove(element.Visual);
+                }
             }
-            _hudElements.Clear();
+            _elements.Clear();
         }
     }
 }

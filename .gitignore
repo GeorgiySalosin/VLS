@@ -29,4 +29,5 @@ shared/VLSShared/obj/
 
 ## OS files
 .DS_Store
-Thumbs.db
+Thumbs.dbvlsgame/Content/Maps/*.png
+vlsgame/Content/Maps/

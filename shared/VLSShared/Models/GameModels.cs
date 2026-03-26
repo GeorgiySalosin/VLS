@@ -1,10 +1,5 @@
 namespace VLSShared.Models
 {
-    public enum GameMode
-    {
-        SinglePlayer,
-        MultiPlayer
-    }
 
     public class PlayerInput
     {
@@ -37,6 +32,5 @@ namespace VLSShared.Models
     public class PanoramaInfo
     {
         public string? ImagePath { get; set; }
-        public byte[]? ImageData { get; set; }
     }
 }

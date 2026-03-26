@@ -3,7 +3,7 @@ using System.Windows.Media.Media3D;
 
 namespace VLSGame.Rendering.Layers
 {
-    public class BackgroundLayer : RenderLayer
+    public class BackgroundLayer : Layer
     {
         private ModelVisual3D? _sphereVisual;
         
@@ -11,8 +11,9 @@ namespace VLSGame.Rendering.Layers
         {
         }
         
-        public void SetPanorama(ModelVisual3D sphereVisual)
+        public void SetPanorama(Viewport3D viewport, ModelVisual3D sphereVisual)
         {
+            ClearPanorama(viewport);
             _sphereVisual = sphereVisual;
         }
         
@@ -26,7 +27,7 @@ namespace VLSGame.Rendering.Layers
             }
         }
         
-        public void ClearPanorama(Viewport3D viewport)
+        private void ClearPanorama(Viewport3D viewport)
         {
             if (_sphereVisual != null && viewport.Children.Contains(_sphereVisual))
             {
