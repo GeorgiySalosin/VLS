@@ -1,5 +1,4 @@
 using System.Windows.Controls;
-using System.Windows.Media.Media3D;
 
 namespace VLSGame.Rendering.Layers
 {

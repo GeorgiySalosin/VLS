@@ -1,17 +1,14 @@
 using OpenCvSharp;
-using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using VLSGame.Config;
 using VLSGame.Models;
 using VLSShared.Interfaces;
-using VLSGame.Config;
 
 namespace VLSGame.ViewModels
 {
-    public class MatchViewModel : INotifyPropertyChanged
+    public class MatchViewModel : ViewModelBase
     {
         private readonly IGameMode _gameMode;
         private readonly PanoramaData _panoramaData;
@@ -23,13 +20,11 @@ namespace VLSGame.ViewModels
         private double _rotationY;
         private bool _isDragging;
 
-
         // Cached texture data
         private int _lastPixelX = -1;
         private int _lastPixelY = -1;
         private double _cachedDistance = 0;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
         public event EventHandler<Vector3D>? CameraDirectionChanged;
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
@@ -43,33 +38,20 @@ namespace VLSGame.ViewModels
         public BitmapSource? ColorMapTexture
         {
             get => _colorMapTexture;
-            private set
-            {
-                _colorMapTexture = value;
-                OnPropertyChanged();
-            }
+            private set => Set(ref  _colorMapTexture, value);
         }
 
         public string DistanceText
         {
             get => _distanceText;
-            set
-            {
-                _distanceText = value;
-                OnPropertyChanged();
-            }
+            set => Set(ref _distanceText, value);
         }
 
         public string PixelCoordinates
         {
             get => _pixelCoordinates;
-            set
-            {
-                _pixelCoordinates = value;
-                OnPropertyChanged();
-            }
+            set => Set(ref _pixelCoordinates, value);
         }
-
         public double RotationX
         {
             get => _rotationX;
@@ -103,11 +85,7 @@ namespace VLSGame.ViewModels
         public bool IsDragging
         {
             get => _isDragging;
-            set
-            {
-                _isDragging = value;
-                OnPropertyChanged();
-            }
+            set => Set(ref _isDragging, value);
         }
 
         public Vector3D GetCameraDirection()
@@ -296,11 +274,6 @@ namespace VLSGame.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Error converting Mat to BitmapSource: {ex.Message}");
                 return null;
             }
-        }
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public void Dispose()

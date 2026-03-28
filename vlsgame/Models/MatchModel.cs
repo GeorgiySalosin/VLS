@@ -1,6 +1,4 @@
-﻿
-using System;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 
 namespace VLSGame.Models
 {

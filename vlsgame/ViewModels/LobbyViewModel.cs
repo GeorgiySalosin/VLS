@@ -1,18 +1,13 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using System.Windows.Media;
 using VLSGame.Services;
-using VLSShared.Enums;
 using VLSShared.Interfaces;
 using VLSShared.Models;
 
 namespace VLSGame.ViewModels
 {
-    public class LobbyViewModel : INotifyPropertyChanged
+    public class LobbyViewModel : ViewModelBase
     {
         //private readonly GameModeFactory _gameModeFactory = GameModeFactory.Instance;
-
 
         private string _serverIp = "192.168.0.106";
         private string _serverPort = "8888";
@@ -21,12 +16,8 @@ namespace VLSGame.ViewModels
         private string _lastResponse = "The server has not replied";
         private List<string> _messages = new();
 
-
-
-
         private IGameMode? _currentGameMode;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
         public event EventHandler<string>? MessageAdded;
 
         public LobbyViewModel()
@@ -35,55 +26,34 @@ namespace VLSGame.ViewModels
             NetworkService.Instance.ConnectionStatusChanged += OnConnectionStatusChanged;
         }
 
-
         public string ServerIp
         {
             get => _serverIp;
-            set
-            {
-                _serverIp = value;
-                OnPropertyChanged();
-            }
+            set => Set(ref _serverIp, value);
         }
 
         public string ServerPort
         {
             get => _serverPort;
-            set
-            {
-                _serverPort = value;
-                OnPropertyChanged();
-            }
+            set => Set(ref _serverPort, value);
         }
 
         public string ConnectionStatus
         {
             get => _connectionStatus;
-            private set
-            {
-                _connectionStatus = value;
-                OnPropertyChanged();
-            }
+            private set => Set(ref _connectionStatus, value);
         }
 
         public Brush ConnectionStatusColor
         {
             get => _connectionStatusColor;
-            private set
-            {
-                _connectionStatusColor = value;
-                OnPropertyChanged();
-            }
+            private set => Set(ref _connectionStatusColor, value);
         }
 
         public string LastResponse
         {
             get => _lastResponse;
-            private set
-            {
-                _lastResponse = value;
-                OnPropertyChanged();
-            }
+            private set => Set(ref _lastResponse, value);
         }
 
         public IReadOnlyList<string> Messages => _messages.AsReadOnly();
@@ -104,8 +74,6 @@ namespace VLSGame.ViewModels
                 singlePlayer.SetPanoramaPath(panoramaPath);
             }
         }
-
-
 
         public async Task ConnectAsync()
         {
@@ -170,10 +138,6 @@ namespace VLSGame.ViewModels
                 _messages.RemoveAt(_messages.Count - 1);
             }
             MessageAdded?.Invoke(this, message);
-        }
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

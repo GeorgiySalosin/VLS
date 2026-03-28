@@ -31,10 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Content\Maps\Test_D.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
