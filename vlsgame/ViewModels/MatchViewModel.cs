@@ -25,7 +25,6 @@ namespace VLSGame.ViewModels
         private int _lastPixelY = -1;
         private double _cachedDistance = 0;
 
-        public event EventHandler<Vector3D>? CameraDirectionChanged;
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
@@ -61,7 +60,6 @@ namespace VLSGame.ViewModels
                 {
                     _rotationX = value;
                     OnPropertyChanged();
-                    UpdateCameraDirection();
                     UpdateCenterDistance();
                 }
             }
@@ -76,7 +74,6 @@ namespace VLSGame.ViewModels
                 {
                     _rotationY = value;
                     OnPropertyChanged();
-                    UpdateCameraDirection();
                     UpdateCenterDistance();
                 }
             }
@@ -214,10 +211,6 @@ namespace VLSGame.ViewModels
             return new DiffuseMaterial(brush);
         }
 
-        private void UpdateCameraDirection()
-        {
-            CameraDirectionChanged?.Invoke(this, GetCameraDirection());
-        }
         public void UpdateCameraRotation(PerspectiveCamera mainCamera, double currentRotationX, double currentRotationY)
         {
             double x = Math.Cos(RotationX) * Math.Sin(RotationY);
