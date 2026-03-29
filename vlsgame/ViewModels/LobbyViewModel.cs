@@ -7,7 +7,6 @@ namespace VLSGame.ViewModels
 {
     public class LobbyViewModel : ViewModelBase
     {
-        //private readonly GameModeFactory _gameModeFactory = GameModeFactory.Instance;
 
         private string _serverIp = "192.168.0.106";
         private string _serverPort = "8888";

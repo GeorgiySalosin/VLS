@@ -12,12 +12,11 @@ namespace VLSGame.ViewModels
     {
         private readonly IGameMode _gameMode;
         private readonly PanoramaData _panoramaData;
+        public CameraProperties CameraProperties { get; private set; } = new();     // A functionality of ViewModel that was Extracted into Camera Properties
 
         private BitmapSource? _colorMapTexture;
-        private string _distanceText = "Distance: --- м";
-        private string _pixelCoordinates = "Tex coords: ---";
-        private double _rotationX;
-        private double _rotationY;
+        private string _distanceText;
+        private string _pixelCoordinates;
         private bool _isDragging;
 
         // Cached texture data
@@ -51,33 +50,7 @@ namespace VLSGame.ViewModels
             get => _pixelCoordinates;
             set => Set(ref _pixelCoordinates, value);
         }
-        public double RotationX
-        {
-            get => _rotationX;
-            set
-            {
-                if (Math.Abs(_rotationX - value) > 0.0001)
-                {
-                    _rotationX = value;
-                    OnPropertyChanged();
-                    UpdateCenterDistance();
-                }
-            }
-        }
 
-        public double RotationY
-        {
-            get => _rotationY;
-            set
-            {
-                if (Math.Abs(_rotationY - value) > 0.0001)
-                {
-                    _rotationY = value;
-                    OnPropertyChanged();
-                    UpdateCenterDistance();
-                }
-            }
-        }
 
         public bool IsDragging
         {
@@ -85,14 +58,7 @@ namespace VLSGame.ViewModels
             set => Set(ref _isDragging, value);
         }
 
-        public Vector3D GetCameraDirection()
-        {
-            double x = Math.Cos(RotationX) * Math.Sin(RotationY);
-            double y = Math.Sin(RotationX);
-            double z = Math.Cos(RotationX) * Math.Cos(RotationY);
 
-            return new Vector3D(x, y, z);
-        }
 
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
         {
@@ -117,8 +83,7 @@ namespace VLSGame.ViewModels
 
         public void UpdateCenterDistance()
         {
-            var direction = GetCameraDirection();
-            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(direction);
+            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
             if (pixelX != _lastPixelX || pixelY != _lastPixelY)
             {
@@ -127,20 +92,13 @@ namespace VLSGame.ViewModels
 
                 _cachedDistance = _panoramaData.GetDistanceAtPixel(pixelX, pixelY);
 
-                DistanceText = FormatDistanceText(_cachedDistance);
-                PixelCoordinates = $"Координаты: ({pixelX}, {pixelY})";
+                if (_cachedDistance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
+                    DistanceText = $"Distance: > {Configuration.Instance.GameSettings.MaxSnipingDistance:F0} м";
+                else 
+                    DistanceText = $"Distance: {_cachedDistance:F1} m";
+
+                PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
             }
-        }
-
-        private string FormatDistanceText(double distance)
-        {
-            if (distance < 0.1)
-                return "Дистанция: < 0.1 м";
-
-            if (distance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
-                return $"Дистанция: > {Configuration.Instance.GameSettings.MaxSnipingDistance:F0} м";
-
-            return $"Дистанция: {distance:F1} м";
         }
 
 
@@ -199,6 +157,7 @@ namespace VLSGame.ViewModels
 
             return mesh;
         }
+
         private DiffuseMaterial CreatePanoramaMaterial(ImageSource? texture)
         {
             var brush = new ImageBrush(texture)
@@ -211,18 +170,10 @@ namespace VLSGame.ViewModels
             return new DiffuseMaterial(brush);
         }
 
-        public void UpdateCameraRotation(PerspectiveCamera mainCamera, double currentRotationX, double currentRotationY)
+        public void UpdateCameraRotation(double currentRotationX, double currentRotationY)
         {
-            double x = Math.Cos(RotationX) * Math.Sin(RotationY);
-            double y = Math.Sin(RotationX);
-            double z = Math.Cos(RotationX) * Math.Cos(RotationY);
-
-            var direction = new Vector3D(x, y, z);
-            direction.Normalize();
-            mainCamera.LookDirection = direction;
-
-            RotationX = currentRotationX;
-            RotationY = currentRotationY;
+            CameraProperties.RotationX = currentRotationX;
+            CameraProperties.RotationY = currentRotationY;
         }
 
         private BitmapSource? ConvertMatToBitmapSource(Mat? mat)
