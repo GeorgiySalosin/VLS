@@ -170,11 +170,6 @@ namespace VLSGame.ViewModels
             return new DiffuseMaterial(brush);
         }
 
-        public void UpdateCameraRotation(double currentRotationX, double currentRotationY)
-        {
-            CameraProperties.RotationX = currentRotationX;
-            CameraProperties.RotationY = currentRotationY;
-        }
 
         private BitmapSource? ConvertMatToBitmapSource(Mat? mat)
         {
