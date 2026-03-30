@@ -15,6 +15,25 @@ namespace VLSGame.Rendering.Layers
             _parentPanel = parentPanel;
         }
 
+
+        public override bool IsVisible
+        {
+            get => base.IsVisible;
+            set
+            {
+                base.IsVisible = value;
+
+                if (value)
+                {
+                    ShowAll();
+                }
+                else
+                {
+                    HideAll();
+                }
+            }
+        }
+
         public void RegisterElement(Element element)
         {
             if (!_elements.ContainsKey(element.Name))

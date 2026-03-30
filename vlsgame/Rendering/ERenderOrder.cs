@@ -3,6 +3,6 @@
     public enum RenderOrder
     {
         Background = 0,      
-        HUD = 1000          
+        HUD = 1         
     }
 }

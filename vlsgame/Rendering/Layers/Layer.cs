@@ -9,7 +9,7 @@ namespace VLSGame.Rendering.Layers
 
         public string Name { get; }
         public RenderOrder Order { get; }
-        public bool IsVisible
+        public virtual bool IsVisible
         {
             get => _isVisible;
             set => _isVisible = value;
