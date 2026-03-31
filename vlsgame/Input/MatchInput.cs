@@ -17,21 +17,21 @@ namespace VLSGame.Input
     /// </summary>
     public sealed class MatchInput
     {
-        private static readonly MatchInput _instance = new();
-        public static MatchInput Instance => _instance;
+        private static readonly MatchInput instance = new();
+        public static MatchInput Instance => instance;
 
-        private MatchViewModel? _viewModel;
-        private Window? _window;
+        private MatchViewModel? viewModel;
+        private Window? window;
 
-        private Point _lastMousePosition;
-        private DateTime _lastMoveTime;
-        private Queue<double> _speedBuffer = new();
+        private Point lastMousePosition;
+        private DateTime lastMoveTime;
+        private readonly Queue<double> speedBuffer = new();
 
 
-        private double _currentRotationX;
-        private double _currentRotationY;
+        private double currentRotationX;
+        private double currentRotationY;
 
-        // WinAPI 
+        // WinAPI methods
         [DllImport("user32.dll")]
         private static extern bool SetCursorPos(int X, int Y);
 
@@ -42,8 +42,8 @@ namespace VLSGame.Input
 
         public void Initialize(MatchViewModel viewModel, Window window)
         {
-            _viewModel = viewModel;
-            _window = window;
+            this.viewModel = viewModel;
+            this.window = window;
 
             SubscribeEvents();
             ShowCursor(false);
@@ -53,38 +53,38 @@ namespace VLSGame.Input
 
         private void SubscribeEvents()
         {
-            if (_window == null) return;
+            if (window == null) return;
 
-            _window.Loaded += OnWindowLoaded;
-            _window.MouseDown += OnMouseDown;
-            _window.MouseMove += OnMouseMove;
-            _window.MouseUp += OnMouseUp;
-            _window.MouseWheel += OnMouseWheel;
-            _window.KeyDown += OnKeyDown;
+            window.Loaded += OnWindowLoaded;
+            window.MouseDown += OnMouseDown;
+            window.MouseMove += OnMouseMove;
+            window.MouseUp += OnMouseUp;
+            window.MouseWheel += OnMouseWheel;
+            window.KeyDown += OnKeyDown;
         }
         public void UnsubscribeEvents()
         {
-            if (_window == null) return;
+            if (window == null) return;
 
-            _window.Loaded -= OnWindowLoaded;
-            _window.MouseDown -= OnMouseDown;
-            _window.MouseMove -= OnMouseMove;
-            _window.MouseUp -= OnMouseUp;
-            _window.MouseWheel -= OnMouseWheel;
-            _window.KeyDown -= OnKeyDown;
+            window.Loaded -= OnWindowLoaded;
+            window.MouseDown -= OnMouseDown;
+            window.MouseMove -= OnMouseMove;
+            window.MouseUp -= OnMouseUp;
+            window.MouseWheel -= OnMouseWheel;
+            window.KeyDown -= OnKeyDown;
         }
 
-        //  Resolving mouse teleportation occuring on window loaded.
+        // This method is generally used for resolving mouse teleportation occuring on window loaded.
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            if (_window == null) return;
+            if (window == null) return;
 
-            Point centerInWindow = new Point(_window.ActualWidth / 2, _window.ActualHeight / 2);
-            Point centerInScreen = _window.PointToScreen(centerInWindow);
+            Point centerInWindow = new (window.ActualWidth / 2, window.ActualHeight / 2);
+            Point centerInScreen = window.PointToScreen(centerInWindow);
             SetCursorPos((int)centerInScreen.X, (int)centerInScreen.Y);
 
-            _lastMousePosition = centerInWindow;
-            _lastMoveTime = DateTime.Now;
+            lastMousePosition = centerInWindow;
+            lastMoveTime = DateTime.Now;
         }
 
 
@@ -96,13 +96,13 @@ namespace VLSGame.Input
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (_viewModel == null || _window == null) return;
+            if (viewModel == null || window == null) return;
 
-            Point currentPosition = e.GetPosition(_window);
+            Point currentPosition = e.GetPosition(window);
             DateTime currentTime = DateTime.Now;
 
             // Get screen center
-            Point centerInWindow = new Point(_window.ActualWidth / 2, _window.ActualHeight / 2);
+            Point centerInWindow = new (window.ActualWidth / 2, window.ActualHeight / 2);
 
             
             double deltaX = currentPosition.X - centerInWindow.X;
@@ -112,66 +112,66 @@ namespace VLSGame.Input
             if (Math.Abs(deltaX) > 0 || Math.Abs(deltaY) > 0)
             {
                 double distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-                double timeDelta = (currentTime - _lastMoveTime).TotalMilliseconds;
+                double timeDelta = (currentTime - lastMoveTime).TotalMilliseconds;
 
                 
                 double speed = distance / timeDelta;
                 double adaptiveSensitivity = CalculateAdaptiveSensitivity(speed);
 
                 
-                _currentRotationY -= deltaX * adaptiveSensitivity;
-                _currentRotationX -= deltaY * adaptiveSensitivity;
+                currentRotationY -= deltaX * adaptiveSensitivity;
+                currentRotationX -= deltaY * adaptiveSensitivity;
 
                 //  Blocking camera view if looking too low/high
-                _currentRotationX = Math.Max(-Math.PI / 2 + Configuration.Instance.GameSettings.ClampVRotationMin,
+                currentRotationX = Math.Max(-Math.PI / 2 + Configuration.Instance.GameSettings.ClampVRotationMin,
                                             Math.Min(Math.PI / 2 - Configuration.Instance.GameSettings.ClampVRotationMax,
-                                                    _currentRotationX));
+                                                    currentRotationX));
 
 
                 // As for horizontal rotation - it's unrestricted
-                _viewModel.CameraProperties.RotationX = _currentRotationX;
-                _viewModel.CameraProperties.RotationY = _currentRotationY;
+                viewModel.CameraProperties.RotationX = currentRotationX;
+                viewModel.CameraProperties.RotationY = currentRotationY;
 
 
                 // Return mouse to the center
-                Point centerInScreen = _window.PointToScreen(centerInWindow);
+                Point centerInScreen = window.PointToScreen(centerInWindow);
                 SetCursorPos((int)centerInScreen.X, (int)centerInScreen.Y);
 
                 // Last pos is screen center again
-                _lastMousePosition = centerInWindow;
-                _lastMoveTime = currentTime;
+                lastMousePosition = centerInWindow;
+                lastMoveTime = currentTime;
             }
             else
             {
-                _lastMousePosition = currentPosition;
-                _lastMoveTime = currentTime;
+                lastMousePosition = currentPosition;
+                lastMoveTime = currentTime;
             }
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (_viewModel == null) return;
+            if (viewModel == null) return;
 
             if (e.ChangedButton == MouseButton.Left)
             {
-                _speedBuffer.Clear();
+                speedBuffer.Clear();
 
-                _window?.ReleaseMouseCapture();
+                window?.ReleaseMouseCapture();
             }
         }
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (_viewModel == null) return;
+            if (viewModel == null) return;
 
-            _viewModel.CameraProperties.FieldOfView -= e.Delta * Configuration.Instance.GameSettings.ZoomSpeed;
-            _viewModel.CameraProperties.FieldOfView = Math.Max(Configuration.Instance.GameSettings.MinFOV,
+            viewModel.CameraProperties.FieldOfView -= e.Delta * Configuration.Instance.GameSettings.ZoomSpeed;
+            viewModel.CameraProperties.FieldOfView = Math.Max(Configuration.Instance.GameSettings.MinFOV,
                                              Math.Min(Configuration.Instance.GameSettings.MaxFOV,
-                                                     _viewModel.CameraProperties.FieldOfView));
+                                                     viewModel.CameraProperties.FieldOfView));
 
             // Toggling HUD visibility
             var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
-            if (_viewModel.CameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV)
+            if (viewModel.CameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV)
                 hudLayer?.HideElement("Crosshair");
             else
                 hudLayer?.ShowElement("Crosshair");
@@ -181,17 +181,17 @@ namespace VLSGame.Input
         {
             if (e.Key == Key.Escape)
             {
-                _window?.Close();
+                window?.Close();
             }
         }
 
         private double CalculateAdaptiveSensitivity(double speed)
         {
-            _speedBuffer.Enqueue(speed);
-            if (_speedBuffer.Count > Configuration.Instance.GameSettings.SpeedBufferSize)
-                _speedBuffer.Dequeue();
+            speedBuffer.Enqueue(speed);
+            if (speedBuffer.Count > Configuration.Instance.GameSettings.SpeedBufferSize)
+                speedBuffer.Dequeue();
 
-            double smoothedSpeed = _speedBuffer.Average();
+            double smoothedSpeed = speedBuffer.Average();
             double sensitivityScale;
 
             if (smoothedSpeed <= Configuration.Instance.GameSettings.MinSpeedThreshold)
@@ -210,7 +210,7 @@ namespace VLSGame.Input
                                  (1.0 - Configuration.Instance.GameSettings.MinSensitivityScale) * (1 - Math.Pow(1 - t, 2));
             }
 
-            return Configuration.Instance.GameSettings.MouseSensitivity * (_viewModel?.CameraProperties?.FieldOfView ?? 90.0)/90.0 * sensitivityScale;
+            return Configuration.Instance.GameSettings.MouseSensitivity * (viewModel?.CameraProperties?.FieldOfView ?? 90.0)/90.0 * sensitivityScale;
         }
     }
 }

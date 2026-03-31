@@ -1,19 +1,14 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace VLSGame.HUD
+namespace VLSGame.Rendering.HUD
 {
-    public abstract class Element
+    public abstract class Element(string name)
     {
-        public string Name { get; protected set; }
+        public string Name { get; protected set; } = name;
         public UIElement? Visual { get; protected set; }
         public bool IsVisible { get; set; } = true;
-        
-        protected Element(string name)
-        {
-            Name = name;
-        }
-        
+
         public abstract void Update(double deltaTime);
         
         public virtual void Show()

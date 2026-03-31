@@ -9,35 +9,35 @@ namespace VLSGame.ViewModels
 {
     public class CameraProperties : ViewModelBase
     {
-        private double _fieldOfView = 90;
-        private double _rotationX = 0;
-        private double _rotationY = 0;
+        private double fieldOfView = 90;
+        private double rotationX = 0;
+        private double rotationY = 0;
 
         public Vector3D LookDirection => CalculateLookDirection();
 
 
         public double FieldOfView
         {
-            get => _fieldOfView;
-            set => Set(ref _fieldOfView, value);
+            get => fieldOfView;
+            set => Set(ref fieldOfView, value);
         }
 
         public double RotationX
         {
-            get => _rotationX;
+            get => rotationX;
             set
             {
-                if (Set(ref _rotationX, value))
+                if (Set(ref rotationX, value))
                     OnPropertyChanged(nameof(LookDirection));
             }
         }
 
         public double RotationY
         {
-            get => _rotationY;
+            get => rotationY;
             set
             {
-                if (Set(ref _rotationY, Math.Clamp(value, -89, 89)))
+                if (Set(ref rotationY, value))
                     OnPropertyChanged(nameof(LookDirection));
             }
         }

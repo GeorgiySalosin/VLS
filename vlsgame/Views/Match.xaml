@@ -33,7 +33,7 @@
         </Grid>
 
         <!-- Debug info -->
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,192,0,0">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,256,0,0">
             <TextBlock Text="{Binding PixelCoordinates}" 
                        Foreground="Yellow" 
                        FontSize="16"

@@ -8,14 +8,14 @@ namespace VLSGame.ViewModels
     public class LobbyViewModel : ViewModelBase
     {
 
-        private string _serverIp = "192.168.0.106";
-        private string _serverPort = "8888";
-        private string _connectionStatus = "Disconnected";
-        private Brush _connectionStatusColor = Brushes.Red;
-        private string _lastResponse = "The server has not replied";
-        private List<string> _messages = new();
+        private string serverIp = "192.168.0.106";
+        private string serverPort = "8888";
+        private string connectionStatus = "Disconnected";
+        private Brush connectionStatusColor = Brushes.Red;
+        private string lastResponse = "The server has not replied";
+        private readonly List<string> messages = [];
 
-        private IGameMode? _currentGameMode;
+        private IGameMode? currentGameMode;
 
         public event EventHandler<string>? MessageAdded;
 
@@ -27,48 +27,48 @@ namespace VLSGame.ViewModels
 
         public string ServerIp
         {
-            get => _serverIp;
-            set => Set(ref _serverIp, value);
+            get => serverIp;
+            set => Set(ref serverIp, value);
         }
 
         public string ServerPort
         {
-            get => _serverPort;
-            set => Set(ref _serverPort, value);
+            get => serverPort;
+            set => Set(ref serverPort, value);
         }
 
         public string ConnectionStatus
         {
-            get => _connectionStatus;
-            private set => Set(ref _connectionStatus, value);
+            get => connectionStatus;
+            private set => Set(ref connectionStatus, value);
         }
 
         public Brush ConnectionStatusColor
         {
-            get => _connectionStatusColor;
-            private set => Set(ref _connectionStatusColor, value);
+            get => connectionStatusColor;
+            private set => Set(ref connectionStatusColor, value);
         }
 
         public string LastResponse
         {
-            get => _lastResponse;
-            private set => Set(ref _lastResponse, value);
+            get => lastResponse;
+            private set => Set(ref lastResponse, value);
         }
 
-        public IReadOnlyList<string> Messages => _messages.AsReadOnly();
+        public IReadOnlyList<string> Messages => messages.AsReadOnly();
 
         public bool IsConnected => NetworkService.Instance.IsConnected;
 
-        public IGameMode? CurrentGameMode => _currentGameMode;
+        public IGameMode? CurrentGameMode => currentGameMode;
 
 
         /* The point where the singleplayer was assigned a panorama*/
         public async Task StartSinglePlayerAsync(string panoramaPath)
         {
-            _currentGameMode = new SinglePlayerGameMode();
-            await _currentGameMode.StartAsync();
+            currentGameMode = new SinglePlayerGameMode();
+            await currentGameMode.StartAsync();
 
-            if (_currentGameMode is SinglePlayerGameMode singlePlayer)
+            if (currentGameMode is SinglePlayerGameMode singlePlayer)
             {
                 singlePlayer.SetPanoramaPath(panoramaPath);
             }
@@ -131,10 +131,10 @@ namespace VLSGame.ViewModels
         }
         private void AddMessage(string message)
         {
-            _messages.Insert(0, $"[{DateTime.Now:HH:mm:ss}] {message}");
-            while (_messages.Count > 50)
+            messages.Insert(0, $"[{DateTime.Now:HH:mm:ss}] {message}");
+            while (messages.Count > 50)
             {
-                _messages.RemoveAt(_messages.Count - 1);
+                messages.RemoveAt(messages.Count - 1);
             }
             MessageAdded?.Invoke(this, message);
         }

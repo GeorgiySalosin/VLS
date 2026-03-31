@@ -10,54 +10,45 @@ namespace VLSGame.ViewModels
 {
     public class MatchViewModel : ViewModelBase
     {
-        private readonly IGameMode _gameMode;
-        private readonly PanoramaData _panoramaData;
+        private readonly IGameMode gameMode;
+        private readonly PanoramaData panoramaData;
         public CameraProperties CameraProperties { get; private set; } = new();     // A functionality of ViewModel that was Extracted into Camera Properties
 
-        private BitmapSource? _colorMapTexture;
-        private string _distanceText;
-        private string _pixelCoordinates;
-        private bool _isDragging;
+        private BitmapSource? colorMapTexture;
+        private string distanceText = "";
+        private string pixelCoordinates = "";
 
         // Cached texture data
-        private int _lastPixelX = -1;
-        private int _lastPixelY = -1;
-        private double _cachedDistance = 0;
+        private int lastPixelX = -1;
+        private int lastPixelY = -1;
+        private double cachedDistance = 0;
 
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
-            _gameMode = gameMode;
-            _panoramaData = new PanoramaData();
-            _panoramaData.LoadTextures(colorMapPath, depthMapPath);
-            _colorMapTexture = ConvertMatToBitmapSource(_panoramaData.ColorMat);
+            this.gameMode = gameMode;
+            panoramaData = new PanoramaData();
+            panoramaData.LoadTextures(colorMapPath, depthMapPath);
+            colorMapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
         }
 
         public BitmapSource? ColorMapTexture
         {
-            get => _colorMapTexture;
-            private set => Set(ref  _colorMapTexture, value);
+            get => colorMapTexture;
+            private set => Set(ref  colorMapTexture, value);
         }
 
         public string DistanceText
         {
-            get => _distanceText;
-            set => Set(ref _distanceText, value);
+            get => distanceText;
+            set => Set(ref distanceText, value);
         }
 
         public string PixelCoordinates
         {
-            get => _pixelCoordinates;
-            set => Set(ref _pixelCoordinates, value);
+            get => pixelCoordinates;
+            set => Set(ref pixelCoordinates, value);
         }
-
-
-        public bool IsDragging
-        {
-            get => _isDragging;
-            set => Set(ref _isDragging, value);
-        }
-
 
 
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
@@ -72,11 +63,11 @@ namespace VLSGame.ViewModels
             double u = theta / (2 * Math.PI);
             double v = phi / Math.PI;
 
-            int pixelX = (int)(u * _panoramaData.DepthWidth);
-            int pixelY = (int)(v * _panoramaData.DepthHeight);
+            int pixelX = (int)(u * panoramaData.DepthWidth);
+            int pixelY = (int)(v * panoramaData.DepthHeight);
 
-            pixelX = Math.Max(0, Math.Min(_panoramaData.DepthWidth - 1, pixelX));
-            pixelY = Math.Max(0, Math.Min(_panoramaData.DepthHeight - 1, pixelY));
+            pixelX = Math.Max(0, Math.Min(panoramaData.DepthWidth - 1, pixelX));
+            pixelY = Math.Max(0, Math.Min(panoramaData.DepthHeight - 1, pixelY));
 
             return (pixelX, pixelY);
         }
@@ -85,23 +76,24 @@ namespace VLSGame.ViewModels
         {
             var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
-            if (pixelX != _lastPixelX || pixelY != _lastPixelY)
+            if (pixelX != lastPixelX || pixelY != lastPixelY)
             {
-                _lastPixelX = pixelX;
-                _lastPixelY = pixelY;
+                lastPixelX = pixelX;
+                lastPixelY = pixelY;
 
-                _cachedDistance = _panoramaData.GetDistanceAtPixel(pixelX, pixelY);
+                cachedDistance = panoramaData.GetDistanceAtPixel(pixelX, pixelY);
 
-                if (_cachedDistance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
+                if (cachedDistance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
                     DistanceText = $"Distance: > {Configuration.Instance.GameSettings.MaxSnipingDistance:F0} м";
                 else 
-                    DistanceText = $"Distance: {_cachedDistance:F1} m";
+                    DistanceText = $"Distance: {cachedDistance:F1} m";
 
                 PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
             }
         }
 
 
+        #region PANORAMA MESH, MATERIALS, TEXTURE SETTINGS 
         public ModelVisual3D CreatePanoramaSphere()
         {
             var mesh = CreateSphereMesh(phiSegments: 128, thetaSegments: 256);
@@ -112,7 +104,7 @@ namespace VLSGame.ViewModels
             return sphereVisual;
         }
 
-        private MeshGeometry3D CreateSphereMesh(int phiSegments, int thetaSegments)
+        private static MeshGeometry3D CreateSphereMesh(int phiSegments, int thetaSegments)
         {
             var mesh = new MeshGeometry3D();
 
@@ -158,7 +150,7 @@ namespace VLSGame.ViewModels
             return mesh;
         }
 
-        private DiffuseMaterial CreatePanoramaMaterial(ImageSource? texture)
+        private static DiffuseMaterial CreatePanoramaMaterial(ImageSource? texture)
         {
             var brush = new ImageBrush(texture)
             {
@@ -170,8 +162,8 @@ namespace VLSGame.ViewModels
             return new DiffuseMaterial(brush);
         }
 
-
-        private BitmapSource? ConvertMatToBitmapSource(Mat? mat)
+        /// <summary> Converts raw opencv data to WPF-frieldly bitmap to use it as a texture</summary>
+        private WriteableBitmap? ConvertMatToBitmap(Mat? mat)
         {
             if (mat == null || mat.Empty())
                 return null;
@@ -182,7 +174,7 @@ namespace VLSGame.ViewModels
                 int height = mat.Height;
                 int stride = width * mat.Channels();
 
-                // Для BGR (3 канала) используем PixelFormats.Bgr24
+                // BGR (3 channels) === PixelFormats.Bgr24
                 var pixelFormat = mat.Channels() == 3 ? PixelFormats.Bgr24 : PixelFormats.Bgr32;
                 var bitmap = new WriteableBitmap(width, height, 96, 96, pixelFormat, null);
 
@@ -214,10 +206,12 @@ namespace VLSGame.ViewModels
                 return null;
             }
         }
+        #endregion
+
 
         public void Dispose()
         {
-            _panoramaData.Dispose();
+            panoramaData.Dispose();
         }
     }
 }
