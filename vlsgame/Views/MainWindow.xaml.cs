@@ -7,7 +7,7 @@ using VLSGame.ViewModels;
 
 using VLSShared.Models;
 
-namespace VLSGame
+namespace VLSGame.Views
 {
     public partial class MainWindow : Window
     {

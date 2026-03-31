@@ -5,7 +5,7 @@ namespace VLSGame.Rendering.Layers
 {
     public class BackgroundLayer : Layer
     {
-        private ModelVisual3D? _sphereVisual;
+        private ModelVisual3D? sphereVisual;
         
         public BackgroundLayer() : base("Background", RenderOrder.Background)
         {
@@ -14,24 +14,24 @@ namespace VLSGame.Rendering.Layers
         public void SetPanorama(Viewport3D viewport, ModelVisual3D sphereVisual)
         {
             ClearPanorama(viewport);
-            _sphereVisual = sphereVisual;
+            this.sphereVisual = sphereVisual;
         }
         
         public override void Render(Viewport3D viewport)
         {
-            if (!IsVisible || _sphereVisual == null) return;
+            if (!IsVisible || sphereVisual == null) return;
             
-            if (!viewport.Children.Contains(_sphereVisual))
+            if (!viewport.Children.Contains(sphereVisual))
             {
-                viewport.Children.Add(_sphereVisual);
+                viewport.Children.Add(sphereVisual);
             }
         }
         
         private void ClearPanorama(Viewport3D viewport)
         {
-            if (_sphereVisual != null && viewport.Children.Contains(_sphereVisual))
+            if (sphereVisual != null && viewport.Children.Contains(sphereVisual))
             {
-                viewport.Children.Remove(_sphereVisual);
+                viewport.Children.Remove(sphereVisual);
             }
         }
     }
