@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 using System.Windows.Media;
 using VLSGame.Config;
 using VLSGame.Input;
@@ -41,7 +39,6 @@ namespace VLSGame.Views
             RenderManager.Instance.Initialize(MainViewport, HudPanel);
 
             MatchInput.Instance.Initialize(viewModel, this);
-
 
             CreateEnvironment();
             SubscribeEvents();

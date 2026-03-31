@@ -17,7 +17,7 @@ namespace VLSGame.Rendering.Layers
             set => isVisible = value;
         }
 
-        public virtual void Render(Viewport3D viewport)
+        public virtual void Render(Viewport3D viewport) // why not abstract?
         {
             /*Implement in inherited class if it has to be rendered in the viewport*/
         }

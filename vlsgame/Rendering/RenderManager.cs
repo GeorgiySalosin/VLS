@@ -14,7 +14,6 @@ namespace VLSGame.Rendering
         private Viewport3D? mainViewport;
         private readonly List<ModelVisual3D> lights = [];
 
-
         // this is used directly from the match view as viewmodel
         public void Initialize(Viewport3D viewport, Panel hudPanel)
         {
@@ -39,7 +38,6 @@ namespace VLSGame.Rendering
         {
             return layers.Values.OfType<T>().FirstOrDefault();
         }
-
 
         public void Render()
         {

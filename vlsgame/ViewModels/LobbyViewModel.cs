@@ -7,7 +7,6 @@ namespace VLSGame.ViewModels
 {
     public class LobbyViewModel : ViewModelBase
     {
-
         private string serverIp = "192.168.0.106";
         private string serverPort = "8888";
         private string connectionStatus = "Disconnected";

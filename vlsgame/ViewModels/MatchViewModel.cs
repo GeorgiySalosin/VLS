@@ -23,7 +23,6 @@ namespace VLSGame.ViewModels
         private int lastPixelY = -1;
         private double cachedDistance = 0;
 
-
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
             this.gameMode = gameMode;
@@ -49,7 +48,6 @@ namespace VLSGame.ViewModels
             get => pixelCoordinates;
             set => Set(ref pixelCoordinates, value);
         }
-
 
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
         {
@@ -91,7 +89,6 @@ namespace VLSGame.ViewModels
                 PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
             }
         }
-
 
         #region PANORAMA MESH, MATERIALS, TEXTURE SETTINGS 
         public ModelVisual3D CreatePanoramaSphere()
@@ -207,7 +204,6 @@ namespace VLSGame.ViewModels
             }
         }
         #endregion
-
 
         public void Dispose()
         {

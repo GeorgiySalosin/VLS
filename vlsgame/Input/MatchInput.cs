@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Media3D;
-using System.Runtime.InteropServices;
 using VLSGame.Config;
 using VLSGame.Rendering;
 using VLSGame.Rendering.Layers;
@@ -27,7 +23,6 @@ namespace VLSGame.Input
         private DateTime lastMoveTime;
         private readonly Queue<double> speedBuffer = new();
 
-
         private double currentRotationX;
         private double currentRotationY;
 
@@ -47,8 +42,6 @@ namespace VLSGame.Input
 
             SubscribeEvents();
             ShowCursor(false);
-
-            
         }
 
         private void SubscribeEvents()
@@ -87,8 +80,6 @@ namespace VLSGame.Input
             lastMoveTime = DateTime.Now;
         }
 
-
-
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             // Мир настолько очистился, что пока здесь ничего не выполняется.
@@ -103,21 +94,17 @@ namespace VLSGame.Input
 
             // Get screen center
             Point centerInWindow = new (window.ActualWidth / 2, window.ActualHeight / 2);
-
             
             double deltaX = currentPosition.X - centerInWindow.X;
             double deltaY = currentPosition.Y - centerInWindow.Y;
-
             
             if (Math.Abs(deltaX) > 0 || Math.Abs(deltaY) > 0)
             {
                 double distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
                 double timeDelta = (currentTime - lastMoveTime).TotalMilliseconds;
-
                 
                 double speed = distance / timeDelta;
                 double adaptiveSensitivity = CalculateAdaptiveSensitivity(speed);
-
                 
                 currentRotationY -= deltaX * adaptiveSensitivity;
                 currentRotationX -= deltaY * adaptiveSensitivity;
@@ -127,11 +114,9 @@ namespace VLSGame.Input
                                             Math.Min(Math.PI / 2 - Configuration.Instance.GameSettings.ClampVRotationMax,
                                                     currentRotationX));
 
-
                 // As for horizontal rotation - it's unrestricted
                 viewModel.CameraProperties.RotationX = currentRotationX;
                 viewModel.CameraProperties.RotationY = currentRotationY;
-
 
                 // Return mouse to the center
                 Point centerInScreen = window.PointToScreen(centerInWindow);
