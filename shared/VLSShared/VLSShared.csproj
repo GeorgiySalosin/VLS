@@ -10,4 +10,10 @@
     <Folder Include="Interfaces\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="VLSGame">
+      <HintPath>..\..\vlsgame\bin\Debug\net8.0-windows\VLSGame.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
