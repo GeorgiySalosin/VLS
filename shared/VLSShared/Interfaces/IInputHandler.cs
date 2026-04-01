@@ -6,8 +6,8 @@ namespace VLSShared.Interfaces
     public interface IInputHandler
     {
         event EventHandler<PlayerInput>? OnInput;
-        void HandleMouseClick(double x, double y, string button);
-        void HandleMouseMove(double deltaX, double deltaY);
+        void HandleMouseClick(double x, double y, string button); // MouseClickData?
+        void HandleMouseMove(double deltaX, double deltaY); // MouseMoveData?
         void HandleKeyPress(string key);
         void HandleKeyRelease(string key);
     }
