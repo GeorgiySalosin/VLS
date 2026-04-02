@@ -1,19 +1,12 @@
+using VLSShared.Enums;
+
 namespace VLSShared.Models
 {
-
     public class PlayerInput
     {
         public InputType Type { get; set; }
         public object? Data { get; set; }
         public DateTime Timestamp { get; set; }
-    }
-
-    public enum InputType
-    {
-        MouseClick,
-        MouseMove,
-        KeyPress,
-        KeyRelease
     }
 
     public class MouseClickData
