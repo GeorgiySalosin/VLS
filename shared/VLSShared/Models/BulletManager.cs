@@ -6,11 +6,14 @@
 
         public static void UpdateBullets(int tickHz = 100)
         {
-            if (Bullets.Count == 0) return;
-            foreach (Bullet bullet in Bullets)
+            for (int i = 0; i < Bullets.Count; i++)
             {
-                if (bullet.IsLanded) Bullets.Remove(bullet);
-                else bullet.Process(tickHz);
+                Bullet bullet = Bullets[i];
+                if (bullet != null)
+                {
+                    if (bullet.IsLanded) Bullets.Remove(bullet);
+                    else bullet.Process(tickHz);
+                }
             }
         }
 

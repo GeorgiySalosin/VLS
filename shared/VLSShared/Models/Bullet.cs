@@ -20,13 +20,14 @@ namespace VLSShared.Models
         private readonly int X;
         private int Y;
         private double Distance = 0;
-        private readonly PanoramaData Panorama;
 
-        public Bullet(int x, int y, PanoramaData panorama)
+        private readonly Func<int, int, double> GetDistanceAtPixel;
+
+        public Bullet(int x, int y, Func<int, int, double> getDistanceAtPixel)
         {
             X = x;
             Y = y;
-            Panorama = panorama;
+            GetDistanceAtPixel = getDistanceAtPixel;
         }
 
         internal void Process(int tickHz = 100)
@@ -36,6 +37,6 @@ namespace VLSShared.Models
             Distance += V * dt;
             // todo
         }
-        internal bool IsLanded => Panorama.GetDistanceAtPixel(X, Y) <= Distance;
+        internal bool IsLanded => GetDistanceAtPixel(X, Y) <= Distance;
     }
 }

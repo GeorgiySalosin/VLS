@@ -17,7 +17,7 @@ namespace VLSGame.ViewModels
         private const int tickHz = 100;
 
         private readonly IGameMode gameMode;
-        internal PanoramaData panoramaData; // private readonly
+        private readonly PanoramaData panoramaData;
         public CameraProperties CameraProperties { get; private set; } = new();     // A functionality of ViewModel that was Extracted into Camera Properties
 
         private BitmapSource? colorMapTexture;
@@ -35,6 +35,7 @@ namespace VLSGame.ViewModels
             panoramaData = new PanoramaData();
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
             colorMapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
+
             StartGameLoop();
         }
 
@@ -53,6 +54,13 @@ namespace VLSGame.ViewModels
             // Здесь можно обновить другие игровые логики
             // Например, перерисовать прицел или обновить отображаемую дистанцию
             // UpdateCenterDistance();
+        }
+
+        internal void Shoot()
+        {
+            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
+            BulletManager.AddBullet(bullet);
         }
 
         public BitmapSource? ColorMapTexture
@@ -93,12 +101,7 @@ namespace VLSGame.ViewModels
 
             return (pixelX, pixelY);
         }
-
-        //public double GetDistancePixel(int x, int y)
-        //{
-
-        //}
-        public double GetCenterDistance()
+        public void GetCenterDistance()
         {
             var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
@@ -119,7 +122,6 @@ namespace VLSGame.ViewModels
 
                 PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
             }
-            return cachedDistance;
         }
 
         #region PANORAMA MESH, MATERIALS, TEXTURE SETTINGS 

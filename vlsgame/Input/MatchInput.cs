@@ -83,9 +83,7 @@ namespace VLSGame.Input
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            (int x, int y) = viewModel.GetTextureCoordinatesFromDirection(viewModel.CameraProperties.LookDirection);
-            Bullet bullet = new Bullet(x, y, viewModel.panoramaData);
-            BulletManager.AddBullet(bullet);
+            viewModel?.Shoot();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
