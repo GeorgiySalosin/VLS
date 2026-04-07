@@ -1,4 +1,5 @@
 using OpenCvSharp;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -23,6 +24,7 @@ namespace VLSGame.ViewModels
         private BitmapSource? colorMapTexture;
         private string distanceText = "";
         private string pixelCoordinates = "";
+        private string lastBullet = ""; // info about last bullet
 
         // Cached texture data
         private int lastPixelX = -1;
@@ -35,7 +37,8 @@ namespace VLSGame.ViewModels
             panoramaData = new PanoramaData();
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
             colorMapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
-
+            BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
+                LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
             StartGameLoop();
         }
 
@@ -79,6 +82,11 @@ namespace VLSGame.ViewModels
         {
             get => pixelCoordinates;
             set => Set(ref pixelCoordinates, value);
+        }
+        public string LastBullet
+        {
+            get => lastBullet;
+            set => Set(ref lastBullet, value);
         }
 
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)

@@ -5,7 +5,6 @@ using VLSGame.Config;
 using VLSGame.Rendering;
 using VLSGame.Rendering.Layers;
 using VLSGame.ViewModels;
-using VLSShared.Models;
 
 namespace VLSGame.Input
 {

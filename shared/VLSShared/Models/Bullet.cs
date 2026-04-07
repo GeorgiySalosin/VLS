@@ -1,6 +1,4 @@
-﻿using VLSGame.Models;
-
-namespace VLSShared.Models
+﻿namespace VLSShared.Models
 {
     public class Bullet
     {
@@ -17,9 +15,10 @@ namespace VLSShared.Models
         //private const double G = 9.81; // Ускорение свободного падения, м/с2
         //private const double I = M * 2.2 / ((D * 39.37) * (D * 39.37) * G1); // Формула форм-фактора + перевод кг в фунты, м в дюймы
 
-        private readonly int X;
-        private int Y;
-        private double Distance = 0;
+        internal int X { get; init; }
+        internal int Y { get; private set; }
+        internal double Distance { get; private set; } = 0;
+        internal double FlightTime { get; private set; } = 0;
 
         private readonly Func<int, int, double> GetDistanceAtPixel;
 
@@ -30,11 +29,10 @@ namespace VLSShared.Models
             GetDistanceAtPixel = getDistanceAtPixel;
         }
 
-        internal void Process(int tickHz = 100)
+        internal void Process(double dt)
         {
-            // tickHz — частота тиков в секунду (например, 100). Тогда шаг времени dt = 1.0 / tickHz
-            double dt = 1.0 / tickHz;
             Distance += V * dt;
+            FlightTime += dt;
             // todo
         }
         internal bool IsLanded => GetDistanceAtPixel(X, Y) <= Distance;
