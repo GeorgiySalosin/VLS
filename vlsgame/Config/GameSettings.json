@@ -9,6 +9,6 @@
   "zoom_speed": 0.1,
   "min_fov": 6,
   "max_fov": 90,
-  "max_sniping_distance": 2000.0,
-  "max_sniping_distance_thresold": 30.0
+  "max_sniping_distance": 2048.0,
+  "max_sniping_distance_thresold": 48.0
 }

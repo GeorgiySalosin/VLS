@@ -2,7 +2,7 @@
 
 namespace VLSGame.Models
 {
-    public class PanoramaData : IDisposable
+    public class PanoramaData : IDisposable // file MatchModel.cs and class PanoramaData?
     {
         public Mat? ColorMat { get; private set; }
         public Mat? DepthMat { get; private set; }

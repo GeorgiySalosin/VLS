@@ -82,7 +82,7 @@ namespace VLSGame.Input
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Мир настолько очистился, что пока здесь ничего не выполняется.
+            viewModel?.Shoot();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)

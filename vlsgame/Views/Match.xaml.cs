@@ -77,7 +77,7 @@ namespace VLSGame.Views
         private void OnRendering(object? sender, EventArgs e)
         {
             RenderManager.Instance.Render();
-            viewModel.UpdateCenterDistance();
+            viewModel.GetCenterDistance();
         }
 
         private void OnClosed(object? sender, EventArgs e)

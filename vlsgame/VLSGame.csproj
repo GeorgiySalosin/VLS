@@ -28,16 +28,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\shared\VLSShared\VLSShared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Content\Maps\Test_D.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Maps\Test_W.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\shared\VLSShared\VLSShared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

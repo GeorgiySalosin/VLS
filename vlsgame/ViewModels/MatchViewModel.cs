@@ -2,14 +2,20 @@ using OpenCvSharp;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 using VLSGame.Config;
 using VLSGame.Models;
 using VLSShared.Interfaces;
+using VLSShared.Models;
 
 namespace VLSGame.ViewModels
 {
     public class MatchViewModel : ViewModelBase
     {
+        // Timer
+        private DispatcherTimer _gameTimer;
+        private const int tickHz = 100;
+
         private readonly IGameMode gameMode;
         private readonly PanoramaData panoramaData;
         public CameraProperties CameraProperties { get; private set; } = new();     // A functionality of ViewModel that was Extracted into Camera Properties
@@ -17,6 +23,7 @@ namespace VLSGame.ViewModels
         private BitmapSource? colorMapTexture;
         private string distanceText = "";
         private string pixelCoordinates = "";
+        private string lastBullet = ""; // info about last bullet
 
         // Cached texture data
         private int lastPixelX = -1;
@@ -29,6 +36,34 @@ namespace VLSGame.ViewModels
             panoramaData = new PanoramaData();
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
             colorMapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
+
+            BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
+                LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
+            StartGameLoop();
+        }
+
+        private void StartGameLoop()
+        {
+            _gameTimer = new DispatcherTimer();
+            _gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
+            _gameTimer.Tick += OnGameTick;
+            _gameTimer.Start();
+        }
+
+        private void OnGameTick(object? sender, EventArgs e)
+        {
+            BulletManager.UpdateBullets();
+
+            // Здесь можно обновить другие игровые логики
+            // Например, перерисовать прицел или обновить отображаемую дистанцию
+            // UpdateCenterDistance();
+        }
+
+        internal void Shoot()
+        {
+            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
+            BulletManager.AddBullet(bullet);
         }
 
         public BitmapSource? ColorMapTexture
@@ -47,6 +82,11 @@ namespace VLSGame.ViewModels
         {
             get => pixelCoordinates;
             set => Set(ref pixelCoordinates, value);
+        }
+        public string LastBullet
+        {
+            get => lastBullet;
+            set => Set(ref lastBullet, value);
         }
 
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
@@ -69,8 +109,7 @@ namespace VLSGame.ViewModels
 
             return (pixelX, pixelY);
         }
-
-        public void UpdateCenterDistance()
+        public void GetCenterDistance()
         {
             var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
@@ -82,8 +121,11 @@ namespace VLSGame.ViewModels
                 cachedDistance = panoramaData.GetDistanceAtPixel(pixelX, pixelY);
 
                 if (cachedDistance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
-                    DistanceText = $"Distance: > {Configuration.Instance.GameSettings.MaxSnipingDistance:F0} м";
-                else 
+                {
+                    cachedDistance = Configuration.Instance.GameSettings.MaxSnipingDistance;
+                    DistanceText = $"Distance: > {cachedDistance:F0} м";
+                }
+                else
                     DistanceText = $"Distance: {cachedDistance:F1} m";
 
                 PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";

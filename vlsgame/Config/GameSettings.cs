@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json.Serialization;
-namespace VLSGame.Config
+﻿using System.Text.Json.Serialization;
 
+namespace VLSGame.Config
 {
     public class GameSettings
     {
@@ -40,10 +35,10 @@ namespace VLSGame.Config
         public double MaxFOV { get; set; } = 90f;       // The base fov (no zoom)
 
         [JsonPropertyName("max_sniping_distance")]
-        public double MaxSnipingDistance = 2000f;       // The distance up to which we can count hits (The range that was written into the depth map) - after this distance we gonna abandon the bullet
+        public double MaxSnipingDistance { get; set; } = 2048f;       // The distance up to which we can count hits (The range that was written into the depth map) - after this distance we gonna abandon the bullet
 
         [JsonPropertyName("max_sniping_distance_thresold")]
-        public double MaxSnipingDistanceThresold = 30f;     // the distance we subtract from MaxSniping distance due to depth map incorrect behavior
+        public double MaxSnipingDistanceThresold { get; set; } = 48f;     // the distance we subtract from MaxSniping distance due to depth map incorrect behavior
                                                             // (for example, the sky pixel might be not 100% white -> w/out thresold the distance could unexpectedly become ~ 19xx meters)
     }
 }
