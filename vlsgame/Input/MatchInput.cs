@@ -5,6 +5,7 @@ using VLSGame.Config;
 using VLSGame.Rendering;
 using VLSGame.Rendering.Layers;
 using VLSGame.ViewModels;
+using VLSShared.Models;
 
 namespace VLSGame.Input
 {
@@ -82,7 +83,9 @@ namespace VLSGame.Input
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Мир настолько очистился, что пока здесь ничего не выполняется.
+            (int x, int y) = viewModel.GetTextureCoordinatesFromDirection(viewModel.CameraProperties.LookDirection);
+            Bullet bullet = new Bullet(x, y, viewModel.panoramaData);
+            BulletManager.AddBullet(bullet);
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
