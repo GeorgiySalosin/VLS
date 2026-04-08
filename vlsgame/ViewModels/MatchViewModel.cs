@@ -1,4 +1,5 @@
 using OpenCvSharp;
+using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -61,9 +62,15 @@ namespace VLSGame.ViewModels
 
         internal void Shoot()
         {
-            var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
-            var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
+            Vector3 startPos = new Vector3(0, 0, 0);
+            Vector3D cameraLook3D = CameraProperties.LookDirection;
+            Vector3 cameraLook = new Vector3((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
+            Bullet bullet = new Bullet(startPos, cameraLook, panoramaData.GetDistanceAtPixel);
             BulletManager.AddBullet(bullet);
+
+            //var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            //var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
+            //BulletManager.AddBullet(bullet);
         }
 
         public BitmapSource? ColorMapTexture

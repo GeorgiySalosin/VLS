@@ -19,11 +19,11 @@
                         BulletLanded?.Invoke(bullet.X, bullet.Y, bullet.Distance, bullet.FlightTime);
                         Bullets.RemoveAt(i);
                     }
-                    else bullet.Process(dt);
+                    else bullet.Update(dt);
                 }
             }
         }
 
-        public static void AddBullet(Bullet bullet) => Bullets.Add(bullet); 
+        public static void AddBullet(Bullet bullet) { lock (_lock) Bullets.Add(bullet); } 
     }
 }

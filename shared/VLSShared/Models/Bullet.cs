@@ -1,4 +1,6 @@
-﻿namespace VLSShared.Models
+﻿using System.Numerics;
+
+namespace VLSShared.Models
 {
     public class Bullet
     {
@@ -22,6 +24,9 @@
 
         private readonly Func<int, int, double> GetDistanceAtPixel;
 
+        private Vector3 position;
+        private Vector3 velocity;
+
         public Bullet(int x, int y, Func<int, int, double> getDistanceAtPixel)
         {
             X = x;
@@ -29,11 +34,20 @@
             GetDistanceAtPixel = getDistanceAtPixel;
         }
 
-        internal void Process(double dt)
+        public Bullet(Vector3 startPos, Vector3 cameraLook, Func<int, int, double> getDistanceAtPixel)
         {
-            Distance += V * dt;
-            FlightTime += dt;
+            position = startPos;
+            velocity = cameraLook * V;
+            GetDistanceAtPixel = getDistanceAtPixel;
+        }
+
+        internal void Update(double dt)
+        {
+            //Distance += V * dt;
+            //FlightTime += dt;
             // todo
+            if (IsLanded) return;
+
         }
         internal bool IsLanded => GetDistanceAtPixel(X, Y) <= Distance;
     }
