@@ -61,7 +61,7 @@ namespace VLSGame.ViewModels
 
         internal void Shoot()
         {
-            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
             var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
             BulletManager.AddBullet(bullet);
         }
@@ -88,30 +88,9 @@ namespace VLSGame.ViewModels
             get => lastBullet;
             set => Set(ref lastBullet, value);
         }
-
-        public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
-        {
-            direction.Normalize();
-
-            double theta = Math.Atan2(direction.Z, direction.X);
-            double phi = Math.Acos(direction.Y);
-
-            if (theta < 0) theta += 2 * Math.PI;
-
-            double u = theta / (2 * Math.PI);
-            double v = phi / Math.PI;
-
-            int pixelX = (int)(u * panoramaData.DepthWidth);
-            int pixelY = (int)(v * panoramaData.DepthHeight);
-
-            pixelX = Math.Max(0, Math.Min(panoramaData.DepthWidth - 1, pixelX));
-            pixelY = Math.Max(0, Math.Min(panoramaData.DepthHeight - 1, pixelY));
-
-            return (pixelX, pixelY);
-        }
         public void GetCenterDistance()
         {
-            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
             if (pixelX != lastPixelX || pixelY != lastPixelY)
             {
