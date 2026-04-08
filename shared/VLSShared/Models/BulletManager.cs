@@ -4,19 +4,20 @@
     {
         public static event Action<int, int, double, double>? BulletLanded; // (x, y, distance, flightTime)
         private static List<Bullet> Bullets { get; } = new List<Bullet>();
+        private static readonly object _lock = new object();
 
         public static void UpdateBullets(int tickHz = 100)
         {
-            double dt = 1.0 / tickHz;
-            for (int i = 0; i < Bullets.Count; i++)
+            lock (_lock)
             {
-                Bullet bullet = Bullets[i];
-                if (bullet != null) // maybe useless
+                double dt = 1.0 / tickHz;
+                for (int i = Bullets.Count - 1; i >= 0; i--)
                 {
+                    Bullet bullet = Bullets[i];
                     if (bullet.IsLanded)
                     {
                         BulletLanded?.Invoke(bullet.X, bullet.Y, bullet.Distance, bullet.FlightTime);
-                        Bullets.Remove(bullet);
+                        Bullets.RemoveAt(i);
                     }
                     else bullet.Process(dt);
                 }
