@@ -10,7 +10,7 @@
         {
             lock (_lock)
             {
-                double dt = 1.0 / tickHz;
+                float dt = 1.0f / tickHz;
                 for (int i = Bullets.Count - 1; i >= 0; i--)
                 {
                     Bullet bullet = Bullets[i];

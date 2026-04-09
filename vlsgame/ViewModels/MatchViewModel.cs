@@ -14,8 +14,8 @@ namespace VLSGame.ViewModels
     public class MatchViewModel : ViewModelBase
     {
         // Timer
-        private DispatcherTimer _gameTimer;
-        private const int tickHz = 100;
+        private DispatcherTimer gameTimer;
+        private const int tickHz = 60;
 
         private readonly IGameMode gameMode;
         private readonly PanoramaData panoramaData;
@@ -45,10 +45,10 @@ namespace VLSGame.ViewModels
 
         private void StartGameLoop()
         {
-            _gameTimer = new DispatcherTimer();
-            _gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
-            _gameTimer.Tick += OnGameTick;
-            _gameTimer.Start();
+            gameTimer = new DispatcherTimer();
+            gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
+            gameTimer.Tick += OnGameTick;
+            gameTimer.Start();
         }
 
         private void OnGameTick(object? sender, EventArgs e)
@@ -65,7 +65,15 @@ namespace VLSGame.ViewModels
             Vector3 startPos = new Vector3(0, 0, 0);
             Vector3D cameraLook3D = CameraProperties.LookDirection;
             Vector3 cameraLook = new Vector3((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
-            Bullet bullet = new Bullet(startPos, cameraLook, panoramaData.GetDistanceAtPixel);
+            // Делегат для преобразования направления в пиксельные координаты
+            Func<Vector3, (int X, int Y)> getPixelFromDirection = (Vector3 dir) =>
+            {
+                // Конвертируем Vector3 → Vector3D
+                var dir3D = new Vector3D(dir.X, dir.Y, dir.Z);
+                // Вызываем метод PanoramaData
+                return panoramaData.GetTextureCoordinatesFromDirection(dir3D);
+            };
+            Bullet bullet = new Bullet(startPos, cameraLook, panoramaData.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
 
             //var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
