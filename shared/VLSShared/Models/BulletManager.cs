@@ -6,7 +6,7 @@
         private static List<Bullet> Bullets { get; } = new List<Bullet>();
         private static readonly object _lock = new object();
 
-        public static void UpdateBullets(int tickHz = 100)
+        public static void UpdateBullets(int tickHz)
         {
             lock (_lock)
             {

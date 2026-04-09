@@ -53,7 +53,7 @@ namespace VLSGame.ViewModels
 
         private void OnGameTick(object? sender, EventArgs e)
         {
-            BulletManager.UpdateBullets();
+            BulletManager.UpdateBullets(tickHz);
 
             // Здесь можно обновить другие игровые логики
             // Например, перерисовать прицел или обновить отображаемую дистанцию
@@ -75,10 +75,6 @@ namespace VLSGame.ViewModels
             };
             Bullet bullet = new Bullet(startPos, cameraLook, panoramaData.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
-
-            //var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
-            //var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
-            //BulletManager.AddBullet(bullet);
         }
 
         public BitmapSource? ColorMapTexture

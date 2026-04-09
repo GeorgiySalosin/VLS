@@ -10,7 +10,7 @@ namespace VLSShared.Models
         private const float PAir = 1.225f; // Плотность воздуха, кг/м3
         private const float D = 0.00792f; // Диаметр пули, м
 
-        private const float S = (float)(Math.PI * (D / 2 * (D / 2))); // Площадь поперечного сечения пули, м2
+        private const float S = D * D; // Площадь поперечного сечения пули, м2
         private const float G = 9.81f; // Ускорение свободного падения, м/с2
         private const float FormFactor = (float)(Mass * 2.2 / ((D * 39.37) * (D * 39.37) * G1)); // Формула форм-фактора + перевод кг в фунты, м в дюймы
 
@@ -69,7 +69,6 @@ namespace VLSShared.Models
                 X = pixelX;
                 Y = pixelY;
                 Distance = distance;
-                // Здесь можно сохранить координаты попадания для эффектов
             }
 
             FlightTime += dt;
@@ -77,15 +76,25 @@ namespace VLSShared.Models
         internal bool IsLanded { get; private set; } = false;
         private float ComputeCd(double V)
         {
-            float M = (float)(V / 340.0); // Число Маха
-            // Примитивная аппроксимация Cd_G1(M) (для эталонной пули)
-            float Cd_G1;
-            if (M < 0.8) Cd_G1 = 0.15f;
-            else if (M < 0.95) Cd_G1 = 0.25f;
-            else if (M < 1.1) Cd_G1 = 0.35f;
-            else if (M < 1.5) Cd_G1 = 0.45f;
-            else Cd_G1 = 0.38f;
-            return FormFactor * Cd_G1;
+            float M = (float)(V / 340.0);
+            // предопределённые точки (M, Cd_G1)
+            (float m, float cd)[] points = new (float, float)[]
+            {
+                (0.0f, 0.15f), (0.8f, 0.20f), (0.95f, 0.32f),
+                (1.0f, 0.45f), (1.1f, 0.45f), (1.2f, 0.42f),
+                (1.5f, 0.36f), (2.0f, 0.33f), (2.5f, 0.30f),
+                (3.0f, 0.29f)
+            };
+            // линейная интерполяция
+            for (int i = 0; i < points.Length - 1; i++)
+                if (M >= points[i].m && M <= points[i + 1].m)
+                {
+                    float t = (M - points[i].m) / (points[i + 1].m - points[i].m);
+                    float cd = points[i].cd + t * (points[i + 1].cd - points[i].cd);
+                    return FormFactor * cd;
+                }
+            // за пределами таблицы
+            return FormFactor * (M < points[0].m ? points[0].cd : points[^1].cd);
         }
     }
 }
