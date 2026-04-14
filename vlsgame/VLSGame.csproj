@@ -8,15 +8,22 @@
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseWindowsForms>False</UseWindowsForms>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Content\Animation\BallisticsFX\BulletDebug.png" />
+    <None Remove="Content\Animation\IdleZoom\A_Scope_Idle.png" />
     <None Remove="Content\Maps\Test_D.png" />
     <None Remove="Content\Maps\Test_W.png" />
     <None Remove="Content\ui\T_CrossAIM.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Content\Animation\BallisticsFX\BulletDebug.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\IdleZoom\A_Scope_Idle.png" />
     <Content Include="Content\ui\T_CrossAIM.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

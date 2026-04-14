@@ -13,7 +13,10 @@ namespace VLSGame.ViewModels
         public double FieldOfView
         {
             get => fieldOfView;
-            set => Set(ref fieldOfView, value);
+            set
+            {
+                Set(ref fieldOfView, value);
+            }
         }
 
         public double RotationX
@@ -36,14 +39,13 @@ namespace VLSGame.ViewModels
             }
         }
 
-
         private Vector3D CalculateLookDirection()
         {
             double x = Math.Cos(RotationX) * Math.Sin(RotationY);
             double y = Math.Sin(RotationX);
             double z = Math.Cos(RotationX) * Math.Cos(RotationY);
 
-            Vector3D vec = new Vector3D(x, y, z);
+            Vector3D vec = new (x, y, z);
             vec.Normalize();
 
             return vec;

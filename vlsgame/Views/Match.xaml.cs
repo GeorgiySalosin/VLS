@@ -3,8 +3,8 @@ using System.Windows.Media;
 using VLSGame.Config;
 using VLSGame.Input;
 using VLSGame.Rendering;
-using VLSGame.Rendering.HUD;
-using VLSGame.Rendering.Layers;
+using VLSGame.Rendering.Content2D.HUD;
+using VLSGame.Rendering.Content2D.Projectile;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Views
@@ -53,32 +53,46 @@ namespace VLSGame.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            SetupHud();
+            SetupLayers();
+            var projectileLayer = RenderManager.Instance.GetLayer<ProjectileLayer>();
+            if (projectileLayer != null)
+            {
+                projectileLayer.ShowProjectile();
+                //projectileLayer.MoveProjectile(100, 50);
+            }
         }
 
-        //this can also be moved into viewmodel
+
         private void CreateEnvironment()
         {
             var worldSphere = viewModel.CreatePanoramaSphere();
-            var panoramaLayer = RenderManager.Instance.GetLayer<BackgroundLayer>();
-            panoramaLayer?.SetPanorama(MainViewport, worldSphere);
+            RenderManager.Instance?.SetBackground(worldSphere);
         }
 
-        //this can also be moved into viewmodel
-        private static void SetupHud()
+
+        private void SetupLayers()
         {
+            // HUD 
             var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
-            var crosshair = new CrosshairElement("Crosshair");
-            hudLayer?.RegisterElement(crosshair);
-            hudLayer?.ShowAll();
+            hudLayer?.Initialize(viewModel);
+            var crosshair = new CrosshairTexture();
+            hudLayer?.RegisterTexture(crosshair);
+            hudLayer?.ShowTexture("Crosshair");
+
+            // Projectile 
+            var projectileLayer = RenderManager.Instance.GetLayer<ProjectileLayer>();
+            projectileLayer?.ShowProjectile();
+
         }
 
         // this 'd better moved into viewmodel.
         private void OnRendering(object? sender, EventArgs e)
         {
             RenderManager.Instance.Render();
+
             viewModel.GetCenterDistance();
         }
+
 
         private void OnClosed(object? sender, EventArgs e)
         {

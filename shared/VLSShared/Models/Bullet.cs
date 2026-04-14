@@ -14,11 +14,12 @@
         //private const double F_air = 0.5 * P * V * V * Cd * S; // Сила сопротивления воздуха
         //private const double G = 9.81; // Ускорение свободного падения, м/с2
         //private const double I = M * 2.2 / ((D * 39.37) * (D * 39.37) * G1); // Формула форм-фактора + перевод кг в фунты, м в дюймы
+        public Guid Id { get; } = Guid.NewGuid(); // ADDED !!!!!
 
-        internal int X { get; init; }
-        internal int Y { get; private set; }
-        internal double Distance { get; private set; } = 0;
-        internal double FlightTime { get; private set; } = 0;
+        public int X { get; init; }                    // CHANGED: internal -> public
+        public int Y { get; private set; }             // CHANGED: internal -> public
+        public double Distance { get; private set; } = 0;   // CHANGED: internal -> public
+        public double FlightTime { get; private set; } = 0; // CHANGED: internal -> public
 
         private readonly Func<int, int, double> GetDistanceAtPixel;
 

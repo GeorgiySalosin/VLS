@@ -37,10 +37,15 @@ namespace VLSGame.ViewModels
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
             colorMapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
 
-            BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
-                LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
+            BulletManager.BulletLanded += OnBulletLanded;  // ИЗМЕНЕНО
             StartGameLoop();
         }
+
+        private void OnBulletLanded(Bullet bullet)  // CHANGED
+        {
+            LastBullet = $"Hit at ({bullet.X}, {bullet.Y}), distance {bullet.Distance:F1} m, time {bullet.FlightTime:F2} s";
+        }
+
 
         private void StartGameLoop()
         {
@@ -249,6 +254,7 @@ namespace VLSGame.ViewModels
 
         public void Dispose()
         {
+            BulletManager.BulletLanded -= OnBulletLanded;
             panoramaData.Dispose();
         }
     }

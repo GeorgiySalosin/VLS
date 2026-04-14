@@ -1,4 +1,5 @@
 ﻿using OpenCvSharp;
+using VLSGame.Config;
 
 namespace VLSGame.Models
 {
@@ -17,8 +18,8 @@ namespace VLSGame.Models
 
         public int ColorStride => ColorWidth * 3; // (BGR)
 
-        private const double MAX_DISTANCE_METERS = 2000.0;
-        private const ushort MAX_DEPTH_VALUE = 65535;
+
+        private const ushort MAX_DEPTH_VALUE = ushort.MaxValue;
 
         public void LoadTextures(string colorMapPath, string depthMapPath)
         {
@@ -106,7 +107,7 @@ namespace VLSGame.Models
             if (index >= 0 && index < DepthData.Length)
             {
                 ushort depthValue = DepthData[index];
-                return (depthValue / (double)MAX_DEPTH_VALUE) * MAX_DISTANCE_METERS;
+                return (depthValue / (double)MAX_DEPTH_VALUE) * Configuration.Instance.GameSettings.MaxSnipingDistance;
             }
 
             return 0;

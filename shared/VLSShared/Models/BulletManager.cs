@@ -2,7 +2,8 @@
 {
     public static class BulletManager
     {
-        public static event Action<int, int, double, double>? BulletLanded; // (x, y, distance, flightTime)
+        public static event Action<Bullet>? BulletAdded;     // ADDED 
+        public static event Action<Bullet>? BulletLanded;    // CHANGED !!!!    // deprecated (x, y, distance, flightTime)
         private static List<Bullet> Bullets { get; } = new List<Bullet>();
 
         public static void UpdateBullets(int tickHz = 100)
@@ -15,14 +16,18 @@
                 {
                     if (bullet.IsLanded)
                     {
-                        BulletLanded?.Invoke(bullet.X, bullet.Y, bullet.Distance, bullet.FlightTime);
-                        Bullets.Remove(bullet);
+                        BulletLanded?.Invoke(bullet);  // CHANGED: send the whole object bullet
+                        Bullets.RemoveAt(i);           // CHANDED: remove by idx
                     }
                     else bullet.Process(dt);
                 }
             }
         }
 
-        public static void AddBullet(Bullet bullet) => Bullets.Add(bullet); 
+        public static void AddBullet(Bullet bullet)
+        {
+            BulletAdded?.Invoke(bullet);    // ADDED 
+            Bullets.Add(bullet);
+        }
     }
 }

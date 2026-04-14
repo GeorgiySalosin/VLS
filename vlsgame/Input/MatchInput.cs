@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using VLSGame.Config;
 using VLSGame.Rendering;
-using VLSGame.Rendering.Layers;
+using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Input
@@ -155,11 +155,11 @@ namespace VLSGame.Input
                                                      viewModel.CameraProperties.FieldOfView));
 
             // Toggling HUD visibility
-            var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
-            if (viewModel.CameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV)
-                hudLayer?.HideElement("Crosshair");
-            else
-                hudLayer?.ShowElement("Crosshair");
+            //var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
+            //if (viewModel.CameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV)
+            //    hudLayer?.HideTexture("Crosshair");
+            //else
+            //    hudLayer?.ShowTexture("Crosshair");
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
