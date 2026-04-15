@@ -55,11 +55,6 @@ namespace VLSGame.Views
         {
             SetupLayers();
             var projectileLayer = RenderManager.Instance.GetLayer<ProjectileLayer>();
-            if (projectileLayer != null)
-            {
-                projectileLayer.ShowProjectile();
-                //projectileLayer.MoveProjectile(100, 50);
-            }
         }
 
 
@@ -79,9 +74,6 @@ namespace VLSGame.Views
             hudLayer?.RegisterTexture(crosshair);
             hudLayer?.ShowTexture("Crosshair");
 
-            // Projectile 
-            var projectileLayer = RenderManager.Instance.GetLayer<ProjectileLayer>();
-            projectileLayer?.ShowProjectile();
 
         }
 
