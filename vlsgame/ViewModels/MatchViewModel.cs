@@ -1,4 +1,5 @@
 using OpenCvSharp;
+using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -13,8 +14,8 @@ namespace VLSGame.ViewModels
     public class MatchViewModel : ViewModelBase
     {
         // Timer
-        private DispatcherTimer _gameTimer;
-        private const int tickHz = 100;
+        private DispatcherTimer gameTimer;
+        private const int tickHz = 60;
 
         private readonly IGameMode gameMode;
         private readonly PanoramaData panoramaData;
@@ -44,15 +45,15 @@ namespace VLSGame.ViewModels
 
         private void StartGameLoop()
         {
-            _gameTimer = new DispatcherTimer();
-            _gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
-            _gameTimer.Tick += OnGameTick;
-            _gameTimer.Start();
+            gameTimer = new DispatcherTimer();
+            gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
+            gameTimer.Tick += OnGameTick;
+            gameTimer.Start();
         }
 
         private void OnGameTick(object? sender, EventArgs e)
         {
-            BulletManager.UpdateBullets();
+            BulletManager.UpdateBullets(tickHz);
 
             // Здесь можно обновить другие игровые логики
             // Например, перерисовать прицел или обновить отображаемую дистанцию
@@ -61,8 +62,18 @@ namespace VLSGame.ViewModels
 
         internal void Shoot()
         {
-            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
-            var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
+            Vector3 startPos = new Vector3(0, 0, 0);
+            Vector3D cameraLook3D = CameraProperties.LookDirection;
+            Vector3 cameraLook = new Vector3((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
+            // Делегат для преобразования направления в пиксельные координаты
+            Func<Vector3, (int X, int Y)> getPixelFromDirection = (Vector3 dir) =>
+            {
+                // Конвертируем Vector3 → Vector3D
+                var dir3D = new Vector3D(dir.X, dir.Y, dir.Z);
+                // Вызываем метод PanoramaData
+                return panoramaData.GetTextureCoordinatesFromDirection(dir3D);
+            };
+            Bullet bullet = new Bullet(startPos, cameraLook, panoramaData.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
         }
 
@@ -88,30 +99,9 @@ namespace VLSGame.ViewModels
             get => lastBullet;
             set => Set(ref lastBullet, value);
         }
-
-        public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
-        {
-            direction.Normalize();
-
-            double theta = Math.Atan2(direction.Z, direction.X);
-            double phi = Math.Acos(direction.Y);
-
-            if (theta < 0) theta += 2 * Math.PI;
-
-            double u = theta / (2 * Math.PI);
-            double v = phi / Math.PI;
-
-            int pixelX = (int)(u * panoramaData.DepthWidth);
-            int pixelY = (int)(v * panoramaData.DepthHeight);
-
-            pixelX = Math.Max(0, Math.Min(panoramaData.DepthWidth - 1, pixelX));
-            pixelY = Math.Max(0, Math.Min(panoramaData.DepthHeight - 1, pixelY));
-
-            return (pixelX, pixelY);
-        }
         public void GetCenterDistance()
         {
-            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
             if (pixelX != lastPixelX || pixelY != lastPixelY)
             {

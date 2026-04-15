@@ -1,4 +1,5 @@
 ﻿using OpenCvSharp;
+using System.Windows.Media.Media3D;
 
 namespace VLSGame.Models
 {
@@ -110,6 +111,27 @@ namespace VLSGame.Models
             }
 
             return 0;
+        }
+
+        public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
+        {
+            direction.Normalize();
+
+            double theta = Math.Atan2(direction.Z, direction.X);
+            double phi = Math.Acos(direction.Y);
+
+            if (theta < 0) theta += 2 * Math.PI;
+
+            double u = theta / (2 * Math.PI);
+            double v = phi / Math.PI;
+
+            int pixelX = (int)(u * DepthWidth);
+            int pixelY = (int)(v * DepthHeight);
+
+            pixelX = Math.Max(0, Math.Min(DepthWidth - 1, pixelX));
+            pixelY = Math.Max(0, Math.Min(DepthHeight - 1, pixelY));
+
+            return (pixelX, pixelY);
         }
 
         public void Dispose()
