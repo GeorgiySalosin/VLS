@@ -4,18 +4,15 @@
     {
         private static Bullet? LastBullet; // последняя добавленная пуля
         public static event Action<string>? LastBulletInfoChanged;
-        public static string LastBulletInfo
-        {
-            get => LastBullet?.ToString() ?? "No active bullets";
-        }
+        public static string LastBulletInfo => LastBullet?.ToString() ?? "No active bullets";
+
         private static List<Bullet> Bullets { get; } = new List<Bullet>();
         private static readonly object _lock = new object();
 
-        public static void UpdateBullets(int tickHz)
+        public static void UpdateBullets(float dt)
         {
             lock (_lock)
             {
-                float dt = 1.0f / tickHz;
                 for (int i = Bullets.Count - 1; i >= 0; i--)
                 {
                     Bullet bullet = Bullets[i];
@@ -34,6 +31,7 @@
             {
                 Bullets.Add(bullet);
                 LastBullet = bullet;
+                LastBulletInfoChanged?.Invoke(LastBulletInfo);
             }
         } 
     }

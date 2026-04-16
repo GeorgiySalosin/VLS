@@ -16,6 +16,7 @@ namespace VLSGame.ViewModels
         // Timer
         private DispatcherTimer gameTimer;
         private const int tickHz = 60;
+        private const float deltaTime = 1f / tickHz;
 
         private readonly IGameMode gameMode;
         private readonly PanoramaData panoramaData;
@@ -45,14 +46,14 @@ namespace VLSGame.ViewModels
         private void StartGameLoop()
         {
             gameTimer = new DispatcherTimer();
-            gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
+            gameTimer.Interval = TimeSpan.FromSeconds(deltaTime);
             gameTimer.Tick += OnGameTick;
             gameTimer.Start();
         }
 
         private void OnGameTick(object? sender, EventArgs e)
         {
-            BulletManager.UpdateBullets(tickHz);
+            BulletManager.UpdateBullets(deltaTime);
 
             // Здесь можно обновить другие игровые логики
             // Например, перерисовать прицел или обновить отображаемую дистанцию

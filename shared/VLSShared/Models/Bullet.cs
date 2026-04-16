@@ -14,10 +14,10 @@ namespace VLSShared.Models
         private const float G = 9.81f; // Ускорение свободного падения, м/с2
         private const float FormFactor = (float)(Mass * 2.2 / ((D * 39.37) * (D * 39.37) * G1)); // Формула форм-фактора + перевод кг в фунты, м в дюймы
 
-        internal int X { get; private set; }
-        internal int Y { get; private set; }
-        internal double Distance { get; private set; } = 0;
-        internal double FlightTime { get; private set; } = 0;
+        private int X { get; set; }
+        private int Y { get; set; }
+        private double Distance { get; set; } = 0;
+        private double FlightTime { get; set; } = 0;
 
         private readonly Func<int, int, double> GetDistanceAtPixel;
         private readonly Func<Vector3, (int X, int Y)> GetPixelFromDirection;
@@ -57,9 +57,7 @@ namespace VLSShared.Models
             Position += Velocity * dt;
 
             // 6. Проверка попадания по карте глубины
-            Vector3 direction = Position;
-            direction = Vector3.Normalize(direction);
-            var (pixelX, pixelY) = GetPixelFromDirection(direction);
+            var (pixelX, pixelY) = GetPixelFromDirection(Position);
             double distance = Position.Length();
             double depth = GetDistanceAtPixel(pixelX, pixelY);
 
