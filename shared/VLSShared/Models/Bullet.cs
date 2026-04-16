@@ -66,11 +66,11 @@ namespace VLSShared.Models
             if (distance >= depth)
             {
                 IsLanded = true;
-                X = pixelX;
-                Y = pixelY;
-                Distance = distance;
             }
 
+            X = pixelX;
+            Y = pixelY;
+            Distance = distance;
             FlightTime += dt;
         }
         internal bool IsLanded { get; private set; } = false;
@@ -95,6 +95,11 @@ namespace VLSShared.Models
                 }
             // за пределами таблицы
             return FormFactor * (M < points[0].m ? points[0].cd : points[^1].cd);
+        }
+
+        public override string ToString()
+        {
+            return $"Bullet at ({X}, {Y}), Distance: {Distance:F1} m, FlightTime: {FlightTime:F2} s\nIsLanded: {IsLanded}";
         }
     }
 }
