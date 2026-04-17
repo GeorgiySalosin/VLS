@@ -58,7 +58,7 @@ namespace VLSGame.Views
         private void OnClosed(object? sender, EventArgs e)
         {
             inputHandler.UnsubscribeEvents();
-            viewModel.Dispose();
+            //viewModel.Dispose();
         }
     }
 }

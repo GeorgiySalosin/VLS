@@ -75,8 +75,8 @@ namespace VLSGame.ViewModels
 
             panoramaData = new PanoramaData();
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
-            
-            MapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
+
+            MapTexture = panoramaData.ColorBitmap;
 
             BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
                 LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
@@ -201,7 +201,7 @@ namespace VLSGame.ViewModels
         }
 
 
-        #region MESH, MATERIALS CREATION
+        #region MODELS CREATION 
 
         public CustomObject3D CreateEnvironmentObject3D()
         {
@@ -215,7 +215,7 @@ namespace VLSGame.ViewModels
 
         public CustomObject3D CreateBulletObject3D(Guid bulletId = new())
         {
-            var mesh = PlaneMesh();
+            var mesh = PlaneMesh(.1, .1);
             var material = RGBAMaterial(255,255,150);
             var geometryModel = new GeometryModel3D(mesh, material);
             var bulletVisual = new ModelVisual3D { Content = geometryModel };
@@ -224,59 +224,7 @@ namespace VLSGame.ViewModels
             return bullet;
         }
 
-
-        /// <summary> Converts raw opencv data to WPF-frieldly bitmap to use it as a texture</summary>
-        private WriteableBitmap? ConvertMatToBitmap(Mat? mat)
-        {
-            if (mat == null || mat.Empty())
-                return null;
-
-            try
-            {
-                int width = mat.Width;
-                int height = mat.Height;
-                int stride = width * mat.Channels();
-
-                // BGR (3 channels) === PixelFormats.Bgr24; otherwise - w/alpha channel
-                var pixelFormat = mat.Channels() == 3 ? PixelFormats.Bgr24 : PixelFormats.Bgr32;
-                var bitmap = new WriteableBitmap(width, height, 96, 96, pixelFormat, null);
-
-                bitmap.Lock();
-                try
-                {
-                    unsafe
-                    {
-                        byte* source = mat.DataPointer;
-                        byte* target = (byte*)bitmap.BackBuffer;
-                        int totalBytes = stride * height;
-
-                        for (int i = 0; i < totalBytes; i++)
-                            target[i] = source[i];
-                    }
-                    bitmap.AddDirtyRect(new System.Windows.Int32Rect(0, 0, width, height));
-                }
-                finally
-                {
-                    bitmap.Unlock();
-                }
-
-                bitmap.Freeze();
-                return bitmap;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error converting Mat to BitmapSource: {ex.Message}");
-                return null;
-            }
-        }
         #endregion
 
-
-
-
-        public void Dispose()
-        {
-            panoramaData.Dispose();
-        }
     }
 }
