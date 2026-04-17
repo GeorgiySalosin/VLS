@@ -1,27 +1,64 @@
 using OpenCvSharp;
 using System.Numerics;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using VLSGame.Config;
 using VLSGame.Models;
+using VLSGame.Rendering;
+using VLSGame.Rendering.Content2D.HUD;
+using VLSGame.Rendering.Content3D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
+using static VLSGame.Rendering.Content3D.Material;
+using static VLSGame.Rendering.Content3D.Mesh;
 
 namespace VLSGame.ViewModels
 {
     public class MatchViewModel : ViewModelBase
     {
-        // Timer
+        #region UI From View
+        private Viewport3D viewport;     // MAIN 3D VIEWPORT,  set from Match View
+        public Viewport3D Viewport
+        {
+            get => viewport;
+            set
+            {
+                if (Set(ref viewport, value))
+                    OnPropertyChanged(nameof(Viewport));
+            }
+        }
+        private Panel hud;          // PANEL THAT CONTAINS 2D TEXTURE ELEMENTS, set from Match View
+        public Panel Hud
+        {
+            get => hud;
+            set
+            {
+                if (Set(ref hud, value))
+                    OnPropertyChanged(nameof(Hud));
+            }
+        }  
+        #endregion
+
+
+        #region Timer settings
+
         private DispatcherTimer gameTimer;
         private const int tickHz = 60;
 
+        #endregion
+
+        public CameraProperties CameraProperties { get; private set; } = new();     // All stuff regarding "at the moment" camera properties (current vector, fov, etc)
+
         private readonly IGameMode gameMode;
         private readonly PanoramaData panoramaData;
-        public CameraProperties CameraProperties { get; private set; } = new();     // A functionality of ViewModel that was Extracted into Camera Properties
+        private readonly RenderManager renderManager = RenderManager.Instance;
 
-        private BitmapSource? colorMapTexture;
+        private BitmapSource? mapTexture;
+        public BitmapSource? MapTexture { get => mapTexture; private set => Set(ref mapTexture, value); }
+
         private string distanceText = "";
         private string pixelCoordinates = "";
         private string lastBullet = ""; // info about last bullet
@@ -33,20 +70,65 @@ namespace VLSGame.ViewModels
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
+            //PropertyChanged += OnPropertyChanged;
             this.gameMode = gameMode;
+
             panoramaData = new PanoramaData();
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
-            colorMapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
+            
+            MapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
 
             BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
                 LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
-            StartGameLoop();
+            
+
+            CameraProperties.RotationX = 0;
+            CameraProperties.RotationY = 0;
+
         }
 
+        /* Implement this in Renderer */
+
+        //private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        //{
+        //    if (e.PropertyName == nameof(MapTexture))   // here we autoupdate a MESH if texture was changed.
+        //    {
+        //        UpdateModelTexture();
+        //    }
+        //}
+        public void OnViewLoaded()
+        {
+            if(viewport!= null && hud != null)
+            {
+                renderManager.Initialize(viewport, hud);
+                renderManager.Add3D(CreateEnvironmentObject3D());
+                renderManager.Add3D(CreateBulletObject3D());
+                renderManager.SetLight();
+                StartGameLoop();
+            }
+        }
+
+        //private void SetupLayers()
+        //{
+        //    // HUD 
+        //    var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
+
+        //    hudLayer?.Initialize(viewModel);
+        //    var crosshair = new CrosshairTexture();
+        //    hudLayer?.RegisterTexture(crosshair);
+        //    hudLayer?.ShowTexture("Crosshair");
+
+
+        //}
+
+
+        #region GAME EVENTS 
         private void StartGameLoop()
         {
-            gameTimer = new DispatcherTimer();
-            gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
+            gameTimer = new()
+            {
+                Interval = TimeSpan.FromSeconds(1.0 / tickHz)
+            };
             gameTimer.Tick += OnGameTick;
             gameTimer.Start();
         }
@@ -54,51 +136,47 @@ namespace VLSGame.ViewModels
         private void OnGameTick(object? sender, EventArgs e)
         {
             BulletManager.UpdateBullets(tickHz);
-
-            // Здесь можно обновить другие игровые логики
-            // Например, перерисовать прицел или обновить отображаемую дистанцию
-            // UpdateCenterDistance();
+            renderManager.Render();
+            GetCenterDistance();
         }
 
         internal void Shoot()
         {
-            Vector3 startPos = new Vector3(0, 0, 0);
+            Vector3 startPos = new(0, 0, 0);    // ??? Do we really need it here
+
             Vector3D cameraLook3D = CameraProperties.LookDirection;
-            Vector3 cameraLook = new Vector3((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
-            // Делегат для преобразования направления в пиксельные координаты
-            Func<Vector3, (int X, int Y)> getPixelFromDirection = (Vector3 dir) =>
+
+            Vector3 cameraLook = new((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
+
+
+            (int X, int Y) getPixelFromDirection(Vector3 dir)       // Didnt know that we can declare local functions like this
             {
-                // Конвертируем Vector3 → Vector3D
+                // Vector3 → Vector3D
                 var dir3D = new Vector3D(dir.X, dir.Y, dir.Z);
-                // Вызываем метод PanoramaData
+
                 return panoramaData.GetTextureCoordinatesFromDirection(dir3D);
-            };
+            }
+
             Bullet bullet = new Bullet(startPos, cameraLook, panoramaData.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
         }
+        #endregion
 
-        public BitmapSource? ColorMapTexture
-        {
-            get => colorMapTexture;
-            private set => Set(ref  colorMapTexture, value);
-        }
 
-        public string DistanceText
-        {
-            get => distanceText;
-            set => Set(ref distanceText, value);
-        }
 
-        public string PixelCoordinates
-        {
-            get => pixelCoordinates;
-            set => Set(ref pixelCoordinates, value);
-        }
-        public string LastBullet
-        {
-            get => lastBullet;
-            set => Set(ref lastBullet, value);
-        }
+
+
+
+
+        public string DistanceText { get => distanceText; set => Set(ref distanceText, value); }
+
+        public string PixelCoordinates { get => pixelCoordinates; set => Set(ref pixelCoordinates, value); }
+
+        public string LastBullet { get => lastBullet; set => Set(ref lastBullet, value); }
+
+
+
+
         public void GetCenterDistance()
         {
             var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
@@ -122,74 +200,30 @@ namespace VLSGame.ViewModels
             }
         }
 
-        #region PANORAMA MESH, MATERIALS, TEXTURE SETTINGS 
-        public ModelVisual3D CreatePanoramaSphere()
+
+        #region MESH, MATERIALS CREATION
+
+        public CustomObject3D CreateEnvironmentObject3D()
         {
-            var mesh = CreateSphereMesh(phiSegments: 128, thetaSegments: 256);
-            var material = CreatePanoramaMaterial(ColorMapTexture);
+            GeometryModel3D geometryModel = new(SphereMesh(radius: 10), TextureMaterial(MapTexture));
+            ModelVisual3D sphereVisual = new() { Content = geometryModel };
+            
+            CustomObject3D environment = new(sphereVisual, tag:"environment");
+            return environment;
+        }
+
+
+        public CustomObject3D CreateBulletObject3D(Guid bulletId = new())
+        {
+            var mesh = PlaneMesh();
+            var material = RGBAMaterial(255,255,150);
             var geometryModel = new GeometryModel3D(mesh, material);
+            var bulletVisual = new ModelVisual3D { Content = geometryModel };
 
-            var sphereVisual = new ModelVisual3D { Content = geometryModel };
-            return sphereVisual;
+            CustomObject3D bullet = new(bulletVisual, id: bulletId, tag: "bullet");
+            return bullet;
         }
 
-        private static MeshGeometry3D CreateSphereMesh(int phiSegments, int thetaSegments)
-        {
-            var mesh = new MeshGeometry3D();
-
-            for (int i = 0; i <= phiSegments; i++)
-            {
-                double phi = Math.PI * i / phiSegments;
-
-                for (int j = 0; j <= thetaSegments; j++)
-                {
-                    double theta = 2 * Math.PI * j / thetaSegments;
-
-                    double x = Math.Sin(phi) * Math.Cos(theta);
-                    double y = Math.Cos(phi);
-                    double z = Math.Sin(phi) * Math.Sin(theta);
-
-                    mesh.Positions.Add(new Point3D(x, y, z));
-
-                    double u = theta / (2 * Math.PI);
-                    double v = phi / Math.PI;
-                    mesh.TextureCoordinates.Add(new System.Windows.Point(u, v));
-                }
-            }
-
-            for (int i = 0; i < phiSegments; i++)
-            {
-                for (int j = 0; j < thetaSegments; j++)
-                {
-                    int p0 = i * (thetaSegments + 1) + j;
-                    int p1 = i * (thetaSegments + 1) + j + 1;
-                    int p2 = (i + 1) * (thetaSegments + 1) + j;
-                    int p3 = (i + 1) * (thetaSegments + 1) + j + 1;
-
-                    mesh.TriangleIndices.Add(p0);
-                    mesh.TriangleIndices.Add(p2);
-                    mesh.TriangleIndices.Add(p1);
-
-                    mesh.TriangleIndices.Add(p1);
-                    mesh.TriangleIndices.Add(p2);
-                    mesh.TriangleIndices.Add(p3);
-                }
-            }
-
-            return mesh;
-        }
-
-        private static DiffuseMaterial CreatePanoramaMaterial(ImageSource? texture)
-        {
-            var brush = new ImageBrush(texture)
-            {
-                ViewportUnits = BrushMappingMode.Absolute,
-                TileMode = TileMode.None,
-                Stretch = Stretch.Fill
-            };
-
-            return new DiffuseMaterial(brush);
-        }
 
         /// <summary> Converts raw opencv data to WPF-frieldly bitmap to use it as a texture</summary>
         private WriteableBitmap? ConvertMatToBitmap(Mat? mat)
@@ -203,7 +237,7 @@ namespace VLSGame.ViewModels
                 int height = mat.Height;
                 int stride = width * mat.Channels();
 
-                // BGR (3 channels) === PixelFormats.Bgr24
+                // BGR (3 channels) === PixelFormats.Bgr24; otherwise - w/alpha channel
                 var pixelFormat = mat.Channels() == 3 ? PixelFormats.Bgr24 : PixelFormats.Bgr32;
                 var bitmap = new WriteableBitmap(width, height, 96, 96, pixelFormat, null);
 
@@ -212,7 +246,7 @@ namespace VLSGame.ViewModels
                 {
                     unsafe
                     {
-                        byte* source = (byte*)mat.DataPointer;
+                        byte* source = mat.DataPointer;
                         byte* target = (byte*)bitmap.BackBuffer;
                         int totalBytes = stride * height;
 
@@ -236,6 +270,9 @@ namespace VLSGame.ViewModels
             }
         }
         #endregion
+
+
+
 
         public void Dispose()
         {

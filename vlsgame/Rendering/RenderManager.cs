@@ -1,31 +1,46 @@
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
+using VLSShared.Models;
 
 namespace VLSGame.Rendering
 {
+    /// <summary>
+    /// Contains all rendering logics using Renderer3D, REnderer2D
+    /// </summary>
     public sealed class RenderManager
     {
-        private static readonly RenderManager instance = new();
-        public static RenderManager Instance => instance;
 
-        private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
-        private readonly BackgroundRenderer backgroundRenderer = new();
-        private Viewport3D? mainViewport;
-        private readonly List<ModelVisual3D> lights = [];
+        #region Initialization  
+        public static RenderManager Instance { get; } = new();
+        private static readonly Renderer3D renderer3D = Renderer3D.Instance;
+        private RenderManager() { }
+
+        private static bool isInitialized = false;
 
         public void Initialize(Viewport3D viewport, Panel hudPanel)
         {
-            mainViewport = viewport;
-            backgroundRenderer.Initialize(viewport);
+            if (isInitialized) return;
+            renderer3D.Initialize(viewport);
+            //renderer3D.AddObject();
+
 
             RegisterLayer(new HudLayer(hudPanel));
+            RegisterLayer(new HudLayer(hudPanel));
 
-            SetupLighting();
+
+            isInitialized = true;
         }
+        #endregion
+
+
+
+        private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
+
+
 
         public void RegisterLayer(Layer layer)
         {
@@ -35,59 +50,21 @@ namespace VLSGame.Rendering
             }
         }
 
-        public void SetBackground(ModelVisual3D backgroundVisual)
-        {
-            backgroundRenderer.SetBackground(backgroundVisual);
-        }
+        public void Add3D(CustomObject3D obj) => renderer3D.AddObject(obj);
+        public void Remove3D(Guid id) => renderer3D.RemoveObject(id);
 
-        public void ClearBackground()
-        {
-            backgroundRenderer.ClearBackground();
-        }
+        public void SetLight() => renderer3D.SetupLighting();
 
 
-        public T? GetLayer<T>() where T : Layer
-        {
-            return Layers.Values.OfType<T>().FirstOrDefault();
-        }
+
+        public T? GetLayer<T>() where T : Layer => Layers.Values.OfType<T>().FirstOrDefault();
+
 
         public void Render()
         {
-            if (mainViewport == null) return;
-
-            var camera = mainViewport.Camera;
-            var lightsToKeep = mainViewport.Children
-                .OfType<ModelVisual3D>()
-                .Where(v => v.Content is AmbientLight || v.Content is DirectionalLight)
-                .ToList();
-
-            mainViewport.Children.Clear();
-            mainViewport.Camera = camera;
-
-            foreach (var light in lightsToKeep)
-            {
-                mainViewport.Children.Add(light);
-            }
-
-            backgroundRenderer.Render();
+            renderer3D.Render();
 
         }
 
-        private void SetupLighting()
-        {
-            if (mainViewport == null) return;
-
-            var ambientLight = new ModelVisual3D();
-            ambientLight.Content = new AmbientLight(Colors.White);
-            lights.Add(ambientLight);
-
-            foreach (var lightVisual in lights)
-            {
-                if (!mainViewport.Children.Contains(lightVisual))
-                {
-                    mainViewport.Children.Add(lightVisual);
-                }
-            }
-        }
     }
 }
