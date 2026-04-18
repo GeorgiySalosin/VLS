@@ -61,6 +61,11 @@ namespace VLSGame.Rendering
                 viewport.Children.Remove(obj.model);
             }
         }
+        public void RemoveObject(CustomObject3D obj)
+        {
+            loadedObjects3D.Remove(obj);                            // remove from coll
+            if (obj != null) viewport.Children.Remove(obj.model);   // unparent from viewport
+        }
 
         /// <summary>
         /// Removes all 3d objects from the scene collection by corresponding tag 

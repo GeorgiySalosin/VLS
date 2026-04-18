@@ -96,6 +96,7 @@ namespace VLSGame.Rendering
         public void Add3D(CustomObject3D obj) => renderer3D.AddObject(obj);
         public void Remove3D(Guid id) => renderer3D.RemoveObject(id);
 
+        public void Remove3D(CustomObject3D obj) => renderer3D.RemoveObject(obj);
 
         public void SetLight() => renderer3D.SetupLighting();
 

@@ -15,7 +15,6 @@ namespace VLSShared.Models
         private const float S = D * D; // Площадь поперечного сечения пули, м2
         private const float G = 9.81f; // Ускорение свободного падения, м/с2
         private const float FormFactor = (float)(Mass * 2.2 / ((D * 39.37) * (D * 39.37) * G1)); // Формула форм-фактора + перевод кг в фунты, м в дюймы
-        public Guid Id { get; private set; }
         internal int X { get; private set; }
         internal int Y { get; private set; }
         internal double Distance { get; private set; } = 0;
@@ -38,9 +37,8 @@ namespace VLSShared.Models
             Velocity = cameraLook * V0;
             GetDistanceAtPixel = getDistanceAtPixel;
             GetPixelFromDirection = getTextureCoordinatesFromDirection;
-            Id = Guid.NewGuid();
 
-            Object3D = RenderManager.Instance.CreateBulletObject3D(Id);
+            Object3D = RenderManager.Instance.CreateBulletObject3D();
             Object3D.UpdateOrbit(Direction);
             RenderManager.Instance.Add3D(Object3D);
         }
@@ -83,7 +81,7 @@ namespace VLSShared.Models
                 X = pixelX;
                 Y = pixelY;
                 Distance = distance;
-                RenderManager.Instance.Remove3D(Id);
+                RenderManager.Instance.Remove3D(Object3D);
             }
 
             FlightTime += dt;
