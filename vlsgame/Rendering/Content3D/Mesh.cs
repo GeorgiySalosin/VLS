@@ -77,6 +77,11 @@ namespace VLSGame.Rendering.Content3D
             mesh.Positions.Add(new Point3D(-width / 2, length / 2, z));
             mesh.Positions.Add(new Point3D(width / 2, length / 2, z));
 
+            mesh.TextureCoordinates.Add(new System.Windows.Point(0, 0)); 
+            mesh.TextureCoordinates.Add(new System.Windows.Point(1, 0)); 
+            mesh.TextureCoordinates.Add(new System.Windows.Point(0, 1)); 
+            mesh.TextureCoordinates.Add(new System.Windows.Point(1, 1)); 
+
             mesh.TriangleIndices.Add(0);
             mesh.TriangleIndices.Add(2);
             mesh.TriangleIndices.Add(1);
@@ -84,6 +89,8 @@ namespace VLSGame.Rendering.Content3D
             mesh.TriangleIndices.Add(1);
             mesh.TriangleIndices.Add(2);
             mesh.TriangleIndices.Add(3);
+
+
 
             return mesh;
         }

@@ -13,7 +13,7 @@ namespace VLSShared.Models
         private const float S = D * D; // Площадь поперечного сечения пули, м2
         private const float G = 9.81f; // Ускорение свободного падения, м/с2
         private const float FormFactor = (float)(Mass * 2.2 / ((D * 39.37) * (D * 39.37) * G1)); // Формула форм-фактора + перевод кг в фунты, м в дюймы
-
+        public Guid Id { get; private set; }
         internal int X { get; private set; }
         internal int Y { get; private set; }
         internal double Distance { get; private set; } = 0;
@@ -32,6 +32,7 @@ namespace VLSShared.Models
             Velocity = cameraLook * V0;
             GetDistanceAtPixel = getDistanceAtPixel;
             GetPixelFromDirection = getTextureCoordinatesFromDirection;
+            Id = Guid.NewGuid();
         }
 
         internal void Update(float dt)

@@ -18,7 +18,7 @@ namespace VLSGame.Rendering
     /// <summary>
     /// A class that stores all the 3d items and renders them to the viweport
     /// </summary>
-    public sealed class Renderer3D: ViewModelBase, INotifyCollectionChanged
+    public sealed class Renderer3D: ViewModelBase
     {
         #region Initialization  
         public static Renderer3D Instance { get; } = new();
@@ -48,7 +48,6 @@ namespace VLSGame.Rendering
         private void Subscribe()
         {
             PropertyChanged += OnPropertyChanged;
-            loadedObjects3D.CollectionChanged += OnCollectionChanged;
 
         }
 
@@ -60,36 +59,6 @@ namespace VLSGame.Rendering
             //}
         }
 
-        private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            // УДАЛИТЬ ИЛИ ЗАКОММЕНТИРОВАТЬ RefreshViewport()
-            // RefreshViewport();
-
-            if (e.NewItems != null)
-            {
-                foreach (CustomObject3D obj in e.NewItems)
-                {
-                    obj.PropertyChanged += OnPropertyChanged;
-                }
-            }
-
-            if (e.OldItems != null)
-            {
-                foreach (CustomObject3D obj in e.OldItems)
-                {
-                    obj.PropertyChanged -= OnPropertyChanged;
-                }
-            }
-
-            OnCollectionChanged(e);
-        }
-
-        //=============== CollectionChanged Event ===============
-        public event NotifyCollectionChangedEventHandler? CollectionChanged;
-        private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            CollectionChanged?.Invoke(this, e);
-        }
         #endregion
 
 
@@ -104,8 +73,11 @@ namespace VLSGame.Rendering
         public void RemoveObject(Guid id)
         {
             var obj = loadedObjects3D.FirstOrDefault(x => x.Id == id);
-            if (obj!=null)
-                loadedObjects3D?.Remove(obj);
+            if (obj != null)
+            {
+                loadedObjects3D.Remove(obj);
+                viewport.Children.Remove(obj.model);
+            }
         }
 
         /// <summary>
@@ -113,17 +85,24 @@ namespace VLSGame.Rendering
         /// </summary>
         public void RemoveObject(string tag)
         {
-            foreach (var obj in loadedObjects3D)
+            var objectsToRemove = loadedObjects3D.Where(obj => obj.Tag.Equals(tag)).ToList();
+            if (objectsToRemove.Count > 0)
+            foreach (var item in objectsToRemove)
             {
-                if (obj.Tag.Equals(tag))
-                    loadedObjects3D?.Remove(obj);
+                loadedObjects3D.Remove(item);
+                viewport.Children.Remove(item.model);
             }
         }
 
         /// <summary>
         /// Empties a scene 3d object collection
         /// </summary>
-        public void RemoveAll() => loadedObjects3D.Clear();
+        public void RemoveAll()
+        {
+            loadedObjects3D.Clear();
+            viewport.Children.Clear();
+        }
+            
 
 
         /// <summary>

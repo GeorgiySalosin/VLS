@@ -36,7 +36,7 @@ namespace VLSGame.Models
             //CacheDepthData();
         }
 
-        private static BitmapImage? LoadBitmapSource(string path)
+        public BitmapImage? LoadBitmapSource(string path)
         {
             try
             {

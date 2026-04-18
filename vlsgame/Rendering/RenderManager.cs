@@ -1,10 +1,12 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
-using VLSShared.Models;
+using static VLSGame.Rendering.Content3D.Material;
+using static VLSGame.Rendering.Content3D.Mesh;
 
 namespace VLSGame.Rendering
 {
@@ -37,10 +39,8 @@ namespace VLSGame.Rendering
         #endregion
 
 
-
+        #region 2D 
         private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
-
-
 
         public void RegisterLayer(Layer layer)
         {
@@ -50,14 +50,55 @@ namespace VLSGame.Rendering
             }
         }
 
+        public T? GetLayer<T>() where T : Layer => Layers.Values.OfType<T>().FirstOrDefault();
+
+
+
+        #endregion
+
+        #region 3D 
+
+        #region MODELS CREATION 
+
+        public CustomObject3D CreateEnvironmentObject3D(BitmapSource? mapTexture)
+        {
+            GeometryModel3D geometryModel = new(SphereMesh(radius: 10), TextureMaterial(mapTexture));
+            ModelVisual3D sphereVisual = new() { Content = geometryModel };
+
+            CustomObject3D environment = new(sphereVisual, tag: "environment");
+            return environment;
+        }
+
+        public CustomObject3D CreateBulletObject3D(Guid bulletId = new())
+        {
+            var mesh = PlaneMesh(.02, .02);
+
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(@"Content\Animation\BallisticsFX\BulletDebug.png", UriKind.Relative);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            ImageSource imageSource = bitmap;
+
+            var material = TextureMaterial(imageSource);
+            var geometryModel = new GeometryModel3D(mesh, material);
+            var bulletVisual = new ModelVisual3D { Content = geometryModel };
+
+            CustomObject3D bullet = new(bulletVisual, id: bulletId, tag: "bullet");
+            return bullet;
+        }
+
+        #endregion
+
         public void Add3D(CustomObject3D obj) => renderer3D.AddObject(obj);
         public void Remove3D(Guid id) => renderer3D.RemoveObject(id);
 
         public void SetLight() => renderer3D.SetupLighting();
 
 
-
-        public T? GetLayer<T>() where T : Layer => Layers.Values.OfType<T>().FirstOrDefault();
+        #endregion
 
 
         public void Render()

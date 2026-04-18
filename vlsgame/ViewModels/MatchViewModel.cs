@@ -12,8 +12,7 @@ using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
-using static VLSGame.Rendering.Content3D.Material;
-using static VLSGame.Rendering.Content3D.Mesh;
+
 
 namespace VLSGame.ViewModels
 {
@@ -80,11 +79,6 @@ namespace VLSGame.ViewModels
 
             BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
                 LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
-            
-
-            CameraProperties.RotationX = 0;
-            CameraProperties.RotationY = 0;
-
         }
 
         /* Implement this in Renderer */
@@ -101,9 +95,10 @@ namespace VLSGame.ViewModels
             if(viewport!= null && hud != null)
             {
                 renderManager.Initialize(viewport, hud);
-                renderManager.Add3D(CreateEnvironmentObject3D());
-                renderManager.Add3D(CreateBulletObject3D());
+
+                renderManager.Add3D(renderManager.CreateEnvironmentObject3D(MapTexture));       // Create a world panorama
                 renderManager.SetLight();
+
                 StartGameLoop();
             }
         }
@@ -157,7 +152,7 @@ namespace VLSGame.ViewModels
                 return panoramaData.GetTextureCoordinatesFromDirection(dir3D);
             }
 
-            Bullet bullet = new Bullet(startPos, cameraLook, panoramaData.GetDistanceAtPixel, getPixelFromDirection);
+            Bullet bullet = new (startPos, cameraLook, panoramaData.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
         }
         #endregion
@@ -201,30 +196,7 @@ namespace VLSGame.ViewModels
         }
 
 
-        #region MODELS CREATION 
 
-        public CustomObject3D CreateEnvironmentObject3D()
-        {
-            GeometryModel3D geometryModel = new(SphereMesh(radius: 10), TextureMaterial(MapTexture));
-            ModelVisual3D sphereVisual = new() { Content = geometryModel };
-            
-            CustomObject3D environment = new(sphereVisual, tag:"environment");
-            return environment;
-        }
-
-
-        public CustomObject3D CreateBulletObject3D(Guid bulletId = new())
-        {
-            var mesh = PlaneMesh(.1, .1);
-            var material = RGBAMaterial(255,255,150);
-            var geometryModel = new GeometryModel3D(mesh, material);
-            var bulletVisual = new ModelVisual3D { Content = geometryModel };
-
-            CustomObject3D bullet = new(bulletVisual, id: bulletId, tag: "bullet");
-            return bullet;
-        }
-
-        #endregion
 
     }
 }
