@@ -25,7 +25,6 @@ namespace VLSShared.Models
 
         private Vector3 Position; // мировые координаты (камера в (0,0,0))
         private Vector3 Velocity; // вектор скорости, м/с
-        private  Vector3 Direction { get; set; }
 
         private CustomObject3D Object3D { get; set; }
 
@@ -33,13 +32,13 @@ namespace VLSShared.Models
             Func<int, int, double> getDistanceAtPixel, Func<Vector3, (int X, int Y)> getTextureCoordinatesFromDirection)
         {
             Position = startPos;
-            Direction = Vector3.Normalize(cameraLook);
+            
             Velocity = cameraLook * V0;
             GetDistanceAtPixel = getDistanceAtPixel;
             GetPixelFromDirection = getTextureCoordinatesFromDirection;
 
             Object3D = RenderManager.Instance.CreateBulletObject3D();
-            Object3D.UpdateOrbit(Direction);
+            Object3D.UpdateOrbit(Vector3.Normalize(cameraLook));        // initial transform rotation
             RenderManager.Instance.Add3D(Object3D);
         }
 
