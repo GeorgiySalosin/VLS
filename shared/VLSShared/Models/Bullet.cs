@@ -1,4 +1,6 @@
 ﻿using System.Numerics;
+using VLSGame.Rendering;
+using VLSGame.Rendering.Content3D;
 
 namespace VLSShared.Models
 {
@@ -24,15 +26,23 @@ namespace VLSShared.Models
 
         private Vector3 Position; // мировые координаты (камера в (0,0,0))
         private Vector3 Velocity; // вектор скорости, м/с
+        public  Vector3 Direction { get; private set; }
+
+        public CustomObject3D Object3D { get; private set; }
 
         public Bullet(Vector3 startPos, Vector3 cameraLook,
             Func<int, int, double> getDistanceAtPixel, Func<Vector3, (int X, int Y)> getTextureCoordinatesFromDirection)
         {
             Position = startPos;
+            Direction = Vector3.Normalize(cameraLook);
             Velocity = cameraLook * V0;
             GetDistanceAtPixel = getDistanceAtPixel;
             GetPixelFromDirection = getTextureCoordinatesFromDirection;
             Id = Guid.NewGuid();
+
+            Object3D = RenderManager.Instance.CreateBulletObject3D(Id);
+            Object3D.UpdateOrbit(Direction);
+            RenderManager.Instance.Add3D(Object3D);
         }
 
         internal void Update(float dt)
@@ -60,6 +70,9 @@ namespace VLSShared.Models
             // 6. Проверка попадания по карте глубины
             Vector3 direction = Position;
             direction = Vector3.Normalize(direction);
+
+            Object3D.UpdateOrbit(direction);
+
             var (pixelX, pixelY) = GetPixelFromDirection(direction);
             double distance = Position.Length();
             double depth = GetDistanceAtPixel(pixelX, pixelY);
@@ -70,6 +83,7 @@ namespace VLSShared.Models
                 X = pixelX;
                 Y = pixelY;
                 Distance = distance;
+                RenderManager.Instance.Remove3D(Id);
             }
 
             FlightTime += dt;

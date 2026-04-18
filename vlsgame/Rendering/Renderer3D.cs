@@ -63,7 +63,7 @@ namespace VLSGame.Rendering
         }
 
         /// <summary>
-        /// Removes a 3d object from the scene collection by corresponding tag 
+        /// Removes all 3d objects from the scene collection by corresponding tag 
         /// </summary>
         public void RemoveObject(string tag)
         {

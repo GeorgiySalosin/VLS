@@ -5,8 +5,6 @@ namespace VLSShared.Models
     public static class BulletManager
     {
         public static event Action<int, int, double, double>? BulletLanded; // (x, y, distance, flightTime)
-        public static event Action<Guid>? BulletCreated;  // NEW
-        public static event Action<Guid>? BulletRemoved;    // NEW
 
 
         public static List<Bullet> Bullets { get; } = [];
@@ -23,7 +21,6 @@ namespace VLSShared.Models
                     if (bullet.IsLanded)
                     {
                         BulletLanded?.Invoke(bullet.X, bullet.Y, bullet.Distance, bullet.FlightTime);
-                        RenderManager.Instance.Remove3D(bullet.Id);
 
                         Bullets.RemoveAt(i);
                     }
@@ -40,7 +37,8 @@ namespace VLSShared.Models
             lock (_lock)
             {
                 Bullets.Add(bullet);
-                RenderManager.Instance.Add3D(RenderManager.Instance.CreateBulletObject3D(bullet.Id));
+
+
             }
         }
     }

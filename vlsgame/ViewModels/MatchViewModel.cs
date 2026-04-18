@@ -87,22 +87,21 @@ namespace VLSGame.ViewModels
 
             renderManager.Add3D(renderManager.CreateEnvironmentObject3D(MapTexture));       // Create a world panorama
             renderManager.SetLight();
-
+            SetupLayers();
             StartGameLoop();
         }
 
-        //private void SetupLayers()
-        //{
-        //    // HUD 
-        //    var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
+        private void SetupLayers()
+        {
+            // HUD 
+            var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
 
-        //    hudLayer?.Initialize(viewModel);
-        //    var crosshair = new CrosshairTexture();
-        //    hudLayer?.RegisterTexture(crosshair);
-        //    hudLayer?.ShowTexture("Crosshair");
+            hudLayer?.Initialize(this);
+            var crosshair = new CrosshairTexture();
+            hudLayer?.RegisterTexture(crosshair);
+            hudLayer?.ShowTexture("Crosshair");
 
-
-        //}
+        }
 
 
         #region GAME EVENTS 
@@ -146,10 +145,7 @@ namespace VLSGame.ViewModels
         #endregion
 
 
-
-
-
-
+        #region Debug line (distance, texture coords, etc)
 
         public string DistanceText { get => distanceText; set => Set(ref distanceText, value); }
 
@@ -157,6 +153,7 @@ namespace VLSGame.ViewModels
 
         public string LastBullet { get => lastBullet; set => Set(ref lastBullet, value); }
 
+        #endregion
 
 
 
@@ -182,9 +179,6 @@ namespace VLSGame.ViewModels
                 PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
             }
         }
-
-
-
 
     }
 }

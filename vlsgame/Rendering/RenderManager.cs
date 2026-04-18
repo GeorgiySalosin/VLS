@@ -71,7 +71,7 @@ namespace VLSGame.Rendering
 
         public CustomObject3D CreateBulletObject3D(Guid bulletId = new())
         {
-            var mesh = PlaneMesh(.02, .02);
+            var mesh = PlaneMesh(.001, .001);
 
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
@@ -86,7 +86,8 @@ namespace VLSGame.Rendering
             var geometryModel = new GeometryModel3D(mesh, material);
             var bulletVisual = new ModelVisual3D { Content = geometryModel };
 
-            CustomObject3D bullet = new(bulletVisual, id: bulletId, tag: "bullet");
+            
+            var bullet = new CustomObject3D(bulletVisual, fixedDistance: 0.2, id: bulletId, tag: "bullet");
             return bullet;
         }
 
@@ -94,6 +95,7 @@ namespace VLSGame.Rendering
 
         public void Add3D(CustomObject3D obj) => renderer3D.AddObject(obj);
         public void Remove3D(Guid id) => renderer3D.RemoveObject(id);
+
 
         public void SetLight() => renderer3D.SetupLighting();
 
