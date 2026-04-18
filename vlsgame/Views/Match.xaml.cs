@@ -39,11 +39,6 @@ namespace VLSGame.Views
             viewModel.Viewport = MainViewport;
             viewModel.Hud = HudPanel;
 
-            SubscribeEvents();
-        }
-
-        private void SubscribeEvents()
-        {
             Loaded += OnLoaded;
             Closed += OnClosed;
         }

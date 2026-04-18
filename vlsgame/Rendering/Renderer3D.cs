@@ -18,7 +18,7 @@ namespace VLSGame.Rendering
     /// <summary>
     /// A class that stores all the 3d items and renders them to the viweport
     /// </summary>
-    public sealed class Renderer3D: ViewModelBase
+    public sealed class Renderer3D
     {
         #region Initialization  
         public static Renderer3D Instance { get; } = new();
@@ -32,7 +32,6 @@ namespace VLSGame.Rendering
 
             this.viewport = viewport;
 
-            Subscribe();
             isInitialized = true;
         }
         #endregion
@@ -43,23 +42,6 @@ namespace VLSGame.Rendering
 
 
 
-
-        #region Event Handlers  
-        private void Subscribe()
-        {
-            PropertyChanged += OnPropertyChanged;
-
-        }
-
-        private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            //if (e.PropertyName == nameof(CustomObject3D.IsVisible))   // here we autoupdate a MESH if texture was changed.
-            //{
-            //    RefreshViewport();
-            //}
-        }
-
-        #endregion
 
 
         /// <summary>

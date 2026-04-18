@@ -81,26 +81,14 @@ namespace VLSGame.ViewModels
                 LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
         }
 
-        /* Implement this in Renderer */
-
-        //private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        //{
-        //    if (e.PropertyName == nameof(MapTexture))   // here we autoupdate a MESH if texture was changed.
-        //    {
-        //        UpdateModelTexture();
-        //    }
-        //}
         public void OnViewLoaded()
         {
-            if(viewport!= null && hud != null)
-            {
-                renderManager.Initialize(viewport, hud);
+            renderManager.Initialize(viewport, hud);
 
-                renderManager.Add3D(renderManager.CreateEnvironmentObject3D(MapTexture));       // Create a world panorama
-                renderManager.SetLight();
+            renderManager.Add3D(renderManager.CreateEnvironmentObject3D(MapTexture));       // Create a world panorama
+            renderManager.SetLight();
 
-                StartGameLoop();
-            }
+            StartGameLoop();
         }
 
         //private void SetupLayers()
