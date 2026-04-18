@@ -25,9 +25,9 @@ namespace VLSShared.Models
 
         private Vector3 Position; // мировые координаты (камера в (0,0,0))
         private Vector3 Velocity; // вектор скорости, м/с
-        public  Vector3 Direction { get; private set; }
+        private  Vector3 Direction { get; set; }
 
-        public CustomObject3D Object3D { get; private set; }
+        private CustomObject3D Object3D { get; set; }
 
         public Bullet(Vector3 startPos, Vector3 cameraLook,
             Func<int, int, double> getDistanceAtPixel, Func<Vector3, (int X, int Y)> getTextureCoordinatesFromDirection)
