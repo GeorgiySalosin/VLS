@@ -11,14 +11,13 @@ namespace VLSGame.Views
 {
     public partial class MainWindow : Window
     {
-        private readonly LobbyViewModel _viewModel;
+        private readonly MainWindowViewModel _viewModel;
 
         public MainWindow()
         {
             InitializeComponent();
 
-
-            _viewModel = new LobbyViewModel();
+            _viewModel = new MainWindowViewModel();
 
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             _viewModel.MessageAdded += OnMessageAdded;
@@ -32,11 +31,11 @@ namespace VLSGame.Views
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(LobbyViewModel.ConnectionStatus):
-                    case nameof(LobbyViewModel.ConnectionStatusColor):
+                    case nameof(MainWindowViewModel.ConnectionStatus):
+                    case nameof(MainWindowViewModel.ConnectionStatusColor):
                         UpdateConnectionStatus();
                         break;
-                    case nameof(LobbyViewModel.LastResponse):
+                    case nameof(MainWindowViewModel.LastResponse):
                         LastResponseText.Text = _viewModel.LastResponse;
                         break;
                 }

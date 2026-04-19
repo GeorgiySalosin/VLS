@@ -11,12 +11,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Content\Animation\BallisticsFX\BulletDebug.png" />
+    <None Remove="Content\checkmark.png" />
     <None Remove="Content\Maps\Test_D.png" />
     <None Remove="Content\Maps\Test_W.png" />
     <None Remove="Content\ui\T_CrossAIM.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Content\checkmark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\ui\T_CrossAIM.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -44,6 +49,10 @@
     <None Update="Config\GameSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Content\Animation\BallisticsFX\" />
   </ItemGroup>
 
 </Project>
