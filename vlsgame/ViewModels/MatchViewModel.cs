@@ -76,8 +76,11 @@ namespace VLSGame.ViewModels
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
 
             MapTexture = panoramaData.ColorBitmap;
+            BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
+            BulletManager.BulletUpdated += (id, direction) => renderManager.UpdateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
+            BulletManager.BulletRemoved += (id) => renderManager.Remove3D(id);
 
-            BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
+            BulletManager.BulletLanded += (x, y, distance, flightTime) =>
                 LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
         }
 

@@ -5,6 +5,7 @@ using System.Windows.Media.Media3D;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
+using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
 
@@ -69,7 +70,7 @@ namespace VLSGame.Rendering
             return environment;
         }
 
-        public CustomObject3D CreateBulletObject3D(Guid bulletId = new())
+        public void CreateBulletObject3D(Guid bulletId, Vector3D direction)
         {
             var mesh = PlaneMesh(.001, .001);
 
@@ -88,15 +89,18 @@ namespace VLSGame.Rendering
 
             
             var bullet = new CustomObject3D(bulletVisual, fixedDistance: 0.2, id: bulletId, tag: "bullet");
-            return bullet;
+            bullet.UpdateOrbit(direction);
+            Add3D(bullet);
         }
+        public void UpdateBulletObject3D(Guid bulletId, Vector3D direction) => Get3D(bulletId).UpdateOrbit(direction);
 
         #endregion
 
         public void Add3D(CustomObject3D obj) => renderer3D.AddObject(obj);
         public void Remove3D(Guid id) => renderer3D.RemoveObject(id);
+        public CustomObject3D Get3D(Guid id) => renderer3D.GetObject(id);
 
-        public void Remove3D(CustomObject3D obj) => renderer3D.RemoveObject(obj);
+        //public void Remove3D(CustomObject3D obj) => renderer3D.RemoveObject(obj);
 
         public void SetLight() => renderer3D.SetupLighting();
 

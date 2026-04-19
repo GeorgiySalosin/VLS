@@ -97,9 +97,9 @@ namespace VLSGame.Rendering.Content3D
         //    transformGroup.Children.Insert(0, matrixTransform);
         //}
 
-        public void UpdateOrbit(Vector3 dir)
+        #region TRANSFORMATION 
+        public void UpdateOrbit(Vector3D direction)
         {
-            Vector3D direction = new(dir.X, dir.Y, dir.Z);
             direction.Normalize();
             Vector3D newPosition = direction * fixedDistance;
 
@@ -108,8 +108,6 @@ namespace VLSGame.Rendering.Content3D
             translate.OffsetY = newPosition.Y;
             translate.OffsetZ = newPosition.Z;
 
-            // Для ориентации по направлению полёта (ось Z вперёд) используем direction
-            // Если нужно смотреть на камеру, используйте -direction
             LookAt(direction);
         }
 
@@ -144,7 +142,8 @@ namespace VLSGame.Rendering.Content3D
             T newTransform = new T();
             transformGroup.Children.Add(newTransform);
             return newTransform;
-        }
+        } 
+        #endregion
 
         public void SetTexture(System.Windows.Media.Imaging.BitmapSource bitmap)
         {

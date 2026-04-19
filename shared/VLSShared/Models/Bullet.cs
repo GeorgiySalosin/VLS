@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
-using VLSGame.Rendering;
-using VLSGame.Rendering.Content3D;
+
 
 namespace VLSShared.Models
 {
-    public class Bullet
+    public class Bullet(Vector3 startPos, Vector3 cameraLook,
+        Func<int, int, double> getDistanceAtPixel, Func<Vector3, (int X, int Y)> getTextureCoordinatesFromDirection)
     {
         private const float Mass = 0.0113f; // Масса, кг
         private const int V0 = 800; // Начальная скорость, м/сек
@@ -20,27 +20,14 @@ namespace VLSShared.Models
         internal double Distance { get; private set; } = 0;
         internal double FlightTime { get; private set; } = 0;
 
-        private readonly Func<int, int, double> GetDistanceAtPixel;
-        private readonly Func<Vector3, (int X, int Y)> GetPixelFromDirection;
+        private readonly Func<int, int, double> GetDistanceAtPixel = getDistanceAtPixel;
+        private readonly Func<Vector3, (int X, int Y)> GetPixelFromDirection = getTextureCoordinatesFromDirection;
 
-        private Vector3 Position; // мировые координаты (камера в (0,0,0))
-        private Vector3 Velocity; // вектор скорости, м/с
+        private Vector3 Position = startPos; // мировые координаты (камера в (0,0,0))
+        private Vector3 Velocity = cameraLook * V0; // вектор скорости, м/с
 
-        private CustomObject3D Object3D { get; set; }
-
-        public Bullet(Vector3 startPos, Vector3 cameraLook,
-            Func<int, int, double> getDistanceAtPixel, Func<Vector3, (int X, int Y)> getTextureCoordinatesFromDirection)
-        {
-            Position = startPos;
-            
-            Velocity = cameraLook * V0;
-            GetDistanceAtPixel = getDistanceAtPixel;
-            GetPixelFromDirection = getTextureCoordinatesFromDirection;
-
-            Object3D = RenderManager.Instance.CreateBulletObject3D();
-            Object3D.UpdateOrbit(Vector3.Normalize(cameraLook));        // initial transform rotation
-            RenderManager.Instance.Add3D(Object3D);
-        }
+        public Guid Id { get; } = Guid.NewGuid();           // ID is required to track 3d object related to concrete bullet
+        public Vector3 Direction { get; private set; } = cameraLook;
 
         internal void Update(float dt)
         {
@@ -55,7 +42,7 @@ namespace VLSShared.Models
             Vector3 dragForce = (float)(-0.5 * PAir * V * V * Cd * S) * Vector3.Divide(Velocity, (float)V);
 
             // 3. Сила тяжести
-            Vector3 gravityForce = new Vector3(0, -Mass * G, 0);
+            Vector3 gravityForce = new (0, -Mass * G, 0);
 
             // 4. Ускорение
             Vector3 acceleration = (dragForce + gravityForce) / Mass;
@@ -68,7 +55,8 @@ namespace VLSShared.Models
             Vector3 direction = Position;
             direction = Vector3.Normalize(direction);
 
-            Object3D.UpdateOrbit(direction);
+            Direction = direction;
+            
 
             var (pixelX, pixelY) = GetPixelFromDirection(direction);
             double distance = Position.Length();
@@ -80,7 +68,6 @@ namespace VLSShared.Models
                 X = pixelX;
                 Y = pixelY;
                 Distance = distance;
-                RenderManager.Instance.Remove3D(Object3D);
             }
 
             FlightTime += dt;

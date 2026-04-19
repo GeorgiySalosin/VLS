@@ -50,8 +50,18 @@ namespace VLSGame.Rendering
         public void AddObject(CustomObject3D obj) => loadedObjects3D.Add(obj);
 
         /// <summary>
+        /// Gets a 3d object with specified id from the scene 3d dictionary
+        /// </summary>
+        public CustomObject3D GetObject(Guid id)
+        {
+            return loadedObjects3D.FirstOrDefault(x => x.Id == id);
+        }
+
+
+        /// <summary>
         /// Removes a 3d object from the scene collection by corresponding guid
         /// </summary>
+
         public void RemoveObject(Guid id)
         {
             var obj = loadedObjects3D.FirstOrDefault(x => x.Id == id);
