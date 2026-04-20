@@ -7,7 +7,8 @@
         Height="800" Width="1200"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        WindowStyle="None">
+        WindowStyle="None"
+        Background ="Black">
 
 
     <Grid x:Name="MainGrid">
@@ -17,12 +18,13 @@
         </Grid.RowDefinitions>
 
         <!-- Viewport3D -->
-        <Viewport3D x:Name="MainViewport" Grid.Row="0">
+        <Viewport3D x:Name="MainViewport" Grid.Row="0" >
             <Viewport3D.Camera>
                 <PerspectiveCamera x:Name="MainCamera"
-                                  LookDirection="{Binding CameraProperties.LookDirection}"
-                                  UpDirection="0,1,0"
-                                  FieldOfView="{Binding CameraProperties.FieldOfView}"/>
+                  Position="0,0,0"
+                  LookDirection="{Binding CameraProperties.LookDirection}"
+                  UpDirection="0,1,0"
+                  FieldOfView="{Binding CameraProperties.FieldOfView}"/>
             </Viewport3D.Camera>
         </Viewport3D>
 

@@ -1,11 +1,14 @@
 ﻿using OpenCvSharp;
+using System.Drawing.Imaging;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using VLSGame.Config;
 
 namespace VLSGame.Models
 {
-    public class PanoramaData : IDisposable // file MatchModel.cs and class PanoramaData?
+    public class PanoramaData()
     {
-        public Mat? ColorMat { get; private set; }
+        public BitmapSource? ColorBitmap { get; private set; }
         public Mat? DepthMat { get; private set; }
 
         public int ColorWidth { get; private set; }
@@ -13,105 +16,56 @@ namespace VLSGame.Models
         public int DepthWidth { get; private set; }
         public int DepthHeight { get; private set; }
 
-        public byte[]? ColorData { get; private set; }
-        public ushort[]? DepthData { get; private set; }
-
-        public int ColorStride => ColorWidth * 3; // (BGR)
-
-        private const double MAX_DISTANCE_METERS = 2000.0;
-        private const ushort MAX_DEPTH_VALUE = 65535;
 
         public void LoadTextures(string colorMapPath, string depthMapPath)
         {
-            ColorMat = Cv2.ImRead(colorMapPath, ImreadModes.Color);
-            DepthMat = Cv2.ImRead(depthMapPath, ImreadModes.Unchanged);
 
-            if (ColorMat == null || ColorMat.Empty() || DepthMat == null || DepthMat.Empty())
-                throw new Exception("Error loading world texture maps");
+            ColorBitmap = LoadBitmapSource(colorMapPath);   // Load color as BitmapSource because we want it to be a texture
+            ColorWidth = ColorBitmap.PixelWidth;
+            ColorHeight = ColorBitmap.PixelHeight;
 
-            ColorWidth = ColorMat.Width;
-            ColorHeight = ColorMat.Height;
+
+            DepthMat = Cv2.ImRead(depthMapPath, ImreadModes.Unchanged);     // Load depth in CV2 Image formt, allowing the quicker access to raw data
+            if (DepthMat == null || DepthMat.Empty())
+                throw new Exception("Error loading depth map");
+
             DepthWidth = DepthMat.Width;
             DepthHeight = DepthMat.Height;
 
-            // Конвертируем в нужные форматы
-            ConvertToRequiredFormats();
 
-            // Кэшируем данные
-            CacheData();
+            //CacheDepthData();
         }
 
-        private void ConvertToRequiredFormats()
+        public BitmapImage? LoadBitmapSource(string path)
         {
-            // Ensure this is 8-bit BGR w/ 3 channels
-            if (ColorMat!.Type() != MatType.CV_8UC3)
+            try
             {
-                if (ColorMat.Channels() == 4)
-                {
-                    // BGRA -> BGR case
-                    Mat bgrMat = new Mat();
-                    Cv2.CvtColor(ColorMat, bgrMat, ColorConversionCodes.BGRA2BGR);
-                    ColorMat.Dispose();
-                    ColorMat = bgrMat;
-                }
-                else
-                {
-                    ColorMat.ConvertTo(ColorMat, MatType.CV_8UC3);
-                }
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                bitmap.Freeze();
+                return bitmap;
             }
-
-            // Ensure this is 16-bit unsigned short (single channel)
-            if (DepthMat!.Type() != MatType.CV_16UC1 && DepthMat.Channels() == 1)
+            catch (Exception ex)
             {
-                DepthMat.ConvertTo(DepthMat, MatType.CV_16UC1);
+                System.Diagnostics.Debug.WriteLine($"Error loading bitmap: {ex.Message}");
+                return null;
             }
         }
 
-        private void CacheData()
-        {
-            // Caching color map
-            int totalColorBytes = ColorStride * ColorHeight;
-            ColorData = new byte[totalColorBytes];
 
-            unsafe
-            {
-                byte* colorSource = ColorMat!.DataPointer;
-                fixed (byte* colorTarget = ColorData)
-                {
-                    for (int i = 0; i < totalColorBytes; i++)
-                        colorTarget[i] = colorSource[i];
-                }
-            }
-
-            // Caching depth map
-            int totalDepthPixels = DepthWidth * DepthHeight;
-            DepthData = new ushort[totalDepthPixels];
-
-            unsafe
-            {
-                ushort* depthSource = (ushort*)DepthMat!.DataPointer;
-                fixed (ushort* depthTarget = DepthData)
-                {
-                    for (int i = 0; i < totalDepthPixels; i++)
-                        depthTarget[i] = depthSource[i];
-                }
-            }
-        }
-
+        // Enter texture coordinates of pixel to recieve its depth from the depth map
         public double GetDistanceAtPixel(int x, int y)
         {
-            if (DepthData == null || x < 0 || x >= DepthWidth || y < 0 || y >= DepthHeight)
+            if (DepthMat == null || x < 0 || x >= DepthWidth || y >= DepthHeight)
                 return 0;
 
-            int index = y * DepthWidth + x;
-            if (index >= 0 && index < DepthData.Length)
-            {
-                ushort depthValue = DepthData[index];
-                return (depthValue / (double)MAX_DEPTH_VALUE) * MAX_DISTANCE_METERS;
-            }
-
-            return 0;
+            return (DepthMat.At<ushort>(y, x) / (double)ushort.MaxValue)
+                   * Configuration.Instance.GameSettings.MaxSnipingDistance;
         }
+
 
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
         {
@@ -132,14 +86,6 @@ namespace VLSGame.Models
             pixelY = Math.Max(0, Math.Min(DepthHeight - 1, pixelY));
 
             return (pixelX, pixelY);
-        }
-
-        public void Dispose()
-        {
-            ColorMat?.Dispose();
-            DepthMat?.Dispose();
-            ColorData = null;
-            DepthData = null;
         }
     }
 }
