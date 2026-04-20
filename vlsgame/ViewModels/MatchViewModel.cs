@@ -46,6 +46,7 @@ namespace VLSGame.ViewModels
 
         private DispatcherTimer gameTimer;
         private const int tickHz = 60;
+        private const float deltaTime = 1f / tickHz;
 
         #endregion
 
@@ -75,6 +76,7 @@ namespace VLSGame.ViewModels
             panoramaData = new PanoramaData();
             panoramaData.LoadTextures(colorMapPath, depthMapPath);
 
+            BulletManager.LastBulletInfoChanged += info => LastBullet = info;
             MapTexture = panoramaData.ColorBitmap;
             BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
             BulletManager.BulletUpdated += (id, direction) => renderManager.UpdateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
@@ -112,7 +114,7 @@ namespace VLSGame.ViewModels
         {
             gameTimer = new()
             {
-                Interval = TimeSpan.FromSeconds(1.0 / tickHz)
+                Interval = TimeSpan.FromSeconds(deltaTime)
             };
             gameTimer.Tick += OnGameTick;
             gameTimer.Start();
@@ -120,7 +122,8 @@ namespace VLSGame.ViewModels
 
         private void OnGameTick(object? sender, EventArgs e)
         {
-            BulletManager.UpdateBullets(tickHz);
+            
+            BulletManager.UpdateBullets(deltaTime);
             renderManager.Render();
             GetCenterDistance();
         }

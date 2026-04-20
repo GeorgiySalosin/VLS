@@ -15,10 +15,11 @@ namespace VLSShared.Models
         private const float S = D * D; // Площадь поперечного сечения пули, м2
         private const float G = 9.81f; // Ускорение свободного падения, м/с2
         private const float FormFactor = (float)(Mass * 2.2 / ((D * 39.37) * (D * 39.37) * G1)); // Формула форм-фактора + перевод кг в фунты, м в дюймы
-        internal int X { get; private set; }
-        internal int Y { get; private set; }
-        internal double Distance { get; private set; } = 0;
-        internal double FlightTime { get; private set; } = 0;
+
+        private int X { get; set; }
+        private int Y { get; set; }
+        private double Distance { get; set; } = 0;
+        private double FlightTime { get; set; } = 0;
 
         private readonly Func<int, int, double> GetDistanceAtPixel = getDistanceAtPixel;
         private readonly Func<Vector3, (int X, int Y)> GetPixelFromDirection = getTextureCoordinatesFromDirection;
@@ -65,11 +66,11 @@ namespace VLSShared.Models
             if (distance >= depth)
             {
                 IsLanded = true;
-                X = pixelX;
-                Y = pixelY;
-                Distance = distance;
             }
 
+            X = pixelX;
+            Y = pixelY;
+            Distance = distance;
             FlightTime += dt;
         }
         internal bool IsLanded { get; private set; } = false;
@@ -94,6 +95,11 @@ namespace VLSShared.Models
                 }
             // за пределами таблицы
             return FormFactor * (M < points[0].m ? points[0].cd : points[^1].cd);
+        }
+
+        public override string ToString()
+        {
+            return $"Bullet at ({X}, {Y}), Distance: {Distance:F1} m, FlightTime: {FlightTime:F2} s\nIsLanded: {IsLanded}";
         }
     }
 }
