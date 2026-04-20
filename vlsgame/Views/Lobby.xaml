@@ -14,24 +14,6 @@
             <Setter Property="FontSize" Value="60"/>
             <Setter Property="FontFamily" Value="Bahnschrift"/>
         </Style>
-        <Style x:Key="MapButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Width" Value="360"/>
-            <Setter Property="Height" Value="240"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border>
-                            <Border.Background>
-                                <ImageBrush ImageSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Tag}" Stretch="UniformToFill"/>
-                            </Border.Background>
-                            <ContentPresenter
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         <Style x:Key="ModeButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Width" Value="128"/>
             <Setter Property="Height" Value="48"/>
@@ -42,25 +24,7 @@
             <Setter Property="FontFamily" Value="Bahnschrift"/>
         </Style>
 
-        <!-- Шаблон для содержимого кнопки -->
-        <DataTemplate x:Key="MapButtonContentTemplate">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <Image Grid.Row="0" 
-                   Source="{Binding Checkmark}" 
-                   Width="32" Height="32" 
-                   VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                <StackPanel Grid.Row="1" HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding Title}" 
-                           FontSize="20" Foreground="White"/>
-                    <TextBlock Text="{Binding Subtitle}" 
-                           FontSize="12" Foreground="LightGray"/>
-                </StackPanel>
-            </Grid>
-        </DataTemplate>
+        
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -90,45 +54,49 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Text="Map"/>
-                <Grid Grid.Row="1">
-                    <ItemsControl ItemsSource="{Binding Maps}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Columns="3"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Style="{StaticResource MapButton}"
-                    Tag="{Binding MapBackgroundImage}"
-                    Command="{Binding DataContext.SelectMapCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                    CommandParameter="{Binding}">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition Height="auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Image Grid.Row="0" 
-                           Source="{Binding Checkmark}" 
-                           Width="32" Height="32" 
-                           VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                                        <StackPanel Grid.Row="1" HorizontalAlignment="Center">
-                                            <TextBlock Text="{Binding Title}" 
-                                   FontSize="20" Foreground="White"/>
-                                            <TextBlock Text="{Binding Subtitle}" 
-                                   FontSize="12" Foreground="LightGray"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.ItemContainerStyle>
-                            <Style TargetType="ContentPresenter">
-                                <Setter Property="Margin" Value="0,32,32,32"/>
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                    </ItemsControl>
-                </Grid>
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding Maps}"> <!--MapButtons-->
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" 
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Top"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Width="360" Height="240" Margin="0,0,32,32">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border>
+                                            <Border.Background>
+                                                <ImageBrush ImageSource="{Binding MapBackgroundImage}" Stretch="UniformToFill"/>
+                                            </Border.Background>
+                                            <ContentPresenter
+                                                    Content="{TemplateBinding Content}"
+                                                    ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Row="0"
+                                                Source="{Binding Checkmark}"
+                                                Width="32" Height="32" 
+                                                VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                                    <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" 
+                                                        FontSize="20" Foreground="White"/>
+                                        <TextBlock Text="{Binding Subtitle}" 
+                                                        FontSize="12" Foreground="LightGray"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <TextBlock Grid.Row="2" Text="Mode"/>
                 <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
