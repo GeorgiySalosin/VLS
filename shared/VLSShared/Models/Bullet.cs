@@ -1,8 +1,10 @@
 ﻿using System.Numerics;
 
+
 namespace VLSShared.Models
 {
-    public class Bullet
+    public class Bullet(Vector3 startPos, Vector3 cameraLook,
+        Func<int, int, double> getDistanceAtPixel, Func<Vector3, (int X, int Y)> getTextureCoordinatesFromDirection)
     {
         private const float Mass = 0.0113f; // Масса, кг
         private const int V0 = 800; // Начальная скорость, м/сек
@@ -19,20 +21,14 @@ namespace VLSShared.Models
         private double Distance { get; set; } = 0;
         private double FlightTime { get; set; } = 0;
 
-        private readonly Func<int, int, double> GetDistanceAtPixel;
-        private readonly Func<Vector3, (int X, int Y)> GetPixelFromDirection;
+        private readonly Func<int, int, double> GetDistanceAtPixel = getDistanceAtPixel;
+        private readonly Func<Vector3, (int X, int Y)> GetPixelFromDirection = getTextureCoordinatesFromDirection;
 
-        private Vector3 Position; // мировые координаты (камера в (0,0,0))
-        private Vector3 Velocity; // вектор скорости, м/с
+        private Vector3 Position = startPos; // мировые координаты (камера в (0,0,0))
+        private Vector3 Velocity = cameraLook * V0; // вектор скорости, м/с
 
-        public Bullet(Vector3 startPos, Vector3 cameraLook,
-            Func<int, int, double> getDistanceAtPixel, Func<Vector3, (int X, int Y)> getTextureCoordinatesFromDirection)
-        {
-            Position = startPos;
-            Velocity = cameraLook * V0;
-            GetDistanceAtPixel = getDistanceAtPixel;
-            GetPixelFromDirection = getTextureCoordinatesFromDirection;
-        }
+        public Guid Id { get; } = Guid.NewGuid();           // ID is required to track 3d object related to concrete bullet
+        public Vector3 Direction { get; private set; } = cameraLook;
 
         internal void Update(float dt)
         {
@@ -47,7 +43,7 @@ namespace VLSShared.Models
             Vector3 dragForce = (float)(-0.5 * PAir * V * V * Cd * S) * Vector3.Divide(Velocity, (float)V);
 
             // 3. Сила тяжести
-            Vector3 gravityForce = new Vector3(0, -Mass * G, 0);
+            Vector3 gravityForce = new (0, -Mass * G, 0);
 
             // 4. Ускорение
             Vector3 acceleration = (dragForce + gravityForce) / Mass;
@@ -57,7 +53,13 @@ namespace VLSShared.Models
             Position += Velocity * dt;
 
             // 6. Проверка попадания по карте глубины
-            var (pixelX, pixelY) = GetPixelFromDirection(Position);
+            Vector3 direction = Position;
+            direction = Vector3.Normalize(direction);
+
+            Direction = direction;
+            
+
+            var (pixelX, pixelY) = GetPixelFromDirection(direction);
             double distance = Position.Length();
             double depth = GetDistanceAtPixel(pixelX, pixelY);
 
