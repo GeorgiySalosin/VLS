@@ -70,7 +70,6 @@ namespace VLSGame.ViewModels
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
-            //PropertyChanged += OnPropertyChanged;
             this.gameMode = gameMode;
 
             panoramaData = new PanoramaData();
@@ -84,6 +83,13 @@ namespace VLSGame.ViewModels
 
             BulletManager.BulletLanded += (x, y, distance, flightTime) =>
                 LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
+
+            // It's necessary for updating FormattedLookDirection
+            CameraProperties.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(CameraProperties.LookDirection))
+                    OnPropertyChanged(nameof(FormattedLookDirection));
+            };
         }
 
         public void OnViewLoaded()
@@ -158,6 +164,8 @@ namespace VLSGame.ViewModels
         public string PixelCoordinates { get => pixelCoordinates; set => Set(ref pixelCoordinates, value); }
 
         public string LastBullet { get => lastBullet; set => Set(ref lastBullet, value); }
+
+        public string FormattedLookDirection => $"LookDirection: {CameraProperties.LookDirection.X:F2}, {CameraProperties.LookDirection.Y:F2}, {CameraProperties.LookDirection.Z:F2}";
 
         #endregion
 
