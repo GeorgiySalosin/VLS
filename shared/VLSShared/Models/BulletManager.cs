@@ -29,7 +29,6 @@ namespace VLSShared.Models
 
                     if (bullet.IsLanded)
                     {
-                        BulletLanded?.Invoke(bullet.X, bullet.Y, bullet.Distance, bullet.FlightTime);
                         BulletRemoved?.Invoke(bullet.Id);
                         Bullets.RemoveAt(i);
                     }

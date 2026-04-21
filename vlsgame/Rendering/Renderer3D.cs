@@ -122,17 +122,7 @@ namespace VLSGame.Rendering
 
 
 
-        public void SetupLighting()
-        {
-            var ambientLight = new ModelVisual3D
-            {
-                Content = new AmbientLight(Colors.White)
-            };
 
-            CustomObject3D ambientlight = new(ambientLight, tag: "light");
-
-            AddObject(ambientlight);
-        }
 
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.ViewModels;
 
@@ -9,6 +11,7 @@ namespace VLSGame.Rendering.Content3D
     public sealed class CustomObject3D : ViewModelBase
     {
         public readonly ModelVisual3D model;
+        private readonly DiffuseMaterial? material;
         public Guid Id { get; }
         public string Tag { get; set; }
 
@@ -37,6 +40,14 @@ namespace VLSGame.Rendering.Content3D
             Id = id == default ? Guid.NewGuid() : id;
             Tag = tag;
             model.Transform = transformGroup;
+
+            // If our model contains GeometryModel3D automatically save its material to reuse it when loading a new texture
+
+            if (model.Content is GeometryModel3D geometryModel && geometryModel.Material is DiffuseMaterial diffMaterial)
+            {
+                material = diffMaterial;
+            }
+            // For such objects as light we will end up with null material
         }
 
         /// <summary>
@@ -142,13 +153,31 @@ namespace VLSGame.Rendering.Content3D
             T newTransform = new T();
             transformGroup.Children.Add(newTransform);
             return newTransform;
-        } 
+        }
         #endregion
 
-        public void SetTexture(System.Windows.Media.Imaging.BitmapSource bitmap)
+        /// <summary>
+        /// Dynamically set a texture by imagebrush
+        /// </summary>
+        public void SetTexture(ImageBrush brush)
         {
-            var mesh = (GeometryModel3D)model.Content;
-            mesh.Material = Material.TextureMaterial(bitmap);
+            material?.Brush = brush;
         }
+
+        /// <summary>
+        /// DEPRECATED
+        /// </summary>
+        //public void SetTexture(BitmapSource bitmap)
+        //{
+        //    var brush = new ImageBrush(bitmap)
+        //    {
+        //        ViewportUnits = BrushMappingMode.Absolute,
+        //        TileMode = TileMode.None,
+        //        Stretch = Stretch.Fill
+        //    };
+        //    brush.Freeze(); 
+        //    material.Brush = brush;
+        //}
+
     }
 }
