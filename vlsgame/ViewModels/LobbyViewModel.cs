@@ -12,23 +12,12 @@ namespace VLSGame.ViewModels
     internal class LobbyViewModel : ViewModelBase
     {
         public ObservableCollection<MapButtonData> Maps { get; set; }
+        internal event EventHandler? CloseRequested; // event for View closing
 
         private Visibility visibilityGridMode = Visibility.Hidden;
         public Visibility VisibilityGridMode {
             get => visibilityGridMode;
             private set => Set(ref visibilityGridMode, value);
-        }
-
-        #region Commands
-
-        #region ChangeVisibilityModeGrid
-
-        public ICommand ToggleModeGridCommand { get; }
-        private bool CanToggleModeGridCommandExecute(object p) => true;
-        private void OnToggleModeGridCommandExecuted(object p)
-        {
-            if (VisibilityGridMode == Visibility.Hidden) VisibilityGridMode = Visibility.Visible;
-            else VisibilityGridMode = Visibility.Hidden;
         }
 
         #region SinglePlayer
@@ -47,6 +36,18 @@ namespace VLSGame.ViewModels
         }
 
         #endregion
+
+        #region Commands
+
+        #region ChangeVisibilityModeGrid
+
+        public ICommand ToggleModeGridCommand { get; }
+        private bool CanToggleModeGridCommandExecute(object p) => true;
+        private void OnToggleModeGridCommandExecuted(object p)
+        {
+            if (VisibilityGridMode == Visibility.Hidden) VisibilityGridMode = Visibility.Visible;
+            else VisibilityGridMode = Visibility.Hidden;
+        }
 
         #endregion
 
@@ -83,7 +84,7 @@ namespace VLSGame.ViewModels
             var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
             var matchWindow = new Match(matchViewModel);
             matchWindow.Show();
-            //this.Close(); todo
+            CloseRequested?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
