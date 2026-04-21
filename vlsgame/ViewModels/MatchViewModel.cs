@@ -90,7 +90,7 @@ namespace VLSGame.ViewModels
         {
             renderManager.Initialize(viewport, hud);
 
-            renderManager.Add3D(renderManager.CreateEnvironmentObject3D(MapTexture));       // Create a world panorama
+            renderManager.CreateEnvironmentObject3D(MapTexture);       // Create a world panorama
             renderManager.SetLight();
             SetupLayers();
             StartGameLoop();

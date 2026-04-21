@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,15 @@ namespace VLSGame.Rendering.Content3D
     /// </summary>
     static class Material
     {
+
+
+        /// <summary>
+        /// Create a Simple Diffuse Material by an ImageBrush
+        /// </summary>
+        public static DiffuseMaterial TextureMaterial(ImageBrush? brush)
+        {
+            return new DiffuseMaterial(brush);
+        }
 
         public static DiffuseMaterial TextureMaterial(ImageSource? texture)
         {
@@ -34,7 +44,7 @@ namespace VLSGame.Rendering.Content3D
         {
             var brush = new SolidColorBrush()
             {
-                Color = Color.FromArgb(a, r, g, b)
+                Color = System.Windows.Media.Color.FromArgb(a, r, g, b)
             };
 
             return new DiffuseMaterial(brush);

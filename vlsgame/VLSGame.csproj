@@ -8,10 +8,15 @@
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseWindowsForms>False</UseWindowsForms>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Content\Animation\BallisticsFX\BulletDebug.png" />
+    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common01.png" />
+    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common02.png" />
+    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png" />
+    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png" />
     <None Remove="Content\Maps\Test_D.png" />
     <None Remove="Content\Maps\Test_W.png" />
     <None Remove="Content\ui\T_CrossAIM.png" />
@@ -19,6 +24,18 @@
 
   <ItemGroup>
     <Content Include="Content\Animation\BallisticsFX\BulletDebug.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common02.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\T_CrossAIM.png">
