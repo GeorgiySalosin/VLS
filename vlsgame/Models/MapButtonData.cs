@@ -6,6 +6,6 @@
         public string Checkmark => checkmark;
         public string Title { get; init; }
         public string Subtitle { get; init; }
-        public string MapBackgroundImage { get; init; }
+        public string MapBackgroundImage { get; init; } // path
     }
 }

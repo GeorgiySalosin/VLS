@@ -11,7 +11,8 @@ namespace VLSGame.ViewModels
 {
     internal class LobbyViewModel : ViewModelBase
     {
-        public ObservableCollection<MapButtonData> Maps { get; set; }
+        public ObservableCollection<MapButtonDataViewModel> MapViewModels { get; init; }
+
         internal event EventHandler? CloseRequested; // event for View closing
 
         private Visibility visibilityGridMode = Visibility.Hidden;
@@ -39,23 +40,24 @@ namespace VLSGame.ViewModels
 
         #region Commands
 
-        #region ChangeVisibilityModeGrid
+        // Change visibility of element
+        private Visibility ToggleVisibility(Visibility visibility) =>
+            visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+
+        #region ToggleModeGridCommand
 
         public ICommand ToggleModeGridCommand { get; }
         private bool CanToggleModeGridCommandExecute(object p) => true;
-        private void OnToggleModeGridCommandExecuted(object p)
-        {
-            if (VisibilityGridMode == Visibility.Hidden) VisibilityGridMode = Visibility.Visible;
-            else VisibilityGridMode = Visibility.Hidden;
-        }
+        private void OnToggleModeGridCommandExecuted(object p) =>
+            VisibilityGridMode = ToggleVisibility(VisibilityGridMode);
 
         #endregion
 
         #region StartGame
 
-        public ICommand StartGame { get; }
-        private bool CanStartGameExecute(object p) => true; // todo
-        private async void OnStartGameExecuted(object p)
+        public ICommand StartGameCommand { get; }
+        private bool CanStartGameCommandExecute(object p) => true; // todo
+        private async void OnStartGameCommandExecuted(object p)
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -89,11 +91,26 @@ namespace VLSGame.ViewModels
 
         #endregion
 
+        #region ToggleMap
+
+        public ICommand ToggleMapCommand { get; }
+        private bool CanToggleMapCommandExecute(object p) => true;
+        private void OnToggleMapCommandExecuted(object p)
+        {
+            if (p is MapButtonDataViewModel vm)
+            {
+                vm.CheckmarkVisibility = ToggleVisibility(vm.CheckmarkVisibility);
+            }
+        }
+
+        #endregion
+
         #endregion
 
         internal LobbyViewModel()
         {
-            Maps = new ObservableCollection<MapButtonData>
+            // Initialize map buttons
+            var models = new[]
             {
                 new MapButtonData
                 {
@@ -114,9 +131,15 @@ namespace VLSGame.ViewModels
                     MapBackgroundImage = "/Content/Lobby/T_MapPreview_Sunset.png"
                 }
             };
+            MapViewModels = new ObservableCollection<MapButtonDataViewModel>(
+                models.Select(m => new MapButtonDataViewModel(m))
+            );
 
+            #region Initialize commands
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
-            StartGame = new RelayCommand(OnStartGameExecuted, CanStartGameExecute);
+            StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
+            ToggleMapCommand = new RelayCommand(OnToggleMapCommandExecuted, CanToggleMapCommandExecute);
+            #endregion
         }
     }
 }

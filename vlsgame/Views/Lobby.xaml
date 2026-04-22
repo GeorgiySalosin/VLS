@@ -7,6 +7,7 @@
         xmlns:models="clr-namespace:VLSGame.Models"
         xmlns:local="clr-namespace:VLSGame.Views"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:LobbyViewModel}"
         WindowState="Maximized"
         Title="Game" Height="1080" Width="1920">
     <Window.Resources>
@@ -24,8 +25,6 @@
             <Setter Property="FontSize" Value="60"/>
             <Setter Property="FontFamily" Value="Bahnschrift"/>
         </Style>
-
-        
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -37,7 +36,7 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Button Grid.Row="0" Content="Start" Width="428" Height="132" Command="{Binding StartGame}"/>
+            <Button Grid.Row="0" Content="Start" Width="428" Height="132" Command="{Binding StartGameCommand}"/>
             <Button Grid.Row="1" Content="select mode" Height="200" Margin="32,0,32,32" Command="{Binding ToggleModeGridCommand}"/>
         </Grid>
         <Grid Grid.Column="1" Visibility="{Binding VisibilityGridMode}">
@@ -55,7 +54,7 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Text="Map"/>
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding Maps}"> <!--MapButtons-->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding MapViewModels}"> <!--MapButtons-->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal" 
@@ -65,7 +64,10 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Width="360" Height="240" Margin="0,0,32,32">
+                            <Button Width="360" Height="240" Margin="0,0,32,32"
+                                    Command="{Binding DataContext.ToggleMapCommand, 
+                                    RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border>
@@ -85,6 +87,7 @@
                                     </Grid.RowDefinitions>
                                     <Image Grid.Row="0"
                                                 Source="{Binding Checkmark}"
+                                                Visibility="{Binding CheckmarkVisibility}"
                                                 Width="32" Height="32" 
                                                 VerticalAlignment="Top" HorizontalAlignment="Right"
                                                 Margin="10"/>
