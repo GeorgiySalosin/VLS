@@ -62,7 +62,7 @@
 
   <ItemGroup>
     <None Update="Config\GameSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

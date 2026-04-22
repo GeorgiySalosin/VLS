@@ -9,9 +9,10 @@ namespace VLSGame.ViewModels
         private readonly MapButtonData data = data;
         private Visibility checkmarkVisibility = Visibility.Visible;
 
+        public int Id => data.Id;
         public string Title => data.Title;
         public string Subtitle => data.Subtitle;
-        public string MapBackgroundImage => data.MapBackgroundImage;
+        public string MapBackgroundImage => data.MapBackgroundImagePath;
         public string Checkmark => data.Checkmark;
 
         public Visibility CheckmarkVisibility

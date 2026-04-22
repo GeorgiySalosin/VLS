@@ -39,6 +39,9 @@ namespace VLSGame.Config
 
         [JsonPropertyName("max_sniping_distance_thresold")]
         public double MaxSnipingDistanceThresold { get; set; } = 48f;     // the distance we subtract from MaxSniping distance due to depth map incorrect behavior
-                                                            // (for example, the sky pixel might be not 100% white -> w/out thresold the distance could unexpectedly become ~ 19xx meters)
+                                                                          // (for example, the sky pixel might be not 100% white -> w/out thresold the distance could unexpectedly become ~ 19xx meters)
+
+        [JsonPropertyName("selected_map_ids")]
+        public List<int> SelectedMapIds { get; set; } = new(); // Stores saved maps in Lobby
     }
 }

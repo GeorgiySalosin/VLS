@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Commands;
+using VLSGame.Config;
 using VLSGame.Models;
 using VLSGame.Services;
 using VLSGame.Views;
@@ -100,6 +101,8 @@ namespace VLSGame.ViewModels
             if (p is MapButtonDataViewModel vm)
             {
                 vm.CheckmarkVisibility = ToggleVisibility(vm.CheckmarkVisibility);
+                // Saving the updated list of selected maps
+                SaveSelectedMapsToConfig();
             }
         }
 
@@ -109,37 +112,75 @@ namespace VLSGame.ViewModels
 
         internal LobbyViewModel()
         {
-            // Initialize map buttons
+            #region Initialize models
+
             var models = new[]
             {
-                new MapButtonData
-                {
-                    Title = "Sunny",
-                    Subtitle = "common map",
-                    MapBackgroundImage = "/Content/Lobby/T_MapPreview_Sun.png"
-                },
-                new MapButtonData
-                {
-                    Title = "Overcast",
-                    Subtitle = "for nature lovers",
-                    MapBackgroundImage = "/Content/Lobby/T_MapPreview_Fog.png"
-                },
-                new MapButtonData
-                {
-                    Title = "Dark",
-                    Subtitle = "prove your skill!",
-                    MapBackgroundImage = "/Content/Lobby/T_MapPreview_Sunset.png"
-                }
+                new MapButtonData { Id = 1, Title = "Sunny", Subtitle = "common map", MapBackgroundImagePath = "/Content/Lobby/T_MapPreview_Sun.png" },
+                new MapButtonData { Id = 2, Title = "Overcast", Subtitle = "for nature lovers", MapBackgroundImagePath = "/Content/Lobby/T_MapPreview_Fog.png" },
+                new MapButtonData { Id = 3, Title = "Dark", Subtitle = "prove your skill!", MapBackgroundImagePath = "/Content/Lobby/T_MapPreview_Sunset.png" }
             };
+
             MapViewModels = new ObservableCollection<MapButtonDataViewModel>(
                 models.Select(m => new MapButtonDataViewModel(m))
             );
+
+            #endregion
+
+            #region JSON
+
+            #region Import config
+
+            if (!Configuration.Instance.LoadConfiguration())
+            {
+                MessageBox.Show("File error: GameSettings.json", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+                return;
+            }
+
+            #endregion
+
+
+            // Restoring the selected maps from the configuration
+            var settings = Configuration.Instance.GameSettings;
+            if (settings != null && settings.SelectedMapIds != null && settings.SelectedMapIds.Any())
+            {
+                // Only those whose Id is in the list are selected
+                foreach (var vm in MapViewModels)
+                    vm.CheckmarkVisibility = settings.SelectedMapIds.Contains(vm.Id) ? Visibility.Visible : Visibility.Hidden;
+            }
+            else
+            {
+                // If there are no saved selections, select all of them.
+                foreach (var vm in MapViewModels)
+                    vm.CheckmarkVisibility = Visibility.Visible;
+                // Save this state
+                SaveSelectedMapsToConfig();
+            }
+
+            #endregion
 
             #region Initialize commands
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
             StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
             ToggleMapCommand = new RelayCommand(OnToggleMapCommandExecuted, CanToggleMapCommandExecute);
             #endregion
+        }
+
+        private void SaveSelectedMapsToConfig()
+        {
+            var selectedIds = MapViewModels
+                .Where(vm => vm.CheckmarkVisibility == Visibility.Visible)
+                .Select(vm => vm.Id)
+                .ToList();
+
+            var config = Configuration.Instance;
+            if (config.GameSettings != null)
+            {
+                config.GameSettings.SelectedMapIds = selectedIds;
+                config.SaveConfiguration();
+            }
         }
     }
 }
