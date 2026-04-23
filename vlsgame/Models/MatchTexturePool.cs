@@ -20,6 +20,7 @@ namespace VLSGame.Models
         readonly ImageBrush T_Tracer_Common03 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png");
         readonly ImageBrush T_Tracer_Common04 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png");
 
+
         public ImageBrush GetBulletTexture()
         {
             return rnd.Next(4) switch
