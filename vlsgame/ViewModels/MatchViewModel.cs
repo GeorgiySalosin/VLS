@@ -53,11 +53,11 @@ namespace VLSGame.ViewModels
         public CameraProperties CameraProperties { get; private set; } = new();     // All stuff regarding "at the moment" camera properties (current vector, fov, etc)
 
         private readonly IGameMode gameMode;
-        private readonly PanoramaData panoramaData;
         private readonly RenderManager renderManager = RenderManager.Instance;
+        //private readonly PanoramaData panoramaData;
 
         private BitmapSource? mapTexture;
-        public BitmapSource? MapTexture { get => mapTexture; private set => Set(ref mapTexture, value); }
+        //public BitmapSource? MapTexture { get => mapTexture; private set => Set(ref mapTexture, value); }
 
         private string distanceText = "";
         private string pixelCoordinates = "";
@@ -72,11 +72,11 @@ namespace VLSGame.ViewModels
         {
             this.gameMode = gameMode;
 
-            panoramaData = new PanoramaData();
-            panoramaData.LoadTextures(colorMapPath, depthMapPath);
+            //panoramaData = new PanoramaData();
+            //panoramaData.LoadTextures(colorMapPath, depthMapPath);
 
             BulletManager.LastBulletInfoChanged += info => LastBullet = info;
-            MapTexture = panoramaData.ColorBitmap;
+            //MapTexture = panoramaData.ColorBitmap;
             BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
             BulletManager.BulletUpdated += (id, direction) => renderManager.UpdateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
             BulletManager.BulletRemoved += (id) => renderManager.Remove3D(id);
@@ -96,7 +96,7 @@ namespace VLSGame.ViewModels
         {
             renderManager.Initialize(viewport, hud);
 
-            renderManager.CreateEnvironmentObject3D(MapTexture);       // Create a world panorama
+            renderManager.CreateEnvironmentObject3D();       // Create a world panorama
             renderManager.SetLight();
             SetupLayers();
             StartGameLoop();
@@ -148,10 +148,10 @@ namespace VLSGame.ViewModels
                 // Vector3 → Vector3D
                 var dir3D = new Vector3D(dir.X, dir.Y, dir.Z);
 
-                return panoramaData.GetTextureCoordinatesFromDirection(dir3D);
+                return renderManager.GetTextureCoordinatesFromDirection(dir3D);
             }
 
-            Bullet bullet = new (startPos, cameraLook, panoramaData.GetDistanceAtPixel, getPixelFromDirection);
+            Bullet bullet = new (startPos, cameraLook, renderManager.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
         }
         #endregion
@@ -173,14 +173,14 @@ namespace VLSGame.ViewModels
 
         public void GetCenterDistance()
         {
-            var (pixelX, pixelY) = panoramaData.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            var (pixelX, pixelY) = renderManager.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
             if (pixelX != lastPixelX || pixelY != lastPixelY)
             {
                 lastPixelX = pixelX;
                 lastPixelY = pixelY;
 
-                cachedDistance = panoramaData.GetDistanceAtPixel(pixelX, pixelY);
+                cachedDistance = renderManager.GetDistanceAtPixel(pixelX, pixelY);
 
                 if (cachedDistance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
                 {
