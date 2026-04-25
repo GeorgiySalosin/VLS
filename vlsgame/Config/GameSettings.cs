@@ -42,6 +42,6 @@ namespace VLSGame.Config
                                                                           // (for example, the sky pixel might be not 100% white -> w/out thresold the distance could unexpectedly become ~ 19xx meters)
 
         [JsonPropertyName("selected_map_ids")]
-        public List<int> SelectedMapIds { get; set; } = new(); // Stores saved maps in Lobby
+        public List<int> SelectedMapIds { get; set; } = new List<int> { 1, 2, 3 }; // Stores saved maps in Lobby
     }
 }

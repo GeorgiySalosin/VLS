@@ -112,7 +112,9 @@ namespace VLSGame.ViewModels
         #region SaveMaps
 
         public ICommand SaveMapsCommand { get; }
-        private bool CanSaveMapsCommandExecute(object p) => VisibilityGridMode != Visibility.Hidden;
+        private bool CanSaveMapsCommandExecute(object p) =>
+            // ModeGrid is opened && at least one map has been selected
+            VisibilityGridMode != Visibility.Hidden && MapViewModels.Any(vm => vm.CheckmarkVisibility == Visibility.Visible);
         private void OnSaveMapsCommandExecuted(object p)
         {
             SaveSelectedMapsToConfig();
@@ -148,8 +150,6 @@ namespace VLSGame.ViewModels
 
             #endregion
 
-            #region JSON
-
             #region Import config
 
             if (!Configuration.Instance.LoadConfiguration())
@@ -159,10 +159,6 @@ namespace VLSGame.ViewModels
                 Application.Current.Shutdown();
                 return;
             }
-
-            #endregion
-
-            ReloadSelectedMapsFromConfig();
 
             #endregion
 
@@ -188,10 +184,10 @@ namespace VLSGame.ViewModels
             }
             else
             {
-                // If there are no saved selections, select all of them.
+                // Fallback: select all maps
                 foreach (var vm in MapViewModels)
                     vm.CheckmarkVisibility = Visibility.Visible;
-                // Save this state
+                // Save this state back to config
                 SaveSelectedMapsToConfig();
             }
         }
@@ -204,11 +200,15 @@ namespace VLSGame.ViewModels
                 .ToList();
 
             var config = Configuration.Instance;
-            if (config.GameSettings != null)
-            {
-                config.GameSettings.SelectedMapIds = selectedIds;
-                config.SaveConfiguration();
-            }
+            if (config.GameSettings == null) return;
+
+            // Compare sequences
+            if (config.GameSettings.SelectedMapIds != null &&
+                config.GameSettings.SelectedMapIds.SequenceEqual(selectedIds))
+                return; // nothing changed
+
+            config.GameSettings.SelectedMapIds = selectedIds;
+            config.SaveConfiguration();
         }
         #endregion
     }
