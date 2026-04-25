@@ -45,19 +45,19 @@ namespace VLSGame.ViewModels
         private Visibility ToggleVisibility(Visibility visibility) =>
             visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
 
-        #region ToggleModeGridCommand
+        #region ToggleModeGrid
 
         public ICommand ToggleModeGridCommand { get; }
-        private bool CanToggleModeGridCommandExecute(object p) => true;
+        private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
         private void OnToggleModeGridCommandExecuted(object p) =>
-            VisibilityGridMode = ToggleVisibility(VisibilityGridMode);
+            VisibilityGridMode = Visibility.Visible;
 
         #endregion
 
         #region StartGame
 
         public ICommand StartGameCommand { get; }
-        private bool CanStartGameCommandExecute(object p) => true; // todo
+        private bool CanStartGameCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
         private async void OnStartGameCommandExecuted(object p)
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -101,10 +101,28 @@ namespace VLSGame.ViewModels
             if (p is MapButtonDataViewModel vm)
             {
                 vm.CheckmarkVisibility = ToggleVisibility(vm.CheckmarkVisibility);
-                // Saving the updated list of selected maps
-                SaveSelectedMapsToConfig();
             }
         }
+
+        #endregion
+
+        #region SaveMaps
+
+        public ICommand SaveMapsCommand { get; }
+        private bool CanSaveMapsCommandExecute(object p) => VisibilityGridMode != Visibility.Hidden;
+        private void OnSaveMapsCommandExecuted(object p)
+        {
+            SaveSelectedMapsToConfig();
+            VisibilityGridMode = Visibility.Hidden;
+        }
+
+        #endregion
+
+        #region ExitChoiceMaps
+
+        public ICommand ExitChoiceMapsCommand { get; }
+        private bool CanExitChoiceMapsCommandExecute(object p) => VisibilityGridMode != Visibility.Hidden;
+        private void OnExitChoiceMapsCommandExecuted(object p) => VisibilityGridMode = Visibility.Hidden;
 
         #endregion
 
@@ -165,6 +183,8 @@ namespace VLSGame.ViewModels
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
             StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
             ToggleMapCommand = new RelayCommand(OnToggleMapCommandExecuted, CanToggleMapCommandExecute);
+            SaveMapsCommand = new RelayCommand(OnSaveMapsCommandExecuted, CanSaveMapsCommandExecute);
+            ExitChoiceMapsCommand = new RelayCommand(OnExitChoiceMapsCommandExecuted, CanExitChoiceMapsCommandExecute);
             #endregion
         }
 

@@ -7,7 +7,11 @@ namespace VLSGame.Commands
         private readonly Action<object> execute;
         private readonly Func<object, bool> canExecute;
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
 
         internal RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
         {
