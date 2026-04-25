@@ -49,8 +49,11 @@ namespace VLSGame.ViewModels
 
         public ICommand ToggleModeGridCommand { get; }
         private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
-        private void OnToggleModeGridCommandExecuted(object p) =>
+        private void OnToggleModeGridCommandExecuted(object p)
+        {
+            ReloadSelectedMapsFromConfig();
             VisibilityGridMode = Visibility.Visible;
+        }
 
         #endregion
 
@@ -159,7 +162,22 @@ namespace VLSGame.ViewModels
 
             #endregion
 
+            ReloadSelectedMapsFromConfig();
 
+            #endregion
+
+            #region Initialize commands
+            ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
+            StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
+            ToggleMapCommand = new RelayCommand(OnToggleMapCommandExecuted, CanToggleMapCommandExecute);
+            SaveMapsCommand = new RelayCommand(OnSaveMapsCommandExecuted, CanSaveMapsCommandExecute);
+            ExitChoiceMapsCommand = new RelayCommand(OnExitChoiceMapsCommandExecuted, CanExitChoiceMapsCommandExecute);
+            #endregion
+        }
+
+        #region Config funcs
+        private void ReloadSelectedMapsFromConfig()
+        {
             // Restoring the selected maps from the configuration
             var settings = Configuration.Instance.GameSettings;
             if (settings != null && settings.SelectedMapIds != null && settings.SelectedMapIds.Any())
@@ -176,16 +194,6 @@ namespace VLSGame.ViewModels
                 // Save this state
                 SaveSelectedMapsToConfig();
             }
-
-            #endregion
-
-            #region Initialize commands
-            ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
-            StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
-            ToggleMapCommand = new RelayCommand(OnToggleMapCommandExecuted, CanToggleMapCommandExecute);
-            SaveMapsCommand = new RelayCommand(OnSaveMapsCommandExecuted, CanSaveMapsCommandExecute);
-            ExitChoiceMapsCommand = new RelayCommand(OnExitChoiceMapsCommandExecuted, CanExitChoiceMapsCommandExecute);
-            #endregion
         }
 
         private void SaveSelectedMapsToConfig()
@@ -202,5 +210,6 @@ namespace VLSGame.ViewModels
                 config.SaveConfiguration();
             }
         }
+        #endregion
     }
 }
