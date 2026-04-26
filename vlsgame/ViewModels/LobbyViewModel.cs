@@ -22,6 +22,20 @@ namespace VLSGame.ViewModels
             private set => Set(ref visibilityGridMode, value);
         }
 
+        private string mapText;
+        public string MapText
+        {
+            get => mapText;
+            set => Set(ref mapText, value);
+        }
+
+        private string displayGamemode;
+        public string DisplayGamemode
+        {
+            get => displayGamemode;
+            set => Set(ref displayGamemode, value);
+        }
+
         #region SinglePlayer
 
         private IGameMode? currentGameMode;
@@ -117,8 +131,10 @@ namespace VLSGame.ViewModels
             VisibilityGridMode != Visibility.Hidden && MapViewModels.Any(vm => vm.CheckmarkVisibility == Visibility.Visible);
         private void OnSaveMapsCommandExecuted(object p)
         {
-            SaveSelectedMapsToConfig();
+            FullSaveToConfig();
             VisibilityGridMode = Visibility.Hidden;
+            UpdateMapText();
+            ReloadSelectedGamemodeFromConfig();
         }
 
         #endregion
@@ -128,6 +144,28 @@ namespace VLSGame.ViewModels
         public ICommand ExitChoiceMapsCommand { get; }
         private bool CanExitChoiceMapsCommandExecute(object p) => VisibilityGridMode != Visibility.Hidden;
         private void OnExitChoiceMapsCommandExecuted(object p) => VisibilityGridMode = Visibility.Hidden;
+
+        #endregion
+
+        #region ActivateSingleplayer
+
+        public ICommand ActivateSingleplayerCommand { get; }
+        private bool CanActivateSingleplayerCommandExecute(object p) => true;
+        private void OnActivateSingleplayerCommandExecuted(object p)
+        {
+            ToggleGamemode(new SinglePlayerGameMode());
+        }
+
+        #endregion
+
+        #region ActivateMultiplayer
+
+        public ICommand ActivateMultiplayerCommand { get; }
+        private bool CanActivateMultiplayerCommandExecute(object p) => true;
+        private void OnActivateMultiplayerCommandExecuted(object p)
+        {
+            ToggleGamemode(new MultiPlayerGameMode());
+        }
 
         #endregion
 
@@ -162,13 +200,37 @@ namespace VLSGame.ViewModels
 
             #endregion
 
+            FullReloadFromConfig();
+            UpdateMapText();
+
             #region Initialize commands
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
             StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
             ToggleMapCommand = new RelayCommand(OnToggleMapCommandExecuted, CanToggleMapCommandExecute);
             SaveMapsCommand = new RelayCommand(OnSaveMapsCommandExecuted, CanSaveMapsCommandExecute);
             ExitChoiceMapsCommand = new RelayCommand(OnExitChoiceMapsCommandExecuted, CanExitChoiceMapsCommandExecute);
+            ActivateSingleplayerCommand = new RelayCommand(OnActivateSingleplayerCommandExecuted, CanActivateSingleplayerCommandExecute);
+            ActivateMultiplayerCommand = new RelayCommand(OnActivateMultiplayerCommandExecuted, CanActivateMultiplayerCommandExecute);
             #endregion
+        }
+
+        private void UpdateMapText()
+        {
+            var selectedMaps = MapViewModels.Where(vm => vm.CheckmarkVisibility == Visibility.Visible).ToList();
+            int selectedCount = selectedMaps.Count;
+            if (selectedCount == 1)
+                MapText = $"Map: {selectedMaps[0].Title}";
+            else
+                MapText = $"Map: Random({selectedCount})";
+        }
+
+        private void ToggleGamemode(IGameMode gameMode)
+        {
+            if (currentGameMode?.GetType() != gameMode.GetType())
+            {
+                currentGameMode = gameMode;
+                DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
+            }
         }
 
         #region Config funcs
@@ -192,6 +254,28 @@ namespace VLSGame.ViewModels
             }
         }
 
+        private void ReloadSelectedGamemodeFromConfig()
+        {
+            // Restoring the selected gamemode from the configuration
+            var settings = Configuration.Instance.GameSettings;
+            if (settings != null && settings.SelectedGameMode != null)
+            {
+                ToggleGamemode(settings.SelectedGameMode);
+            }
+            else
+            {
+                IGameMode defaultMode = new GameSettings().SelectedGameMode;
+                ToggleGamemode(defaultMode);
+                SaveSelectedGamemodeToConfig();
+            }
+        }
+
+        private void FullReloadFromConfig()
+        {
+            ReloadSelectedMapsFromConfig();
+            ReloadSelectedGamemodeFromConfig();
+        }
+
         private void SaveSelectedMapsToConfig()
         {
             var selectedIds = MapViewModels
@@ -209,6 +293,26 @@ namespace VLSGame.ViewModels
 
             config.GameSettings.SelectedMapIds = selectedIds;
             config.SaveConfiguration();
+        }
+
+        private void SaveSelectedGamemodeToConfig()
+        {
+            var config = Configuration.Instance;
+            if (config.GameSettings == null) return;
+
+            // Compare
+            if (config.GameSettings.SelectedGameMode != null &&
+                config.GameSettings.SelectedGameMode == currentGameMode)
+                return; // nothing changed
+
+            config.GameSettings.SelectedGameMode = currentGameMode;
+            config.SaveConfiguration();
+        }
+
+        private void FullSaveToConfig()
+        {
+            SaveSelectedMapsToConfig();
+            SaveSelectedGamemodeToConfig();
         }
         #endregion
     }

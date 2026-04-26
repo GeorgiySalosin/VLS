@@ -37,7 +37,21 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Content="Start" Width="428" Height="132" Command="{Binding StartGameCommand}"/>
-            <Button Grid.Row="1" Content="select mode" Height="200" Margin="32,0,32,32" Command="{Binding ToggleModeGridCommand}"/>
+            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="32,0,32,32">
+                <Button Content="select mode" Height="200"
+                        Margin="0,0,0,0" Command="{Binding ToggleModeGridCommand}"/>
+                <Grid Height="32" Background="Gray">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding MapText}" FontSize="22" 
+                               VerticalAlignment="Center" Margin="5,5,0,0"/>
+                    <TextBlock Grid.Column="2" Text="{Binding DisplayGamemode}" FontSize="22" 
+                               VerticalAlignment="Center" Margin="0,5,5,0"/>
+                </Grid>
+            </StackPanel>
         </Grid>
         <Grid Grid.Column="1" Visibility="{Binding VisibilityGridMode}">
             <Grid.RowDefinitions>
@@ -110,8 +124,10 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Style="{StaticResource ModeButton}" Margin="0,0,32,32"/>
-                    <Button Grid.Column="1" Style="{StaticResource ModeButton}" Margin="0,0,32,32"/>
+                    <Button Grid.Column="0" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
+                            Content="Singleplayer" Command="{Binding ActivateSingleplayerCommand}"/>
+                    <Button Grid.Column="1" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
+                            Content="Multiplayer" Command="{Binding ActivateMultiplayerCommand}"/>
                 </Grid>
             </Grid>
             <Button Grid.Row="2" Content="Ok" Width="268" Height="92"
