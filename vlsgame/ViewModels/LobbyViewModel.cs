@@ -16,6 +16,8 @@ namespace VLSGame.ViewModels
 
         internal event EventHandler? CloseRequested; // event for View closing
 
+        #region View's properties
+
         private Visibility visibilityGridMode = Visibility.Hidden;
         public Visibility VisibilityGridMode {
             get => visibilityGridMode;
@@ -35,6 +37,8 @@ namespace VLSGame.ViewModels
             get => displayGamemode;
             set => Set(ref displayGamemode, value);
         }
+
+        #endregion
 
         #region SinglePlayer
 
@@ -134,7 +138,7 @@ namespace VLSGame.ViewModels
             FullSaveToConfig();
             VisibilityGridMode = Visibility.Hidden;
             UpdateMapText();
-            ReloadSelectedGamemodeFromConfig();
+            ReloadSelectedGamemodeFromConfig(); // Update the UI
         }
 
         #endregion
@@ -153,7 +157,7 @@ namespace VLSGame.ViewModels
         private bool CanActivateSingleplayerCommandExecute(object p) => true;
         private void OnActivateSingleplayerCommandExecuted(object p)
         {
-            ToggleGamemode(new SinglePlayerGameMode());
+            currentGameMode = new SinglePlayerGameMode(); // We update the state and update the UI when the settings are saved
         }
 
         #endregion
@@ -164,7 +168,7 @@ namespace VLSGame.ViewModels
         private bool CanActivateMultiplayerCommandExecute(object p) => true;
         private void OnActivateMultiplayerCommandExecuted(object p)
         {
-            ToggleGamemode(new MultiPlayerGameMode());
+            currentGameMode = new MultiPlayerGameMode(); // We update the state and update the UI when the settings are saved
         }
 
         #endregion
@@ -224,14 +228,8 @@ namespace VLSGame.ViewModels
                 MapText = $"Map: Random({selectedCount})";
         }
 
-        private void ToggleGamemode(IGameMode gameMode)
-        {
-            if (currentGameMode?.GetType() != gameMode.GetType())
-            {
-                currentGameMode = gameMode;
-                DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
-            }
-        }
+        private void ToggleGamemode(IGameMode gameMode) =>
+            DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
 
         #region Config funcs
         private void ReloadSelectedMapsFromConfig()
