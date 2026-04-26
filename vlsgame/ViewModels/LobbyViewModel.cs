@@ -77,7 +77,7 @@ namespace VLSGame.ViewModels
         private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
         private void OnToggleModeGridCommandExecuted(object p)
         {
-            ReloadSelectedMapsFromConfig();
+            FullReloadFromConfig();
             VisibilityGridMode = Visibility.Visible;
         }
 
@@ -145,7 +145,6 @@ namespace VLSGame.ViewModels
         {
             FullSaveToConfig();
             VisibilityGridMode = Visibility.Hidden;
-            UpdateMapText();
             FullReloadFromConfig(); // Update the UI
         }
 
@@ -213,7 +212,6 @@ namespace VLSGame.ViewModels
             #endregion
 
             FullReloadFromConfig();
-            UpdateMapText();
 
             #region Initialize commands
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
@@ -261,6 +259,7 @@ namespace VLSGame.ViewModels
                 // Save this state back to config
                 SaveSelectedMapsToConfig();
             }
+            UpdateMapText();
 
             // Defining the SelectModeImagePath
             var selectedMaps = MapViewModels
