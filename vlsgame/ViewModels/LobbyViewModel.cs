@@ -38,6 +38,13 @@ namespace VLSGame.ViewModels
             set => Set(ref displayGamemode, value);
         }
 
+        private string selectModeImagePath;
+        public string SelectModeImagePath
+        {
+            get => selectModeImagePath;
+            private set => Set(ref selectModeImagePath, value);
+        }
+
         #endregion
 
         #region SinglePlayer
@@ -228,8 +235,11 @@ namespace VLSGame.ViewModels
                 MapText = $"Map: Random({selectedCount})";
         }
 
-        private void ToggleGamemode(IGameMode gameMode) =>
+        private void ToggleGamemode(IGameMode gameMode)
+        {
+            currentGameMode = gameMode;
             DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
+        }
 
         #region Config funcs
         private void ReloadSelectedMapsFromConfig()

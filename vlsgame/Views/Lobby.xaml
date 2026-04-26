@@ -39,7 +39,38 @@
             <Button Grid.Row="0" Content="Start" Width="428" Height="132" Command="{Binding StartGameCommand}"/>
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="32,0,32,32">
                 <Button Content="select mode" Height="200"
-                        Margin="0,0,0,0" Command="{Binding ToggleModeGridCommand}"/>
+                        Margin="0,0,0,0" Command="{Binding ToggleModeGridCommand}">
+                    <!--<Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border>
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding MapBackgroundImage}" Stretch="UniformToFill"/>
+                                </Border.Background>
+                                <ContentPresenter
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Image Grid.Row="0"
+                            Source="{Binding Checkmark}"
+                            Visibility="{Binding CheckmarkVisibility}"
+                            Width="32" Height="32" 
+                            VerticalAlignment="Top" HorizontalAlignment="Right"
+                            Margin="10"/>
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding Title}" 
+                                FontSize="20" Foreground="White"/>
+                            <TextBlock Text="{Binding Subtitle}" 
+                                FontSize="12" Foreground="LightGray"/>
+                        </StackPanel>
+                    </Grid>-->
+                </Button>
                 <Grid Height="32" Background="Gray">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
