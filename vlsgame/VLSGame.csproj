@@ -13,6 +13,7 @@
   <ItemGroup>
     <None Remove="Content\Animation\BallisticsFX\BulletDebug.png" />
     <None Remove="Content\checkmark.png" />
+    <None Remove="Content\Lobby\T_MapPreview_Combined.png" />
     <None Remove="Content\Lobby\T_MapPreview_Fog.png" />
     <None Remove="Content\Lobby\T_MapPreview_Sun.png" />
     <None Remove="Content\Lobby\T_MapPreview_Sunset.png" />
@@ -23,6 +24,9 @@
 
   <ItemGroup>
     <Content Include="Content\checkmark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Lobby\T_MapPreview_Combined.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\T_CrossAIM.png">

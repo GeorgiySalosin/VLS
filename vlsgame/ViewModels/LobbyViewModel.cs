@@ -44,6 +44,7 @@ namespace VLSGame.ViewModels
             get => selectModeImagePath;
             private set => Set(ref selectModeImagePath, value);
         }
+        private const string combinedSelectModeImagePath = "/Content/Lobby/T_MapPreview_Combined.png";
 
         #endregion
 
@@ -145,7 +146,7 @@ namespace VLSGame.ViewModels
             FullSaveToConfig();
             VisibilityGridMode = Visibility.Hidden;
             UpdateMapText();
-            ReloadSelectedGamemodeFromConfig(); // Update the UI
+            FullReloadFromConfig(); // Update the UI
         }
 
         #endregion
@@ -260,6 +261,16 @@ namespace VLSGame.ViewModels
                 // Save this state back to config
                 SaveSelectedMapsToConfig();
             }
+
+            // Defining the SelectModeImagePath
+            var selectedMaps = MapViewModels
+                .Where(vm => vm.CheckmarkVisibility == Visibility.Visible)
+                .ToList();
+            if (selectedMaps.Count == 1)
+                SelectModeImagePath = selectedMaps[0].MapBackgroundImage;
+            else
+                SelectModeImagePath = combinedSelectModeImagePath;
+
         }
 
         private void ReloadSelectedGamemodeFromConfig()
