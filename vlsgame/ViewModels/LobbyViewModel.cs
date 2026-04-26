@@ -28,14 +28,14 @@ namespace VLSGame.ViewModels
         public string MapText
         {
             get => mapText;
-            set => Set(ref mapText, value);
+            private set => Set(ref mapText, value);
         }
 
         private string displayGamemode;
         public string DisplayGamemode
         {
             get => displayGamemode;
-            set => Set(ref displayGamemode, value);
+            private set => Set(ref displayGamemode, value);
         }
 
         private string selectModeImagePath;
