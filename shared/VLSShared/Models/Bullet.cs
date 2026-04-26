@@ -18,7 +18,9 @@ namespace VLSShared.Models
 
         private int X { get; set; }
         private int Y { get; set; }
-        private double Distance { get; set; } = 0;
+
+        public double DistancePrevious { get; set; } = 0;          // To track the interval on which bullet teleports (between two ticks)
+        public double Distance { get; set; } = 0;
         private double FlightTime { get; set; } = 0;
 
         private readonly Func<int, int, double> GetDistanceAtPixel = getDistanceAtPixel;
@@ -70,10 +72,13 @@ namespace VLSShared.Models
 
             X = pixelX;
             Y = pixelY;
+
+            DistancePrevious = Distance;
             Distance = distance;
+
             FlightTime += dt;
         }
-        internal bool IsLanded { get; private set; } = false;
+        public bool IsLanded { get; set; } = false;
         private float ComputeCd(double V)
         {
             float M = (float)(V / 340.0);

@@ -31,7 +31,8 @@
                   Position="0,0,0"
                   LookDirection="{Binding CameraProperties.LookDirection}"
                   UpDirection="0,1,0"
-                  FieldOfView="{Binding CameraProperties.FieldOfView}"/>
+                  FieldOfView="{Binding CameraProperties.FieldOfView}"
+                  NearPlaneDistance = "0.01"/>
             </Viewport3D.Camera>
         </Viewport3D>
 

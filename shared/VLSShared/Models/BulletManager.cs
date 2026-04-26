@@ -15,7 +15,7 @@ namespace VLSShared.Models
         public static event Action<Guid, Vector3>? BulletUpdated;       // notifies viewmodel that it should transform related 3d model with new direction
         public static event Action<Guid, Vector3>? BulletCreated;       // notifies viewmodel that it should create a new 3d object assigned to bullet
 
-        public static List<Bullet> Bullets { get; } = [];
+        private static List<Bullet> Bullets { get; } = [];
         private static readonly object _lock = new();
 
         public static void UpdateBullets(float dt)
@@ -25,18 +25,30 @@ namespace VLSShared.Models
                 for (int i = Bullets.Count - 1; i >= 0; i--)
                 {
                     Bullet bullet = Bullets[i];
-                    
 
                     if (bullet.IsLanded)
                     {
                         BulletRemoved?.Invoke(bullet.Id);
                         Bullets.RemoveAt(i);
+                        continue;
+                    }
+
+                    bullet.Update(dt);
+
+                    // Проверка попадания во врагов
+                    EnemyManager.CheckBulletCollision(bullet);
+
+                    if (bullet.IsLanded)
+                    {
+                        // Пуля попала в землю или врага — удаляем
+                        BulletRemoved?.Invoke(bullet.Id);
+                        Bullets.RemoveAt(i);
                     }
                     else
                     {
-                        bullet.Update(dt);
                         BulletUpdated?.Invoke(bullet.Id, bullet.Direction);
                     }
+
                     if (bullet == LastBullet) LastBulletInfoChanged?.Invoke(LastBulletInfo);
                 }
             }

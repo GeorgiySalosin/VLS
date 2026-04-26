@@ -3,6 +3,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.Config;
+using VLSShared.Enums;
 namespace VLSGame.Models
 {
     public sealed class MatchTexturePool
@@ -34,6 +35,32 @@ namespace VLSGame.Models
 
         private readonly ImageBrush Test_Enemy = LoadTexture(@"Content\Enemy\Test_Enemy.png");
 
+        public ImageBrush GetEnemyTexture() => Test_Enemy;
+
+        private readonly Mat Test_Enemy_Coll = LoadCV(@"Content\Enemy\Test_Enemy_Coll.png");
+
+        public HitZone GetHitZoneFromUV(float u, float v)
+        {
+            if (Test_Enemy_Coll == null)
+                return HitZone.None;
+
+            int width = Test_Enemy_Coll.Width;
+            int height = Test_Enemy_Coll.Height;
+
+            int pixelX = (int)(u * (width - 1));
+            int pixelY = (int)(v * (height - 1));
+
+            pixelX = Math.Clamp(pixelX, 0, width - 1);
+            pixelY = Math.Clamp(pixelY, 0, height - 1);
+
+            Vec3b color = Test_Enemy_Coll.At<Vec3b>(pixelY, pixelX);
+            // OpenCV: Vec3b -> Item0 = Blue, Item1 = Green, Item2 = Red
+            if (color.Item2 > 128) return HitZone.Head;   // Красный канал
+            if (color.Item1 > 128) return HitZone.Body;   // Зеленый канал
+            if (color.Item0 > 128) return HitZone.Limb;  // Синий канал
+
+            return HitZone.None;
+        }
 
         #region World
         private ImageBrush World_Color;

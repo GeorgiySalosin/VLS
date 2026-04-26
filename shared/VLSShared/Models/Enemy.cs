@@ -10,11 +10,14 @@ namespace VLSShared.Models
 
     public class Enemy
     {
-        public Guid Id { get; }    
+        public Guid Id { get; }
         public Vector3 Direction { get; init; }   // The direction determines where the enemy is spawned. Enemy location is static.
         public double Distance { get; init; }      // The distance determines how far enemy is supposed to be located (will be used to re-scale the character). Enemy distance is static.
 
+        public double RenderDistance { get; init; } = 0.1; // реальное расстояние плоскости от камеры
 
+        public double Scale { get; init; } = 0.01;
+        public Func<float, float, HitZone>? HitZoneChecker { get; set; }
 
         public Enemy(Vector3 direction, double distance)
         {
@@ -22,11 +25,5 @@ namespace VLSShared.Models
             Direction = Vector3.Normalize(direction);
             Distance = distance;
         }
-
-        public HitZone CheckHit(Vector3 bulletDirection)
-        {
-            return HitZone.None;
-        }
-
     }
 }

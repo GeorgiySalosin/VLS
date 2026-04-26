@@ -70,7 +70,7 @@ namespace VLSGame.Rendering.Content3D
             var mesh = new MeshGeometry3D();
 
             
-            double z = 0.5;
+            double z = 0.0;
 
             mesh.Positions.Add(new Point3D(-width / 2, -length / 2, z));
             mesh.Positions.Add(new Point3D(width / 2, -length / 2, z));

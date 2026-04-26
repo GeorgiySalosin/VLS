@@ -6,6 +6,7 @@ using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
+using VLSShared.Enums;
 using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
@@ -98,7 +99,7 @@ namespace VLSGame.Rendering
         /// </summary>
         public void CreateBulletObject3D(Guid bulletId, Vector3D direction)
         {
-            var mesh = PlaneMesh(.003, .003);
+            var mesh = PlaneMesh(.001, .001);
 
             var texture = texturePool.GetBulletTexture();
 
@@ -107,7 +108,7 @@ namespace VLSGame.Rendering
             var bulletVisual = new ModelVisual3D { Content = geometryModel };
 
 
-            var bullet = new CustomObject3D(bulletVisual, fixedDistance: 0.1, id: bulletId, tag: CustomObject3DTags.Projectile);
+            var bullet = new CustomObject3D(bulletVisual, fixedDistance: 0.5, id: bulletId, tag: CustomObject3DTags.Projectile);
             bullet.UpdateOrbit(direction);
             Add3D(bullet);
         }
@@ -121,6 +122,28 @@ namespace VLSGame.Rendering
             bullet.UpdateOrbit(direction);
             bullet.SetTexture(texturePool.GetBulletTexture());
         }
+        #endregion
+
+        #region Enemy
+        /// <summary>
+        ///  Creates a new custom 3d of enemy and adds it to viewport
+        /// </summary>
+        public void CreateEnemyObject3D(Guid enemyId, Vector3D direction, double distance, double fixedDistance = .1, double scale = .01)
+        {
+            var mesh = PlaneMesh(scale, scale);
+
+            var texture = texturePool.GetEnemyTexture();
+            var material = TextureMaterial(texture);
+            var geometryModel = new GeometryModel3D(mesh, material);
+            var enemyVisual = new ModelVisual3D { Content = geometryModel };
+
+            
+            var enemy = new CustomObject3D(enemyVisual, fixedDistance: fixedDistance, id: enemyId, tag: CustomObject3DTags.Enemy);
+            enemy.UpdateOrbit(direction);
+            Add3D(enemy);
+        }
+
+
         #endregion
 
         #region Lightind
