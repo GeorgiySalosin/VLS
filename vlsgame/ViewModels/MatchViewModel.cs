@@ -131,6 +131,10 @@ namespace VLSGame.ViewModels
             hudLayer?.RegisterTexture(crosshair);
             hudLayer?.ShowTexture("Crosshair");
 
+            var scope = new TestScopeTexture();
+            hudLayer?.RegisterTexture(scope);
+            //hudLayer?.ShowTexture("Scope");
+
         }
 
 

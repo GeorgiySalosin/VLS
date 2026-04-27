@@ -139,8 +139,10 @@ namespace VLSGame.Rendering.Content2D
                 PixelHeight = convertedBitmap.PixelHeight;
 
                 Image.Source = convertedBitmap;
-                Image.Width = PixelWidth;
-                Image.Height = PixelHeight;
+                //Image.Width = PixelWidth;
+                //Image.Height = PixelHeight;
+                //Image.Width = 2560;
+                //Image.Height = 1440;
 
                 // Apply current transform values
                 UpdateTransform();
