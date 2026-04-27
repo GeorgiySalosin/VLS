@@ -28,7 +28,7 @@ namespace VLSShared.Models
             {
                 enemies.Add(enemy);
 
-                OnEnemySpawned?.Invoke(enemy.Id, enemy.Direction, enemy.Distance, enemy.RenderDistance, enemy.Scale);
+                OnEnemySpawned?.Invoke(enemy.Id, enemy.Direction, enemy.Distance, enemy.ViewportDistance, enemy.Scale);
             }
         }
 
@@ -40,24 +40,24 @@ namespace VLSShared.Models
             {
                 foreach (var enemy in enemies)
                 {
-                    Vector3 bulletDir = bullet.Direction;   // нормированное направление к текущей позиции пули
-                    Vector3 enemyDir = enemy.Direction;     // нормированное направление к врагу
+                    Vector3 bulletDir = bullet.Direction;  
+                    Vector3 enemyDir = enemy.Direction;     
 
-                    // --- Условие по мнимой дистанции ---
-                    // Пуля долетела до врага, если мнимое расстояние врага лежит между предыдущей и текущей мнимой дистанцией пули.
+                    
+                    // Bullet has reached the enemy if the enemy distance is between bullet per-tick distances
                     if (enemy.Distance < bullet.DistancePrevious || enemy.Distance > bullet.Distance)
                         continue;
 
                     float dot = Vector3.Dot(bulletDir, enemyDir);
-                    if (dot <= 0) continue;                 // пуля и враг в противоположных полушариях
+                    if (dot <= 0) continue;                 // bullet and emnemy are in diametrically different directions
 
-                    // Точка пересечения луча пули с физической плоскостью врага (на RenderDistance от камеры)
-                    double t = enemy.RenderDistance / dot;   // расстояние вдоль луча до плоскости
-                    Vector3 O = enemyDir * (float)enemy.RenderDistance;
+                    // Dot of bullet ray collision with mesh plane 
+                    double t = enemy.ViewportDistance / dot;  
+                    Vector3 O = enemyDir * (float)enemy.ViewportDistance;
                     Vector3 P = bulletDir * (float)t;
                     Vector3 diff = P - O;
 
-                    // Локальные оси плоскости (как в CustomObject3D.LookAt)
+                    // Local axes
                     Vector3 worldUp = new(0, 1, 0);
                     Vector3 right = Vector3.Cross(worldUp, enemyDir);
                     right = Vector3.Normalize(right);
@@ -69,22 +69,21 @@ namespace VLSShared.Models
 
                     double halfS = enemy.Scale / 2;
 
-                    if (Math.Abs(localX) > halfS || Math.Abs(localY) > halfS)
-                        continue;                           // мимо прямоугольника врага
+                    if (Math.Abs(localX) > halfS || Math.Abs(localY) > halfS) continue;    // Bullet did not collide a mesh plane                         
 
-                    // UV-координаты (соответствуют развёртке PlaneMesh)
+                    // UVs 
                     float u = (float)((halfS - localX) / enemy.Scale);
                     float v = (float)((halfS - localY) / enemy.Scale);
 
                     HitZone zone = enemy.HitZoneChecker?.Invoke(u, v) ?? HitZone.None;
-                    if (zone == HitZone.None)
-                        continue;                           // попали в прозрачную область маски
+
+                    if (zone == HitZone.None) continue;                           // bullet did not collide the pixel w/ hitbox area
 
                     Vector3 hitPoint = O + right * localX + realUp * localY;
 
                     bullet.IsLanded = true;
                     OnEnemyHit?.Invoke(enemy.Id, bulletDir, hitPoint, zone, u, v);
-                    break;                                  // одна пуля — один враг
+                    break;                                  
                 }
             }
         }

@@ -115,7 +115,7 @@ namespace VLSGame.ViewModels
             Enemy enemy = new(new Vector3(-.98f, -.09f, .18f), 1000)
             {
                 Scale = .001,
-                RenderDistance = 1.0,
+                ViewportDistance = 1.0,
                 HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
             };
             EnemyManager.AddEnemy(enemy);
