@@ -126,21 +126,21 @@ namespace VLSGame.Rendering
 
         #region Enemy
         /// <summary>
-        ///  Creates a new custom 3d of enemy and adds it to viewport
+        ///  Creates a new custom 3d of ENEMY PLAYER and adds it to viewport
         /// </summary>
-        public void CreateEnemyObject3D(Guid enemyId, Vector3D direction, double distance, double fixedDistance = .1, double scale = .01)
+        public void CreatePlayerObject3D(Guid playerId, Vector3D direction, double distance, double fixedDistance = .1, double scale = .01)
         {
             var mesh = PlaneMesh(scale, scale);
 
             var texture = texturePool.GetEnemyTexture();
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
-            var enemyVisual = new ModelVisual3D { Content = geometryModel };
+            var playerVisual = new ModelVisual3D { Content = geometryModel };
 
             
-            var enemy = new CustomObject3D(enemyVisual, fixedDistance: fixedDistance, id: enemyId, tag: CustomObject3DTags.Enemy);
-            enemy.UpdateOrbit(direction);
-            Add3D(enemy);
+            var player = new CustomObject3D(playerVisual, fixedDistance: fixedDistance, id: playerId, tag: CustomObject3DTags.Enemy);
+            player.UpdateOrbit(direction);
+            Add3D(player);
         }
 
 

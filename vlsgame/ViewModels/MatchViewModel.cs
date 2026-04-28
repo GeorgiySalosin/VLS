@@ -78,9 +78,9 @@ namespace VLSGame.ViewModels
             BulletManager.BulletUpdated += (id, direction) => renderManager.UpdateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
             BulletManager.BulletRemoved += (id) => renderManager.Remove3D(id);
 
-            EnemyManager.OnEnemySpawned += (id, direction, distance, renderDistance, scale) => renderManager.CreateEnemyObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z), distance, renderDistance, scale);
+            PlayerManager.OnPlayerSpawned += (id, direction, distance, renderDistance, scale) => renderManager.CreatePlayerObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z), distance, renderDistance, scale);
 
-            EnemyManager.OnEnemyHit += (enemyId, bulletDir, hitPoint, zone, u, v) =>
+            PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v) =>
             {
                 System.Diagnostics.Debug.WriteLine(
                     $"HIT: Enemy {enemyId.ToString("N")[..8]}, Zone = {zone}, " +
@@ -112,13 +112,13 @@ namespace VLSGame.ViewModels
             Vector3D cameraLook3D = CameraProperties.LookDirection;
             Vector3 cameraLook = new((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
 
-            Enemy enemy = new(new Vector3(-.98f, -.09f, .18f), 1000)
+            Player player = new(new Vector3(-.98f, -.09f, .18f), 1000)
             {
                 Scale = .001,
                 ViewportDistance = 1.0,
                 HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
             };
-            EnemyManager.AddEnemy(enemy);
+            PlayerManager.AddPlayer(player);
         }
 
         private void SetupLayers()
