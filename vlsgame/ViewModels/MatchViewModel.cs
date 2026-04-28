@@ -1,26 +1,64 @@
 using OpenCvSharp;
+using System.Numerics;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using VLSGame.Config;
 using VLSGame.Models;
+using VLSGame.Rendering;
+using VLSGame.Rendering.Content2D.HUD;
+using VLSGame.Rendering.Content3D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
+
 
 namespace VLSGame.ViewModels
 {
     public class MatchViewModel : ViewModelBase
     {
-        // Timer
-        private DispatcherTimer _gameTimer;
-        private const int tickHz = 100;
+        #region UI From View
+        private Viewport3D viewport;     // MAIN 3D VIEWPORT,  set from Match View
+        public Viewport3D Viewport
+        {
+            get => viewport;
+            set
+            {
+                if (Set(ref viewport, value))
+                    OnPropertyChanged(nameof(Viewport));
+            }
+        }
+        private Panel hud;          // PANEL THAT CONTAINS 2D TEXTURE ELEMENTS, set from Match View
+        public Panel Hud
+        {
+            get => hud;
+            set
+            {
+                if (Set(ref hud, value))
+                    OnPropertyChanged(nameof(Hud));
+            }
+        }  
+        #endregion
+
+
+        #region Timer settings
+
+        private DispatcherTimer gameTimer;
+        private const int tickHz = 60;
+        private const float deltaTime = 1f / tickHz;
+
+        #endregion
+
+        public CameraProperties CameraProperties { get; private set; } = new();     // All stuff regarding "at the moment" camera properties (current vector, fov, etc)
 
         private readonly IGameMode gameMode;
-        private readonly PanoramaData panoramaData;
-        public CameraProperties CameraProperties { get; private set; } = new();     // A functionality of ViewModel that was Extracted into Camera Properties
+        private readonly RenderManager renderManager = RenderManager.Instance;
+        //private readonly PanoramaData panoramaData;
 
-        private BitmapSource? colorMapTexture;
+        private BitmapSource? mapTexture;
+        //public BitmapSource? MapTexture { get => mapTexture; private set => Set(ref mapTexture, value); }
+
         private string distanceText = "";
         private string pixelCoordinates = "";
         private string lastBullet = ""; // info about last bullet
@@ -33,92 +71,139 @@ namespace VLSGame.ViewModels
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
             this.gameMode = gameMode;
-            panoramaData = new PanoramaData();
-            panoramaData.LoadTextures(colorMapPath, depthMapPath);
-            colorMapTexture = ConvertMatToBitmap(panoramaData.ColorMat);
 
-            BulletManager.BulletLanded += (int x, int y, double distance, double flightTime) =>
+
+            BulletManager.LastBulletInfoChanged += info => LastBullet = info;
+            BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
+            BulletManager.BulletUpdated += (id, direction) => renderManager.UpdateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
+            BulletManager.BulletRemoved += (id) => renderManager.Remove3D(id);
+
+            PlayerManager.OnPlayerSpawned += (id, direction, distance, renderDistance, scale) => renderManager.CreatePlayerObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z), distance, renderDistance, scale);
+
+            PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v) =>
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"HIT: Enemy {enemyId.ToString("N")[..8]}, Zone = {zone}, " +
+                    $"UV = ({u:F3}, {v:F3}), " +
+                    $"HitPoint = ({hitPoint.X:F4}, {hitPoint.Y:F4}, {hitPoint.Z:F4})");
+            };
+
+            BulletManager.BulletLanded += (x, y, distance, flightTime) =>
                 LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
-            StartGameLoop();
+
+            // It's necessary for updating FormattedLookDirection
+            CameraProperties.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(CameraProperties.LookDirection))
+                    OnPropertyChanged(nameof(FormattedLookDirection));
+            };
         }
 
+        public void OnViewLoaded()
+        {
+            renderManager.Initialize(viewport, hud);
+
+            renderManager.CreateEnvironmentObject3D();       // Create a world panorama
+            renderManager.SetLight();
+            
+            SetupLayers();
+            StartGameLoop();
+
+            Vector3D cameraLook3D = CameraProperties.LookDirection;
+            Vector3 cameraLook = new((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
+
+            Player player = new(new Vector3(-.98f, -.09f, .18f), 1000)
+            {
+                Scale = .001,
+                ViewportDistance = 1.0,
+                HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
+            };
+            PlayerManager.AddPlayer(player);
+        }
+
+        private void SetupLayers()
+        {
+            // HUD 
+            var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
+
+            hudLayer?.Initialize(this);
+            var crosshair = new CrosshairTexture();
+            hudLayer?.RegisterTexture(crosshair);
+            hudLayer?.ShowTexture("Crosshair");
+
+            var scope = new TestScopeTexture();
+            hudLayer?.RegisterTexture(scope);
+            //hudLayer?.ShowTexture("Scope");
+
+        }
+
+
+        #region GAME EVENTS 
         private void StartGameLoop()
         {
-            _gameTimer = new DispatcherTimer();
-            _gameTimer.Interval = TimeSpan.FromSeconds(1.0 / tickHz);
-            _gameTimer.Tick += OnGameTick;
-            _gameTimer.Start();
+            gameTimer = new()
+            {
+                Interval = TimeSpan.FromSeconds(deltaTime)
+            };
+            gameTimer.Tick += OnGameTick;
+            gameTimer.Start();
         }
 
         private void OnGameTick(object? sender, EventArgs e)
         {
-            BulletManager.UpdateBullets();
-
-            // Здесь можно обновить другие игровые логики
-            // Например, перерисовать прицел или обновить отображаемую дистанцию
-            // UpdateCenterDistance();
+            
+            BulletManager.UpdateBullets(deltaTime);
+            renderManager.Render();
+            GetCenterDistance();
         }
 
         internal void Shoot()
         {
-            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
-            var bullet = new Bullet(pixelX, pixelY, panoramaData.GetDistanceAtPixel);
+            Vector3 startPos = new(0, 0, 0);    // ??? Do we really need it here
+
+            Vector3D cameraLook3D = CameraProperties.LookDirection;
+
+            Vector3 cameraLook = new((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
+
+
+            (int X, int Y) getPixelFromDirection(Vector3 dir)       // Didnt know that we can declare local functions like this
+            {
+                // Vector3 → Vector3D
+                var dir3D = new Vector3D(dir.X, dir.Y, dir.Z);
+
+                return renderManager.GetTextureCoordinatesFromDirection(dir3D);
+            }
+
+            Bullet bullet = new (startPos, cameraLook, renderManager.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
         }
+        #endregion
 
-        public BitmapSource? ColorMapTexture
-        {
-            get => colorMapTexture;
-            private set => Set(ref  colorMapTexture, value);
-        }
 
-        public string DistanceText
-        {
-            get => distanceText;
-            set => Set(ref distanceText, value);
-        }
+        #region Debug line (distance, texture coords, etc)
 
-        public string PixelCoordinates
-        {
-            get => pixelCoordinates;
-            set => Set(ref pixelCoordinates, value);
-        }
-        public string LastBullet
-        {
-            get => lastBullet;
-            set => Set(ref lastBullet, value);
-        }
+        public string DistanceText { get => distanceText; set => Set(ref distanceText, value); }
 
-        public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
-        {
-            direction.Normalize();
+        public string PixelCoordinates { get => pixelCoordinates; set => Set(ref pixelCoordinates, value); }
 
-            double theta = Math.Atan2(direction.Z, direction.X);
-            double phi = Math.Acos(direction.Y);
+        public string LastBullet { get => lastBullet; set => Set(ref lastBullet, value); }
 
-            if (theta < 0) theta += 2 * Math.PI;
+        public string FormattedLookDirection => $"LookDirection: {CameraProperties.LookDirection.X:F2}, {CameraProperties.LookDirection.Y:F2}, {CameraProperties.LookDirection.Z:F2}";
 
-            double u = theta / (2 * Math.PI);
-            double v = phi / Math.PI;
+        #endregion
 
-            int pixelX = (int)(u * panoramaData.DepthWidth);
-            int pixelY = (int)(v * panoramaData.DepthHeight);
 
-            pixelX = Math.Max(0, Math.Min(panoramaData.DepthWidth - 1, pixelX));
-            pixelY = Math.Max(0, Math.Min(panoramaData.DepthHeight - 1, pixelY));
 
-            return (pixelX, pixelY);
-        }
         public void GetCenterDistance()
         {
-            var (pixelX, pixelY) = GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            var (pixelX, pixelY) = renderManager.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
 
             if (pixelX != lastPixelX || pixelY != lastPixelY)
             {
                 lastPixelX = pixelX;
                 lastPixelY = pixelY;
 
-                cachedDistance = panoramaData.GetDistanceAtPixel(pixelX, pixelY);
+                cachedDistance = renderManager.GetDistanceAtPixel(pixelX, pixelY);
 
                 if (cachedDistance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
                 {
@@ -132,124 +217,5 @@ namespace VLSGame.ViewModels
             }
         }
 
-        #region PANORAMA MESH, MATERIALS, TEXTURE SETTINGS 
-        public ModelVisual3D CreatePanoramaSphere()
-        {
-            var mesh = CreateSphereMesh(phiSegments: 128, thetaSegments: 256);
-            var material = CreatePanoramaMaterial(ColorMapTexture);
-            var geometryModel = new GeometryModel3D(mesh, material);
-
-            var sphereVisual = new ModelVisual3D { Content = geometryModel };
-            return sphereVisual;
-        }
-
-        private static MeshGeometry3D CreateSphereMesh(int phiSegments, int thetaSegments)
-        {
-            var mesh = new MeshGeometry3D();
-
-            for (int i = 0; i <= phiSegments; i++)
-            {
-                double phi = Math.PI * i / phiSegments;
-
-                for (int j = 0; j <= thetaSegments; j++)
-                {
-                    double theta = 2 * Math.PI * j / thetaSegments;
-
-                    double x = Math.Sin(phi) * Math.Cos(theta);
-                    double y = Math.Cos(phi);
-                    double z = Math.Sin(phi) * Math.Sin(theta);
-
-                    mesh.Positions.Add(new Point3D(x, y, z));
-
-                    double u = theta / (2 * Math.PI);
-                    double v = phi / Math.PI;
-                    mesh.TextureCoordinates.Add(new System.Windows.Point(u, v));
-                }
-            }
-
-            for (int i = 0; i < phiSegments; i++)
-            {
-                for (int j = 0; j < thetaSegments; j++)
-                {
-                    int p0 = i * (thetaSegments + 1) + j;
-                    int p1 = i * (thetaSegments + 1) + j + 1;
-                    int p2 = (i + 1) * (thetaSegments + 1) + j;
-                    int p3 = (i + 1) * (thetaSegments + 1) + j + 1;
-
-                    mesh.TriangleIndices.Add(p0);
-                    mesh.TriangleIndices.Add(p2);
-                    mesh.TriangleIndices.Add(p1);
-
-                    mesh.TriangleIndices.Add(p1);
-                    mesh.TriangleIndices.Add(p2);
-                    mesh.TriangleIndices.Add(p3);
-                }
-            }
-
-            return mesh;
-        }
-
-        private static DiffuseMaterial CreatePanoramaMaterial(ImageSource? texture)
-        {
-            var brush = new ImageBrush(texture)
-            {
-                ViewportUnits = BrushMappingMode.Absolute,
-                TileMode = TileMode.None,
-                Stretch = Stretch.Fill
-            };
-
-            return new DiffuseMaterial(brush);
-        }
-
-        /// <summary> Converts raw opencv data to WPF-frieldly bitmap to use it as a texture</summary>
-        private WriteableBitmap? ConvertMatToBitmap(Mat? mat)
-        {
-            if (mat == null || mat.Empty())
-                return null;
-
-            try
-            {
-                int width = mat.Width;
-                int height = mat.Height;
-                int stride = width * mat.Channels();
-
-                // BGR (3 channels) === PixelFormats.Bgr24
-                var pixelFormat = mat.Channels() == 3 ? PixelFormats.Bgr24 : PixelFormats.Bgr32;
-                var bitmap = new WriteableBitmap(width, height, 96, 96, pixelFormat, null);
-
-                bitmap.Lock();
-                try
-                {
-                    unsafe
-                    {
-                        byte* source = (byte*)mat.DataPointer;
-                        byte* target = (byte*)bitmap.BackBuffer;
-                        int totalBytes = stride * height;
-
-                        for (int i = 0; i < totalBytes; i++)
-                            target[i] = source[i];
-                    }
-                    bitmap.AddDirtyRect(new System.Windows.Int32Rect(0, 0, width, height));
-                }
-                finally
-                {
-                    bitmap.Unlock();
-                }
-
-                bitmap.Freeze();
-                return bitmap;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error converting Mat to BitmapSource: {ex.Message}");
-                return null;
-            }
-        }
-        #endregion
-
-        public void Dispose()
-        {
-            panoramaData.Dispose();
-        }
     }
 }

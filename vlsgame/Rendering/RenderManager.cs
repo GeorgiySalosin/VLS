@@ -1,93 +1,197 @@
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using VLSGame.Rendering.Layers;
+using VLSGame.Models;
+using VLSGame.Rendering.Content2D;
+using VLSGame.Rendering.Content2D.HUD;
+using VLSGame.Rendering.Content3D;
+using VLSShared.Enums;
+using VLSShared.Models;
+using static VLSGame.Rendering.Content3D.Material;
+using static VLSGame.Rendering.Content3D.Mesh;
 
 namespace VLSGame.Rendering
 {
+    /// <summary>
+    /// Contains all rendering logics using Renderer3D, REnderer2D
+    /// </summary>
     public sealed class RenderManager
     {
-        private static readonly RenderManager instance = new();
-        public static RenderManager Instance => instance;
 
-        private readonly SortedDictionary<RenderOrder, Layer> layers = []; 
-        private Viewport3D? mainViewport;
-        private readonly List<ModelVisual3D> lights = [];
+        #region Initialization  
 
-        // this is used directly from the match view as viewmodel
-        public void Initialize(Viewport3D viewport, Panel hudPanel)
+        public static RenderManager Instance { get; } = new();
+        private static readonly Renderer3D renderer3D = Renderer3D.Instance;    // A tool responsible for rendering of all 3D.
+        private static readonly MatchTexturePool texturePool = MatchTexturePool.Instance;           // Pre-loading all in-game textures and reusing them!
+
+        private RenderManager() { }
+
+        private static bool isInitialized = false;
+
+        public void Initialize(Viewport3D viewport, Panel hudPanel, string mapName = "Test")
         {
-            mainViewport = viewport;
+            if (isInitialized) return;
+            renderer3D.Initialize(viewport);
 
-            // REGISTRATING NEW LAYERS THERE
-            RegisterLayer(new BackgroundLayer());
+
+            RegisterLayer(new HudLayer(hudPanel));
             RegisterLayer(new HudLayer(hudPanel));
 
-            SetupLighting();
-        }
+            texturePool.UpdateEnvironmentTexture(mapName);      // Loads new environment textures
 
-        public void RegisterLayer(Layer layer)  // ← gets abstract class
+            isInitialized = true;
+        }
+        #endregion
+
+
+        #region 2D 
+        private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
+
+        public void RegisterLayer(Layer layer)
         {
-            if (!layers.ContainsKey(layer.Order))
+            if (!Layers.ContainsKey(layer.Order))
             {
-                layers.Add(layer.Order, layer);
+                Layers.Add(layer.Order, layer);
             }
         }
 
-        public T? GetLayer<T>() where T : Layer  // able to get any layer though they are different classes
+        public T? GetLayer<T>() where T : Layer => Layers.Values.OfType<T>().FirstOrDefault();
+
+
+
+        #endregion
+        //TODO: Create a new Renderer 2D Class, Move those into it.
+
+
+        #region 3D 
+
+        #region MODELS CREATION 
+
+        #region World 
+        /// <summary>
+        ///  Creates a new custom 3d of environment sphere and adds it to viewport
+        /// </summary>
+        public void CreateEnvironmentObject3D()
         {
-            return layers.Values.OfType<T>().FirstOrDefault();
+            GeometryModel3D geometryModel = new(
+                SphereMesh(radius: 10),
+                TextureMaterial(texturePool.GetEnvironmentTexture())
+                );
+            ModelVisual3D sphereVisual = new() { Content = geometryModel };
+
+            CustomObject3D environment = new(sphereVisual, tag: CustomObject3DTags.World);
+            Add3D(environment);
         }
 
-        public void Render()
+        public void UpdateEnvironment(string path)
         {
-            if (mainViewport == null) return;
+            var environment = Get3D(CustomObject3DTags.World);
+            texturePool.UpdateEnvironmentTexture(path);
 
-            var camera = mainViewport.Camera;
-            var lightsToKeep = mainViewport.Children
-                .OfType<ModelVisual3D>()
-                .Where(v => v.Content is AmbientLight || v.Content is DirectionalLight)
-                .ToList();
-
-            mainViewport.Children.Clear();
-            mainViewport.Camera = camera;
-
-            foreach (var light in lightsToKeep)
-            {
-                mainViewport.Children.Add(light);
-            }
-
-            foreach (var layer in layers.Values)
-            {
-                layer.Render(mainViewport);
-            }
         }
 
-        private void SetupLighting()
+        #endregion
+
+        #region Bullet
+        /// <summary>
+        ///  Creates a new custom 3d of bullet and adds it to viewport
+        /// </summary>
+        public void CreateBulletObject3D(Guid bulletId, Vector3D direction)
         {
-            if (mainViewport == null) return;
+            var mesh = PlaneMesh(.001, .001);
 
-            var ambientLight = new ModelVisual3D();
-            ambientLight.Content = new AmbientLight(Colors.White);
-            lights.Add(ambientLight);
+            var texture = texturePool.GetBulletTexture();
 
-            foreach (var lightVisual in lights)
-            {
-                if (!mainViewport.Children.Contains(lightVisual))
-                {
-                    mainViewport.Children.Add(lightVisual);
-                }
-            }
+            var material = TextureMaterial(texture);
+            var geometryModel = new GeometryModel3D(mesh, material);
+            var bulletVisual = new ModelVisual3D { Content = geometryModel };
+
+
+            var bullet = new CustomObject3D(bulletVisual, fixedDistance: 0.5, id: bulletId, tag: CustomObject3DTags.Projectile);
+            bullet.UpdateOrbit(direction);
+            Add3D(bullet);
         }
 
-        /*this could be used later*/
-        public void SetLayerVisibility<T>(bool visible) where T : Layer
+        /// <summary>
+        ///  Updates a bullet 3d with new rotation transform and sets a new texture
+        /// </summary>
+        public void UpdateBulletObject3D(Guid bulletId, Vector3D direction)
         {
-            var layer = GetLayer<T>();
-            if (layer != null)
-            {
-                layer.IsVisible = visible;
-            }
+            var bullet = Get3D(bulletId);
+            bullet.UpdateOrbit(direction);
+            bullet.SetTexture(texturePool.GetBulletTexture());
         }
+        #endregion
+
+        #region Enemy
+        /// <summary>
+        ///  Creates a new custom 3d of ENEMY PLAYER and adds it to viewport
+        /// </summary>
+        public void CreatePlayerObject3D(Guid playerId, Vector3D direction, double distance, double fixedDistance = .1, double scale = .01)
+        {
+            var mesh = PlaneMesh(scale, scale);
+
+            var texture = texturePool.GetEnemyTexture();
+            var material = TextureMaterial(texture);
+            var geometryModel = new GeometryModel3D(mesh, material);
+            var playerVisual = new ModelVisual3D { Content = geometryModel };
+
+            
+            var player = new CustomObject3D(playerVisual, fixedDistance: fixedDistance, id: playerId, tag: CustomObject3DTags.Enemy);
+            player.UpdateOrbit(direction);
+            Add3D(player);
+        }
+
+
+        #endregion
+
+        #region Lightind
+        /// <summary>
+        ///  Creates and adds to viewport  a new white ambient light to represent a scene with its original colors
+        /// </summary>
+        public void SetLight()
+        {
+            var ambientLight = new ModelVisual3D
+            {
+                Content = new AmbientLight(Colors.White)
+            };
+
+            CustomObject3D ambientlight = new(ambientLight, tag: CustomObject3DTags.AmbientLight);
+
+            Add3D(ambientlight);
+        } 
+        #endregion
+
+        #endregion
+
+        /// <summary>
+        ///  Adds a new custom 3d object to the scene
+        /// </summary>
+        public void Add3D(CustomObject3D obj) => renderer3D.AddObject(obj);
+        /// <summary>
+        ///  Removes custom 3d object from the scene by its id
+        /// </summary>
+        public void Remove3D(Guid id) => renderer3D.RemoveObject(id);
+        /// <summary>
+        ///  Gets scene custom 3d object reference by its id. PoSsible null reference!
+        /// </summary>
+        public CustomObject3D Get3D(Guid id) => renderer3D.GetObject(id);
+
+        /// <summary>
+        ///  Gets scene custom 3d object reference by its tag. PoSsible null reference! Use with uniquue objects like world.
+        /// </summary>
+        public CustomObject3D Get3D(CustomObject3DTags tag) => renderer3D.GetObject(tag);
+
+
+        public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction) => texturePool.GetTextureCoordinatesFromDirection(direction);
+
+        public double GetDistanceAtPixel(int x, int y) => texturePool.GetDistanceAtPixel(x, y);
+
+        #endregion
+
+
+        public void Render() => renderer3D.Render();
+
     }
 }

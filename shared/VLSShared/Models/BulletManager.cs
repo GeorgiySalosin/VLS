@@ -1,28 +1,68 @@
-﻿namespace VLSShared.Models
+﻿using System.Numerics;
+
+namespace VLSShared.Models
 {
     public static class BulletManager
     {
-        public static event Action<int, int, double, double>? BulletLanded; // (x, y, distance, flightTime)
-        private static List<Bullet> Bullets { get; } = new List<Bullet>();
+        private static Bullet? LastBullet; // последняя добавленная пуля
+        public static event Action<string>? LastBulletInfoChanged;
+        public static string LastBulletInfo => LastBullet?.ToString() ?? "No active bullets";
 
-        public static void UpdateBullets(int tickHz = 100)
+        public static event Action<int, int, double, double>? BulletLanded; // (x, y, distance, flightTime)
+
+
+        public static event Action<Guid>? BulletRemoved;                // notifies viewmodel that it should unload related 3d model
+        public static event Action<Guid, Vector3>? BulletUpdated;       // notifies viewmodel that it should transform related 3d model with new direction
+        public static event Action<Guid, Vector3>? BulletCreated;       // notifies viewmodel that it should create a new 3d object assigned to bullet
+
+        private static List<Bullet> Bullets { get; } = [];
+        private static readonly object _lock = new();
+
+        public static void UpdateBullets(float dt)
         {
-            double dt = 1.0 / tickHz;
-            for (int i = 0; i < Bullets.Count; i++)
+            lock (_lock)
             {
-                Bullet bullet = Bullets[i];
-                if (bullet != null) // maybe useless
+                for (int i = Bullets.Count - 1; i >= 0; i--)
                 {
+                    Bullet bullet = Bullets[i];
+
                     if (bullet.IsLanded)
                     {
-                        BulletLanded?.Invoke(bullet.X, bullet.Y, bullet.Distance, bullet.FlightTime);
-                        Bullets.Remove(bullet);
+                        BulletRemoved?.Invoke(bullet.Id);
+                        Bullets.RemoveAt(i);
+                        continue;
                     }
-                    else bullet.Process(dt);
+
+                    bullet.Update(dt);
+
+                    // Проверка попадания во врагов
+                    PlayerManager.CheckBulletCollision(bullet);
+
+                    if (bullet.IsLanded)
+                    {
+                        // Пуля попала в землю или врага — удаляем
+                        BulletRemoved?.Invoke(bullet.Id);
+                        Bullets.RemoveAt(i);
+                    }
+                    else
+                    {
+                        BulletUpdated?.Invoke(bullet.Id, bullet.Direction);
+                    }
+
+                    if (bullet == LastBullet) LastBulletInfoChanged?.Invoke(LastBulletInfo);
                 }
             }
         }
 
-        public static void AddBullet(Bullet bullet) => Bullets.Add(bullet); 
+        public static void AddBullet(Bullet bullet)
+        {
+            lock (_lock)
+            {
+                Bullets.Add(bullet);
+                LastBullet = bullet;
+                LastBulletInfoChanged?.Invoke(LastBulletInfo);
+                BulletCreated?.Invoke(bullet.Id, bullet.Direction);
+            }
+        }
     }
 }

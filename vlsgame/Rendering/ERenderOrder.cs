@@ -2,7 +2,8 @@
 {
     public enum RenderOrder
     {
-        Background = 0,      
-        HUD = 1         
+        Background = 0,
+        Projectile = 1,
+        HUD = 100         
     }
 }
