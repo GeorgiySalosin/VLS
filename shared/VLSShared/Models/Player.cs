@@ -8,7 +8,7 @@ namespace VLSShared.Models
 {
 
 
-    public class Enemy
+    public class Player
     {
         public Guid Id { get; }
         public Vector3 Direction { get; init; }   // The direction determines where the enemy is spawned. Static.
@@ -19,7 +19,7 @@ namespace VLSShared.Models
         public double Scale { get; init; } = 0.01;
         public Func<float, float, HitZone>? HitZoneChecker { get; set; }
 
-        public Enemy(Vector3 direction, double distance)
+        public Player(Vector3 direction, double distance)
         {
             Id = Guid.NewGuid();
             Direction = Vector3.Normalize(direction);

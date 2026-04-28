@@ -36,7 +36,7 @@ namespace VLSShared.Models
                     bullet.Update(dt);
 
                     // Проверка попадания во врагов
-                    EnemyManager.CheckBulletCollision(bullet);
+                    PlayerManager.CheckBulletCollision(bullet);
 
                     if (bullet.IsLanded)
                     {
