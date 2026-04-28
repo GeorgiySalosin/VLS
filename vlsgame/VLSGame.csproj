@@ -17,6 +17,9 @@
     <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common02.png" />
     <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png" />
     <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png" />
+    <None Remove="Content\Animation\Rifle\Test_Debug_Scope.png" />
+    <None Remove="Content\Enemy\Test_Enemy.png" />
+    <None Remove="Content\Enemy\Test_Enemy_Coll.png" />
     <None Remove="Content\Maps\Test_D.png" />
     <None Remove="Content\Maps\Test_W.png" />
     <None Remove="Content\ui\T_CrossAIM.png" />
@@ -36,6 +39,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\Test_Debug_Scope.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Enemy\Test_Enemy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Enemy\Test_Enemy_Coll.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\T_CrossAIM.png">

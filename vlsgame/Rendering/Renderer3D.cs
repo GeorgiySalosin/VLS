@@ -56,7 +56,13 @@ namespace VLSGame.Rendering
         {
             return loadedObjects3D.FirstOrDefault(x => x.Id == id);
         }
-
+        /// <summary>
+        /// Gets a 3d object with specified tag from the scene 3d dictionary
+        /// </summary>
+        public CustomObject3D GetObject(CustomObject3DTags tag)
+        {
+            return loadedObjects3D.FirstOrDefault(x => x.Tag == tag);
+        }
 
         /// <summary>
         /// Removes a 3d object from the scene collection by corresponding guid

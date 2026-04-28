@@ -23,17 +23,19 @@ namespace VLSGame.Rendering.Content2D.HUD
             if (e.PropertyName == nameof(CameraProperties.FieldOfView))
             {
                 var crosshair = GetTexture("Crosshair");
-                if (crosshair == null) return;
+                var scope = GetTexture("Scope");
 
                 var currentFov = viewModel?.CameraProperties.FieldOfView ?? Configuration.Instance.GameSettings.MaxFOV;
 
                 if (currentFov < Configuration.Instance.GameSettings.MaxFOV)
                 {
                     crosshair.Hide();
+                    scope.Show();
                 }
                 else
                 {
                     crosshair.Show();
+                    scope.Hide();
                 }
             }
         }

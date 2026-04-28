@@ -13,7 +13,7 @@ namespace VLSGame.Rendering.Content3D
         public readonly ModelVisual3D model;
         private readonly DiffuseMaterial? material;
         public Guid Id { get; }
-        public string Tag { get; set; }
+        public CustomObject3DTags Tag { get; set; }
 
         private bool isVisible = true;
         public bool IsVisible
@@ -33,7 +33,7 @@ namespace VLSGame.Rendering.Content3D
         /// <summary>
         /// An Object that contains  ModelVisual3D (GeometryModel3D With its Material)   and some functionality over it   
         /// </summary>
-        public CustomObject3D(ModelVisual3D model, double fixedDistance = 0, Guid id = default, string tag = "default")
+        public CustomObject3D(ModelVisual3D model, double fixedDistance = 0, Guid id = default, CustomObject3DTags tag = 0)
         {
             this.model = model;
             this.fixedDistance = fixedDistance;
