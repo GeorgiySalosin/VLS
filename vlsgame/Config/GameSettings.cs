@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Serialization;
+using VLSGame.Services;
+using VLSShared.Interfaces;
 
 namespace VLSGame.Config
 {
@@ -39,6 +41,35 @@ namespace VLSGame.Config
 
         [JsonPropertyName("max_sniping_distance_thresold")]
         public double MaxSnipingDistanceThresold { get; set; } = 48f;     // the distance we subtract from MaxSniping distance due to depth map incorrect behavior
-                                                            // (for example, the sky pixel might be not 100% white -> w/out thresold the distance could unexpectedly become ~ 19xx meters)
+                                                                          // (for example, the sky pixel might be not 100% white -> w/out thresold the distance could unexpectedly become ~ 19xx meters)
+
+        // If desired, you can put it in a separate JSON.
+        #region Lobby settings
+        [JsonPropertyName("selected_map_ids")]
+        public List<int> SelectedMapIds { get; set; } = new List<int> { 1, 2, 3 }; // Stores saved maps in Lobby
+
+        [JsonPropertyName("selected_gamemode_type")]
+        public string SelectedGameModeType { get; set; } = "Singleplayer"; // Stores selected gamemode in Lobby
+
+        // We cannot store the IGameMode interface in JSON, so we
+        // will store a string and convert it to the interface using the property
+        [JsonIgnore]
+        public IGameMode SelectedGameMode
+        {
+            get
+            {
+                return SelectedGameModeType switch
+                {
+                    "Singleplayer" => new SinglePlayerGameMode(),
+                    "Multiplayer" => new MultiPlayerGameMode(),
+                    _ => new SinglePlayerGameMode()
+                };
+            }
+            set
+            {
+                SelectedGameModeType = value is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
+            }
+        }
+        #endregion
     }
 }
