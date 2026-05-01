@@ -1,5 +1,6 @@
 ﻿// EnemyManager.cs
 using System.Numerics;
+using VLSGame.Rendering;
 using VLSShared.Enums;
 
 namespace VLSShared.Models
@@ -81,6 +82,7 @@ namespace VLSShared.Models
                     if (player.Hp <= 0)
                     {
                         players.RemoveAt(i);
+                        RenderManager.Instance.Remove3D(player.Id);
                     }
                     //break; why?                          
                 }
