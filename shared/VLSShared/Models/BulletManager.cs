@@ -4,7 +4,7 @@ namespace VLSShared.Models
 {
     public static class BulletManager
     {
-        private static Bullet? LastBullet; // последняя добавленная пуля
+        private static Bullet? LastBullet; // The last bullet added
         public static event Action<string>? LastBulletInfoChanged;
         public static string LastBulletInfo => LastBullet?.ToString() ?? "No active bullets";
 
@@ -35,12 +35,12 @@ namespace VLSShared.Models
 
                     bullet.Update(dt);
 
-                    // Проверка попадания во врагов
+                    // Checking for hitting enemies
                     PlayerManager.CheckBulletCollision(bullet);
 
-                    if (bullet.IsLanded)
+                    if (bullet.IsLanded) // todo: leave only one check
                     {
-                        // Пуля попала в землю или врага — удаляем
+                        // The bullet hit the ground or the enemy — remove it
                         BulletRemoved?.Invoke(bullet.Id);
                         Bullets.RemoveAt(i);
                     }
