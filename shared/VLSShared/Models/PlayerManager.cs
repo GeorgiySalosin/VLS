@@ -84,7 +84,7 @@ namespace VLSShared.Models
                         players.RemoveAt(i);
                         RenderManager.Instance.Remove3D(player.Id);
                     }
-                    //break; why?                          
+                    break;                       
                 }
             }
         }
