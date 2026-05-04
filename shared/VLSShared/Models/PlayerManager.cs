@@ -24,17 +24,15 @@ namespace VLSShared.Models
             }
         }
 
-        public static void CheckBulletCollision(Bullet bullet) // todo: remove bullet manipulation (bullet.IsLanded = true;)
+        public static bool CheckBulletCollision(Bullet bullet)
         {
-            if (bullet.IsLanded) return;
-
             lock (_lock)
             {
                 for (int i = players.Count - 1; i >= 0; i--) // It is better to do a reverse parting by index, as we are removing elements from the array
                 {
                     Player player = players[i];
-                    Vector3 bulletDir = bullet.Direction;  
-                    Vector3 enemyDir = player.Direction;     
+                    Vector3 bulletDir = bullet.Direction;
+                    Vector3 enemyDir = player.Direction;
 
                     
                     // Bullet has reached the enemy if the enemy distance is between bullet per-tick distances
@@ -74,18 +72,17 @@ namespace VLSShared.Models
 
                     Vector3 hitPoint = O + right * localX + realUp * localY;
 
-                    bullet.IsLanded = true;
-
                     // Taking damage and dying
                     player.ApplyDamage(zone);
                     OnPlayerHit?.Invoke(player.Id, bulletDir, hitPoint, zone, u, v, player.Hp);
                     if (player.Hp <= 0)
                     {
                         players.RemoveAt(i);
-                        RenderManager.Instance.Remove3D(player.Id);
+                        RenderManager.Instance.Remove3D(player.Id); // todo: realize using event
                     }
-                    break;                       
+                    return true;                     
                 }
+                return false;
             }
         }
     }

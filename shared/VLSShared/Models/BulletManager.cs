@@ -26,19 +26,15 @@ namespace VLSShared.Models
                 {
                     Bullet bullet = Bullets[i];
 
-                    if (bullet.IsLanded)
-                    {
-                        BulletRemoved?.Invoke(bullet.Id);
-                        Bullets.RemoveAt(i);
-                        continue;
-                    }
-
                     bullet.Update(dt);
 
                     // Checking for hitting enemies
-                    PlayerManager.CheckBulletCollision(bullet);
-
-                    if (bullet.IsLanded) // todo: leave only one check
+                    if (PlayerManager.CheckBulletCollision(bullet) || bullet.IsLanded) // First, we check the collision with the player,
+                                                                                       // then with the panorama. In the future, there may be a bug:
+                                                                                       // if the panorama is closer to the camera than the player,
+                                                                                       // the bullet may pass through both the player and the panorama in the same dt.
+                                                                                       // The hit on the player will be counted, even though the bullet is
+                                                                                       // expected to collide with the panorama
                     {
                         // The bullet hit the ground or the enemy — remove it
                         BulletRemoved?.Invoke(bullet.Id);
