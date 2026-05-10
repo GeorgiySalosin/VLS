@@ -73,6 +73,9 @@ namespace VLSGame.Rendering
             var obj = loadedObjects3D.FirstOrDefault(x => x.Id == id);
             if (obj != null)
             {
+
+                foreach (CustomObject3D child in obj.Children) RemoveObject(child.Id);      // recursively delete all the parented objects if any
+
                 loadedObjects3D.Remove(obj);
                 viewport.Children.Remove(obj.model);
             }

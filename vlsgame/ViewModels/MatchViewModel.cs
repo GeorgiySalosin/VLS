@@ -74,11 +74,12 @@ namespace VLSGame.ViewModels
 
 
             BulletManager.LastBulletInfoChanged += info => LastBullet = info;
+
             BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
-            BulletManager.BulletUpdated += (id, direction) => renderManager.UpdateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
+            BulletManager.BulletUpdated += (id, pos) => renderManager.UpdateBulletObject3D(id, pos);
             BulletManager.BulletRemoved += (id) => renderManager.Remove3D(id);
 
-            PlayerManager.OnPlayerSpawned += (id, direction, distance, renderDistance, scale) => renderManager.CreatePlayerObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z), distance, renderDistance, scale);
+            PlayerManager.OnPlayerSpawned += (id, direction) => renderManager.CreatePlayerObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
 
             PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v) =>
             {
@@ -88,8 +89,8 @@ namespace VLSGame.ViewModels
                     $"HitPoint = ({hitPoint.X:F4}, {hitPoint.Y:F4}, {hitPoint.Z:F4})");
             };
 
-            BulletManager.BulletLanded += (x, y, distance, flightTime) =>
-                LastBullet = $"Hit at ({x}, {y}), distance {distance:F1} m, time {flightTime:F2} s";
+            BulletManager.BulletLanded += (distance, flightTime) =>
+                LastBullet = $"Hit: distance {distance:F1} m, time {flightTime:F2} s";
 
             // It's necessary for updating FormattedLookDirection
             CameraProperties.PropertyChanged += (s, e) =>

@@ -14,7 +14,7 @@ namespace VLSShared.Models
         private static readonly object _lock = new();
 
 
-        public static event Action<Guid, Vector3, double, double, double>? OnPlayerSpawned;
+        public static event Action<Guid, Vector3>? OnPlayerSpawned;
         public static event Action<Guid, Vector3, Vector3, HitZone, float, float>? OnPlayerHit;
         public static event Action<Guid, Vector3>? OnPlayerDead;
 
@@ -28,7 +28,7 @@ namespace VLSShared.Models
             {
                 players.Add(player);
 
-                OnPlayerSpawned?.Invoke(player.Id, player.Direction, player.Distance, player.ViewportDistance, player.Scale);
+                OnPlayerSpawned?.Invoke(player.Id, player.Direction);
             }
         }
 

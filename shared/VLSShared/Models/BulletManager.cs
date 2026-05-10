@@ -8,15 +8,18 @@ namespace VLSShared.Models
         public static event Action<string>? LastBulletInfoChanged;
         public static string LastBulletInfo => LastBullet?.ToString() ?? "No active bullets";
 
-        public static event Action<int, int, double, double>? BulletLanded; // (x, y, distance, flightTime)
+        public static event Action<double, double>? BulletLanded; // (x, y, distance, flightTime)
 
 
         public static event Action<Guid>? BulletRemoved;                // notifies viewmodel that it should unload related 3d model
-        public static event Action<Guid, Vector3>? BulletUpdated;       // notifies viewmodel that it should transform related 3d model with new direction
+        public static event Action<Guid, Vector3>? BulletUpdated; // id, position
         public static event Action<Guid, Vector3>? BulletCreated;       // notifies viewmodel that it should create a new 3d object assigned to bullet
+
 
         private static List<Bullet> Bullets { get; } = [];
         private static readonly object _lock = new();
+
+
 
         public static void UpdateBullets(float dt)
         {
@@ -34,19 +37,16 @@ namespace VLSShared.Models
                     }
 
                     bullet.Update(dt);
-
-                    // Проверка попадания во врагов
                     PlayerManager.CheckBulletCollision(bullet);
 
                     if (bullet.IsLanded)
                     {
-                        // Пуля попала в землю или врага — удаляем
                         BulletRemoved?.Invoke(bullet.Id);
                         Bullets.RemoveAt(i);
                     }
                     else
                     {
-                        BulletUpdated?.Invoke(bullet.Id, bullet.Direction);
+                        BulletUpdated?.Invoke(bullet.Id, bullet.Position);
                     }
 
                     if (bullet == LastBullet) LastBulletInfoChanged?.Invoke(LastBulletInfo);

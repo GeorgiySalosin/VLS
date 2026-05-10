@@ -39,6 +39,10 @@ namespace VLSGame.Models
 
         private readonly Mat Test_Enemy_Coll = LoadCV(@"Content\Enemy\Test_Enemy_Coll.png");
 
+        private readonly ImageBrush T_Hit_Cloud01 = LoadTexture(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png");
+
+        public ImageBrush GetBloodFXTexture() => T_Hit_Cloud01;
+
         public HitZone GetHitZoneFromUV(float u, float v)
         {
             if (Test_Enemy_Coll == null)
@@ -55,9 +59,10 @@ namespace VLSGame.Models
 
             Vec3b color = Test_Enemy_Coll.At<Vec3b>(pixelY, pixelX);
             // OpenCV: Vec3b -> Item0 = Blue, Item1 = Green, Item2 = Red
-            if (color.Item2 > 128) return HitZone.Head;   // Красный канал
-            if (color.Item1 > 128) return HitZone.Body;   // Зеленый канал
-            if (color.Item0 > 128) return HitZone.Limb;  // Синий канал
+
+            if (color.Item2 > 128) return HitZone.Head;   // RED channel
+            if (color.Item1 > 128) return HitZone.Body;   // GREEN channel
+            if (color.Item0 > 128) return HitZone.Limb;  // BLUE channel
 
             return HitZone.None;
         }
@@ -107,6 +112,9 @@ namespace VLSGame.Models
         }
 
 
+        /// <summary>
+        /// Takes a direction vector and converts it to pixel coordinates of a sphere mesh clamped by a depthmap resolution (used for getting a specified pixel of depth map)
+        /// </summary>
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction)
         {
             direction.Normalize();
