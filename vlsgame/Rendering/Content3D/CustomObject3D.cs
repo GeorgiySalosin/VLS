@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Numerics;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Rendering.Content3D
 {
-    public sealed class CustomObject3D : ViewModelBase
+    public sealed class CustomObject3D : ViewModelBase // todo: remove inheritance
     {
         public readonly ModelVisual3D model;
         private readonly DiffuseMaterial? material;

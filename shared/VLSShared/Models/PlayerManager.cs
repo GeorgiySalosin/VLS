@@ -1,9 +1,6 @@
 ﻿// EnemyManager.cs
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
+using VLSGame.Rendering;
 using VLSShared.Enums;
 
 namespace VLSShared.Models
@@ -13,14 +10,9 @@ namespace VLSShared.Models
         private static readonly List<Player> players = [];
         private static readonly object _lock = new();
 
-
         public static event Action<Guid, Vector3, double, double, double>? OnPlayerSpawned;
-        public static event Action<Guid, Vector3, Vector3, HitZone, float, float>? OnPlayerHit;
+        public static event Action<Guid, Vector3, Vector3, HitZone, float, float, int>? OnPlayerHit;
         public static event Action<Guid, Vector3>? OnPlayerDead;
-
-
-
-
 
         public static void AddPlayer(Player player)
         {
@@ -32,16 +24,15 @@ namespace VLSShared.Models
             }
         }
 
-        public static void CheckBulletCollision(Bullet bullet)
+        public static bool CheckBulletCollision(Bullet bullet)
         {
-            if (bullet.IsLanded) return;
-
             lock (_lock)
             {
-                foreach (var player in players)
+                for (int i = players.Count - 1; i >= 0; i--) // It is better to do a reverse parting by index, as we are removing elements from the array
                 {
-                    Vector3 bulletDir = bullet.Direction;  
-                    Vector3 enemyDir = player.Direction;     
+                    Player player = players[i];
+                    Vector3 bulletDir = bullet.Direction;
+                    Vector3 enemyDir = player.Direction;
 
                     
                     // Bullet has reached the enemy if the enemy distance is between bullet per-tick distances
@@ -81,10 +72,17 @@ namespace VLSShared.Models
 
                     Vector3 hitPoint = O + right * localX + realUp * localY;
 
-                    bullet.IsLanded = true;
-                    OnPlayerHit?.Invoke(player.Id, bulletDir, hitPoint, zone, u, v);
-                    break;                                  
+                    // Taking damage and dying
+                    player.ApplyDamage(zone);
+                    OnPlayerHit?.Invoke(player.Id, bulletDir, hitPoint, zone, u, v, player.Hp);
+                    if (player.Hp <= 0)
+                    {
+                        players.RemoveAt(i);
+                        RenderManager.Instance.Remove3D(player.Id); // todo: realize using event
+                    }
+                    return true;                     
                 }
+                return false;
             }
         }
     }

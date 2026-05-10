@@ -80,12 +80,13 @@ namespace VLSGame.ViewModels
 
             PlayerManager.OnPlayerSpawned += (id, direction, distance, renderDistance, scale) => renderManager.CreatePlayerObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z), distance, renderDistance, scale);
 
-            PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v) =>
+            PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v, hp) =>
             {
                 System.Diagnostics.Debug.WriteLine(
                     $"HIT: Enemy {enemyId.ToString("N")[..8]}, Zone = {zone}, " +
                     $"UV = ({u:F3}, {v:F3}), " +
-                    $"HitPoint = ({hitPoint.X:F4}, {hitPoint.Y:F4}, {hitPoint.Z:F4})");
+                    $"HitPoint = ({hitPoint.X:F4}, {hitPoint.Y:F4}, {hitPoint.Z:F4})" + 
+                    $"Remaining HP = {hp}");
             };
 
             BulletManager.BulletLanded += (x, y, distance, flightTime) =>

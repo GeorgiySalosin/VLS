@@ -4,7 +4,7 @@ namespace VLSShared.Models
 {
     public static class BulletManager
     {
-        private static Bullet? LastBullet; // последняя добавленная пуля
+        private static Bullet? LastBullet; // The last bullet added
         public static event Action<string>? LastBulletInfoChanged;
         public static string LastBulletInfo => LastBullet?.ToString() ?? "No active bullets";
 
@@ -26,21 +26,17 @@ namespace VLSShared.Models
                 {
                     Bullet bullet = Bullets[i];
 
-                    if (bullet.IsLanded)
-                    {
-                        BulletRemoved?.Invoke(bullet.Id);
-                        Bullets.RemoveAt(i);
-                        continue;
-                    }
-
                     bullet.Update(dt);
 
-                    // Проверка попадания во врагов
-                    PlayerManager.CheckBulletCollision(bullet);
-
-                    if (bullet.IsLanded)
+                    // Checking for hitting enemies
+                    if (PlayerManager.CheckBulletCollision(bullet) || bullet.IsLanded) // First, we check the collision with the player,
+                                                                                       // then with the panorama. In the future, there may be a bug:
+                                                                                       // if the panorama is closer to the camera than the player,
+                                                                                       // the bullet may pass through both the player and the panorama in the same dt.
+                                                                                       // The hit on the player will be counted, even though the bullet is
+                                                                                       // expected to collide with the panorama
                     {
-                        // Пуля попала в землю или врага — удаляем
+                        // The bullet hit the ground or the enemy — remove it
                         BulletRemoved?.Invoke(bullet.Id);
                         Bullets.RemoveAt(i);
                     }
