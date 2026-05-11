@@ -14,11 +14,15 @@ namespace VLSGame.Models
 
         private static readonly Random rnd = new ();
 
+        private readonly ImageBrush Empty = new();
+        public ImageBrush GetEmptyTexture() => Empty;
+
         #region Bullet 
         private readonly ImageBrush T_Tracer_Common01 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common01.png");
         private readonly ImageBrush T_Tracer_Common02 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common02.png");
         private readonly ImageBrush T_Tracer_Common03 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png");
         private readonly ImageBrush T_Tracer_Common04 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png");
+
 
 
         public ImageBrush GetBulletTexture()
@@ -33,15 +37,47 @@ namespace VLSGame.Models
         } 
         #endregion
 
-        private readonly ImageBrush Test_Enemy = LoadTexture(@"Content\Enemy\Test_Enemy.png");
+        private readonly ImageBrush Test_Enemy = LoadTextureTransparent(@"Content\Enemy\Test_Enemy.png");
 
         public ImageBrush GetEnemyTexture() => Test_Enemy;
 
         private readonly Mat Test_Enemy_Coll = LoadCV(@"Content\Enemy\Test_Enemy_Coll.png");
 
-        private readonly ImageBrush T_Hit_Cloud01 = LoadTexture(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png");
 
-        public ImageBrush GetBloodFXTexture() => T_Hit_Cloud01;
+
+        private readonly List<ImageBrush> Animation_Blood = 
+        [
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud03.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud04.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud05.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud06.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud07.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud08.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud09.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud10.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud11.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud12.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud13.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud14.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud15.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud16.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud17.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud18.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png"),
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png")
+        ];
+
+        public ImageBrush? GetBloodFXTexture(ref int frame)
+        {
+            if (frame >= Animation_Blood.Count)
+            {
+                frame = -1;
+                return Empty;
+            }
+            return Animation_Blood[frame];
+        }
 
         public HitZone GetHitZoneFromUV(float u, float v)
         {
@@ -152,6 +188,25 @@ namespace VLSGame.Models
                 ViewportUnits = BrushMappingMode.Absolute,
                 TileMode = TileMode.None,
                 Stretch = Stretch.Fill
+            };
+            return brush;
+        }
+
+        private static ImageBrush LoadTextureTransparent(string path, double opacity = 0.5)
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path, UriKind.Relative);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();        // remove if changing transparency dynamically
+
+            var brush = new ImageBrush(bitmap)
+            {
+                ViewportUnits = BrushMappingMode.Absolute,
+                TileMode = TileMode.None,
+                Stretch = Stretch.Fill,
+                Opacity = opacity   // дополнительное ослабление прозрачности
             };
             return brush;
         }

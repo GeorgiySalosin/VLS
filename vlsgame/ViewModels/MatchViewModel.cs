@@ -75,18 +75,20 @@ namespace VLSGame.ViewModels
 
             BulletManager.LastBulletInfoChanged += info => LastBullet = info;
 
-            BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
+            BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id);
             BulletManager.BulletUpdated += (id, pos) => renderManager.UpdateBulletObject3D(id, pos);
             BulletManager.BulletRemoved += (id) => renderManager.Remove3D(id);
 
-            PlayerManager.OnPlayerSpawned += (id, direction) => renderManager.CreatePlayerObject3D(id, new Vector3D(direction.X, direction.Y, direction.Z));
-
-            PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v) =>
+            PlayerManager.OnPlayerSpawned += (id, direction) =>
             {
-                System.Diagnostics.Debug.WriteLine(
-                    $"HIT: Enemy {enemyId.ToString("N")[..8]}, Zone = {zone}, " +
-                    $"UV = ({u:F3}, {v:F3}), " +
-                    $"HitPoint = ({hitPoint.X:F4}, {hitPoint.Y:F4}, {hitPoint.Z:F4})");
+                var (distance, scale) = renderManager.CreatePlayerObject3D(id, V3(direction));         // get actual 3d model parameters and write it to math model of a player
+                PlayerManager.SetPlayerDistance(id, distance);
+                PlayerManager.SetPlayerScale(id, scale);
+            };
+
+            PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v, hp) =>
+            {
+                renderManager.StartBloodFXAnimation(enemyId, V3(bulletDir));
             };
 
             BulletManager.BulletLanded += (distance, flightTime) =>
@@ -111,12 +113,10 @@ namespace VLSGame.ViewModels
             StartGameLoop();
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
-            Vector3 cameraLook = new((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
+            Vector3 cameraLook = V3(cameraLook3D);
 
-            Player player = new(new Vector3(-.98f, -.09f, .18f), 1000)
+            Player player = new(new Vector3(-.3f, -.16f, .94f))
             {
-                Scale = .001,
-                ViewportDistance = 1.0,
                 HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
             };
             PlayerManager.AddPlayer(player);
@@ -164,13 +164,13 @@ namespace VLSGame.ViewModels
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
 
-            Vector3 cameraLook = new((float)cameraLook3D.X, (float)cameraLook3D.Y, (float)cameraLook3D.Z);
+            Vector3 cameraLook = V3(cameraLook3D);
 
 
             (int X, int Y) getPixelFromDirection(Vector3 dir)       // Didnt know that we can declare local functions like this
             {
                 // Vector3 → Vector3D
-                var dir3D = new Vector3D(dir.X, dir.Y, dir.Z);
+                var dir3D = V3(dir);
 
                 return renderManager.GetTextureCoordinatesFromDirection(dir3D);
             }
@@ -217,6 +217,16 @@ namespace VLSGame.ViewModels
                 PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
             }
         }
+
+
+        /// <summary>
+        /// UTILITIES for converting between System.Numerics.Vector3 and System.Windows.Media.Media3D.Vector3D
+        /// </summary>
+        private Vector3D V3(Vector3 vec) => new (vec.X, vec.Y, vec.Z);
+        /// <summary>
+        /// UTILITIES for converting between System.Numerics.Vector3 and System.Windows.Media.Media3D.Vector3D
+        /// </summary>
+        private Vector3 V3(Vector3D vec) => new((float)vec.X, (float)vec.Y, (float)vec.Z);
 
     }
 }

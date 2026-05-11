@@ -1,13 +1,11 @@
 ﻿using System.Numerics;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
-using VLSShared.Enums;
 using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
@@ -44,6 +42,7 @@ namespace VLSGame.Rendering
             isInitialized = true;
         }
         #endregion
+
 
 
         #region 2D 
@@ -99,7 +98,7 @@ namespace VLSGame.Rendering
         ///  Creates a new custom 3d of bullet and adds it to viewport
         /// </summary>
         // Изменить метод CreateBulletObject3D
-        public void CreateBulletObject3D(Guid bulletId, Vector3D initialDirection)
+        public void CreateBulletObject3D(Guid bulletId)
         {
             var mesh = PlaneMesh(1, 1); // базовый размер
             var texture = texturePool.GetBulletTexture();
@@ -140,11 +139,12 @@ namespace VLSGame.Rendering
 
         #region Enemy
         /// <summary>
-        ///  Creates a new custom 3d of ENEMY PLAYER and adds it to viewport
+        ///  Creates a new custom 3d of ENEMY PLAYER and adds it to viewport. Returns a distance on which enemy was placed.
         /// </summary>
-        public void CreatePlayerObject3D(Guid playerId, Vector3D initialDirection)
+        public (double, double) CreatePlayerObject3D(Guid playerId, Vector3D initialDirection)
         {
-            var mesh = PlaneMesh(3.5, 3.5);
+            double scale = 3.5;                     // Assuming we have a man with standart height 1m 75cm, but we have to multiply by 2 cause texture uses only a half-space of the height.
+            var mesh = PlaneMesh(scale, scale);     
 
             var texture = texturePool.GetEnemyTexture();
             var material = TextureMaterial(texture);
@@ -164,6 +164,7 @@ namespace VLSGame.Rendering
             Add3D(player);
             player.Children.Add(CreatePlayerFX(worldPosition));         // parenting FX plane to the Enemy model, thus we can have an access to it.
 
+            return (distance, scale);
         }
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace VLSGame.Rendering
         {
             var mesh = PlaneMesh(7.0, 7.0);
 
-            var texture = texturePool.GetBloodFXTexture();
+            var texture = texturePool.GetEmptyTexture();
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
             var bloodFXVisual = new ModelVisual3D { Content = geometryModel };
@@ -183,7 +184,7 @@ namespace VLSGame.Rendering
                                            tag: CustomObject3DTags.Enemy);
 
 
-            bloodFX.SetWorldPosition(worldPosition * 0.999);                           // place an effect a bit closer than the character is to avoid mesh overlapping
+            bloodFX.SetWorldPosition(worldPosition * 0.95);                           // place an effect a bit closer than the character is to avoid mesh overlapping
             Add3D(bloodFX);
             return bloodFX;
         }
@@ -216,6 +217,19 @@ namespace VLSGame.Rendering
 
         #endregion
 
+
+        public void StartBloodFXAnimation(Guid playerId, Vector3D bulletDirection)
+        {
+            foreach (CustomObject3D obj in Get3D(playerId).Children)        // TEMPORARY SOLUTION, CONSIDERING ALL CHILDREN OF ENEMY ARE PLANES FOR BLOOD ANIMATION
+            {
+                obj.Animation.IsPlaying = true;
+            }
+        }
+
+
+
+
+
         /// <summary>
         ///  Adds a new custom 3d object to the scene
         /// </summary>
@@ -242,7 +256,10 @@ namespace VLSGame.Rendering
         #endregion
 
 
-        public void Render() => renderer3D.Render();
+        public void Render()
+        {
+            renderer3D.Render();
+        }
 
     }
 }

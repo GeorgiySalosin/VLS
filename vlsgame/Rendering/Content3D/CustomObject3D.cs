@@ -12,6 +12,8 @@ public sealed class CustomObject3D : ViewModelBase
 
     public CustomObject3DTags Tag { get; set; }
 
+    public Animation Animation { get; init; } = new();
+
     private bool isVisible = true;
     public bool IsVisible
     {
