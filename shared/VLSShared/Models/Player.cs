@@ -4,34 +4,21 @@ using VLSShared.Enums;
 
 namespace VLSShared.Models
 {
-    public class Player
+    public class Player(Vector3 direction)
     {
-        public Guid Id { get; }
+        public Guid Id { get; } = Guid.NewGuid();
 
         internal int Hp { get; private set; } = 100;
-        private static readonly Dictionary<HitZone, int> BaseDamage = new()
-        {
-            [HitZone.Head] = 100,
-            [HitZone.Body] = 50,
-            [HitZone.Limb] = 25,
-            [HitZone.None] = 0
-        };
 
-        public Vector3 Direction { get; init; }   // The direction determines where the enemy is spawned. Static.
-        public double Distance { get; set; }      // The distance determines how far enemy is supposed to be located (will be used to re-scale the character). Enemy distance is static.
-
-        //public double ViewportDistance { get; init; } // the distance from coordinates center to the 3d object (plane) center
+        public Vector3 Direction { get; init; } = Vector3.Normalize(direction);
+        public double Distance { get; set; } 
 
         public double Scale { get; set; }
-        public Func<float, float, HitZone>? HitZoneChecker { get; set; }
+        public Func<float, float, HitZoneInfo>? HitZoneChecker { get; set; }
 
-        public Player(Vector3 direction)
+        internal void ApplyDamage(HitZoneInfo hitZone)
         {
-            Id = Guid.NewGuid();
-            Direction = Vector3.Normalize(direction);
+            Hp -= hitZone.BaseDamage;
         }
-
-        internal void ApplyDamage(HitZone hitZone) => 
-            Hp -= BaseDamage[hitZone];
     }
 }

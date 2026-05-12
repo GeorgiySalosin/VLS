@@ -12,6 +12,7 @@ namespace VLSGame.Rendering.Content3D
         World,
         AmbientLight,
         Enemy,
-        Projectile
+        Projectile,
+        FXAnimationSingle
     }
 }

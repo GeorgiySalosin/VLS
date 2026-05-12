@@ -162,7 +162,7 @@ namespace VLSGame.Rendering
 
             player.SetWorldPosition(worldPosition);    
             Add3D(player);
-            player.Children.Add(CreatePlayerFX(worldPosition));         // parenting FX plane to the Enemy model, thus we can have an access to it.
+            
 
             return (distance, scale);
         }
@@ -170,9 +170,9 @@ namespace VLSGame.Rendering
         /// <summary>
         ///  Creates a plane for blood effect on PlayerHit event
         /// </summary>
-        private CustomObject3D CreatePlayerFX(Vector3D worldPosition)
+        public void CreatePlayerFX(Vector3D worldPosition, double fxScale)
         {
-            var mesh = PlaneMesh(7.0, 7.0);
+            var mesh = PlaneMesh(fxScale);
 
             var texture = texturePool.GetEmptyTexture();
             var material = TextureMaterial(texture);
@@ -181,12 +181,12 @@ namespace VLSGame.Rendering
 
 
             var bloodFX = new CustomObject3D(bloodFXVisual,
-                                           tag: CustomObject3DTags.Enemy);
+                                           tag: CustomObject3DTags.FXAnimationSingle);
 
 
             bloodFX.SetWorldPosition(worldPosition * 0.95);                           // place an effect a bit closer than the character is to avoid mesh overlapping
+            bloodFX.Animation.IsPlaying = true;
             Add3D(bloodFX);
-            return bloodFX;
         }
 
         //public void PlayHitAnimation(Guid playerId, Vector3D worldPosition)
@@ -216,15 +216,6 @@ namespace VLSGame.Rendering
         #endregion
 
         #endregion
-
-
-        public void StartBloodFXAnimation(Guid playerId, Vector3D bulletDirection)
-        {
-            foreach (CustomObject3D obj in Get3D(playerId).Children)        // TEMPORARY SOLUTION, CONSIDERING ALL CHILDREN OF ENEMY ARE PLANES FOR BLOOD ANIMATION
-            {
-                obj.Animation.IsPlaying = true;
-            }
-        }
 
 
 

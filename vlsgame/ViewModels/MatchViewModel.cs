@@ -86,9 +86,9 @@ namespace VLSGame.ViewModels
                 PlayerManager.SetPlayerScale(id, scale);
             };
 
-            PlayerManager.OnPlayerHit += (enemyId, bulletDir, hitPoint, zone, u, v, hp) =>
+            PlayerManager.OnPlayerHit += (bulletLocation, hitZoneInfo) =>
             {
-                renderManager.StartBloodFXAnimation(enemyId, V3(bulletDir));
+                renderManager.CreatePlayerFX(V3(bulletLocation), hitZoneInfo.FXScale);
             };
 
             BulletManager.BulletLanded += (distance, flightTime) =>

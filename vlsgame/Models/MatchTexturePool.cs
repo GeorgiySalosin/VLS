@@ -4,6 +4,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.Config;
 using VLSShared.Enums;
+using VLSShared.Models;
 namespace VLSGame.Models
 {
     public sealed class MatchTexturePool
@@ -79,10 +80,10 @@ namespace VLSGame.Models
             return Animation_Blood[frame];
         }
 
-        public HitZone GetHitZoneFromUV(float u, float v)
+        public HitZoneInfo GetHitZoneFromUV(float u, float v)
         {
             if (Test_Enemy_Coll == null)
-                return HitZone.None;
+                return HitZoneInfo.None;
 
             int width = Test_Enemy_Coll.Width;
             int height = Test_Enemy_Coll.Height;
@@ -96,11 +97,11 @@ namespace VLSGame.Models
             Vec3b color = Test_Enemy_Coll.At<Vec3b>(pixelY, pixelX);
             // OpenCV: Vec3b -> Item0 = Blue, Item1 = Green, Item2 = Red
 
-            if (color.Item2 > 128) return HitZone.Head;   // RED channel
-            if (color.Item1 > 128) return HitZone.Body;   // GREEN channel
-            if (color.Item0 > 128) return HitZone.Limb;  // BLUE channel
+            if (color.Item2 > 128) return HitZoneInfo.Head;   // RED channel
+            if (color.Item1 > 128) return HitZoneInfo.Body;   // GREEN channel
+            if (color.Item0 > 128) return HitZoneInfo.Limb;  // BLUE channel
 
-            return HitZone.None;
+            return HitZoneInfo.None;
         }
 
         #region World

@@ -12,7 +12,10 @@ namespace VLSShared.Models
 
 
         public static event Action<Guid, Vector3>? OnPlayerSpawned;
-        public static event Action<Guid, Vector3, Vector3, HitZone, float, float, int>? OnPlayerHit;
+        /// <summary>
+        /// params: last bullet location (world), hitzone (to determine an amount of blood)
+        /// </summary>
+        public static event Action<Vector3, HitZoneInfo>? OnPlayerHit;      
         public static event Action<Guid, Vector3>? OnPlayerDead;
 
         public static void AddPlayer(Player player)
@@ -98,12 +101,17 @@ namespace VLSShared.Models
                     // Попадание!
                     float u = (float)((halfS - localX) / player.Scale);
                     float v = (float)((halfS - localY) / player.Scale);
-                    HitZone zone = player.HitZoneChecker?.Invoke(u, v) ?? HitZone.None;
-                    if (zone == HitZone.None) continue;
+                    HitZoneInfo zone = player.HitZoneChecker?.Invoke(u, v) ?? HitZoneInfo.None;
+                    if (zone == HitZoneInfo.None) continue;
 
                     Vector3 hitPointWorld = planePoint + right * localX + realUp * localY;
                     player.ApplyDamage(zone);
-                    OnPlayerHit?.Invoke(player.Id, bulletDir, hitPointWorld, zone, u, v, player.Hp);
+
+                    
+                    
+
+                    OnPlayerHit?.Invoke(bullet.Position, zone);
+
                     //if (player.Hp <= 0) players.RemoveAt(i);
                     return true;
                 }

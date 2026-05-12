@@ -74,8 +74,7 @@ namespace VLSGame.Rendering
             var obj = loadedObjects3D.FirstOrDefault(x => x.Id == id);
             if (obj != null)
             {
-
-                foreach (CustomObject3D child in obj.Children) RemoveObject(child.Id);      // recursively delete all the parented objects if any
+                //foreach (CustomObject3D child in obj.Children) RemoveObject(child.Id);      // recursively delete all the parented objects if any
 
                 loadedObjects3D.Remove(obj);
                 viewport.Children.Remove(obj.model);
@@ -131,15 +130,15 @@ namespace VLSGame.Rendering
                 }
 
 
-                if (item.Animation.IsPlaying && item.Tag == CustomObject3DTags.Enemy)
+                if (item.Animation.IsPlaying && item.Tag == CustomObject3DTags.FXAnimationSingle)
                 {
                     int currentFrame = item.Animation.CurrentFrame ?? 0;
 
-                    // Если достигнут конец анимации – останавливаем
-                    if (currentFrame >= 20) // 20 кадров в Animation_Blood
+                    
+                    if (currentFrame >= 20) 
                     {
-                        item.Animation.CurrentFrame = -1; // свойство сбросит IsPlaying и обнулит кадр
-                        item.SetTexture(texturePool.GetEmptyTexture());
+                        RemoveObject(item);
+                        break;
                     }
                     else
                     {

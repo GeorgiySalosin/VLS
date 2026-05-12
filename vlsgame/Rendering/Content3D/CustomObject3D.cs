@@ -12,6 +12,7 @@ public sealed class CustomObject3D : ViewModelBase
 
     public CustomObject3DTags Tag { get; set; }
 
+    // property for managing animations easily.
     public Animation Animation { get; init; } = new();
 
     private bool isVisible = true;
@@ -30,7 +31,6 @@ public sealed class CustomObject3D : ViewModelBase
     private TranslateTransform3D? translateTransform = null;
     private ScaleTransform3D? scaleTransform = null;
 
-    public List<CustomObject3D> Children { get; set; } = [];    // allows us to store related objects e.x. Enemy and its particle meshes for blood hit effect
 
     public CustomObject3D(ModelVisual3D model, Guid id = default, CustomObject3DTags tag = 0)
     {
