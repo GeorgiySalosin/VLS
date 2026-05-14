@@ -1,10 +1,12 @@
-﻿using System.Windows.Controls;
+﻿using System.Numerics;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
+using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
 
@@ -42,6 +44,7 @@ namespace VLSGame.Rendering
         #endregion
 
 
+
         #region 2D 
         private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
 
@@ -72,7 +75,7 @@ namespace VLSGame.Rendering
         public void CreateEnvironmentObject3D()
         {
             GeometryModel3D geometryModel = new(
-                SphereMesh(radius: 10),
+                SphereMesh(radius: 2048),
                 TextureMaterial(texturePool.GetEnvironmentTexture())
                 );
             ModelVisual3D sphereVisual = new() { Content = geometryModel };
@@ -94,51 +97,103 @@ namespace VLSGame.Rendering
         /// <summary>
         ///  Creates a new custom 3d of bullet and adds it to viewport
         /// </summary>
-        public void CreateBulletObject3D(Guid bulletId, Vector3D direction)
+        // Изменить метод CreateBulletObject3D
+        public void CreateBulletObject3D(Guid bulletId)
         {
-            var mesh = PlaneMesh(.001, .001);
-
+            var mesh = PlaneMesh(1, 1); // базовый размер
             var texture = texturePool.GetBulletTexture();
-
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
             var bulletVisual = new ModelVisual3D { Content = geometryModel };
 
+            var bullet = new CustomObject3D(bulletVisual, id: bulletId,
+                                            tag: CustomObject3DTags.Projectile);
 
-            var bullet = new CustomObject3D(bulletVisual, fixedDistance: 0.5, id: bulletId, tag: CustomObject3DTags.Projectile);
-            bullet.UpdateOrbit(direction);
+            // Ставим на небольшую начальную дистанцию, чтобы сразу увидеть
+            //bullet.SetWorldPosition(initialDirection * 0.5);
             Add3D(bullet);
         }
 
         /// <summary>
-        ///  Updates a bullet 3d with new rotation transform and sets a new texture
+        /// updates a bulet position with new one from vec3 and does stuff
         /// </summary>
-        public void UpdateBulletObject3D(Guid bulletId, Vector3D direction)
+        public void UpdateBulletObject3D(Guid bulletId, Vector3 worldPos)
         {
             var bullet = Get3D(bulletId);
-            bullet.UpdateOrbit(direction);
-            bullet.SetTexture(texturePool.GetBulletTexture());
+            if (bullet != null)
+            {
+
+                var pos3D = new Vector3D(worldPos.X, worldPos.Y, worldPos.Z);
+
+                bullet.SetWorldPosition(pos3D);     // set a new pos in viewport
+
+                double distance = pos3D.Length;
+                double scale = Math.Max(0.1, distance * 0.0015 + 0.2);      // found hardcoded params with which bullet doesn't visually scale down too fast
+                bullet.SetScale(scale);
+
+                bullet.SetTexture(texturePool.GetBulletTexture());          // update a tracer texture w/ random one from pool
+            }
         }
+
         #endregion
 
         #region Enemy
         /// <summary>
-        ///  Creates a new custom 3d of ENEMY PLAYER and adds it to viewport
+        ///  Creates a new custom 3d of ENEMY PLAYER and adds it to viewport. Returns a distance on which enemy was placed.
         /// </summary>
-        public void CreatePlayerObject3D(Guid playerId, Vector3D direction, double distance, double fixedDistance = .1, double scale = .01)
+        public (double, double) CreatePlayerObject3D(Guid playerId, Vector3D initialDirection)
         {
-            var mesh = PlaneMesh(scale, scale);
+            double scale = 3.5;                     // Assuming we have a man with standart height 1m 75cm, but we have to multiply by 2 cause texture uses only a half-space of the height.
+            var mesh = PlaneMesh(scale, scale);     
 
             var texture = texturePool.GetEnemyTexture();
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
             var playerVisual = new ModelVisual3D { Content = geometryModel };
 
-            
-            var player = new CustomObject3D(playerVisual, fixedDistance: fixedDistance, id: playerId, tag: CustomObject3DTags.Enemy);
-            player.UpdateOrbit(direction);
+            var (X, Y) = texturePool.GetTextureCoordinatesFromDirection(initialDirection);      // get a depth (distance) in which were gonna place our enemy avatar
+            double distance = texturePool.GetDistanceAtPixel(X, Y);                             // get a depth (distance) in which were gonna place our enemy avatar
+
+            var player = new CustomObject3D(playerVisual, id: playerId,
+                                           tag: CustomObject3DTags.Enemy);
+
+            var worldPosition = initialDirection * distance;                // place a character in a correct world position automatically 
+
+
+            player.SetWorldPosition(worldPosition);    
             Add3D(player);
+            
+
+            return (distance, scale);
         }
+
+        /// <summary>
+        ///  Creates a plane for blood effect on PlayerHit event
+        /// </summary>
+        public void CreatePlayerFX(Vector3D worldPosition, double fxScale)
+        {
+            var mesh = PlaneMesh(fxScale);
+
+            var texture = texturePool.GetEmptyTexture();
+            var material = TextureMaterial(texture);
+            var geometryModel = new GeometryModel3D(mesh, material);
+            var bloodFXVisual = new ModelVisual3D { Content = geometryModel };
+
+
+            var bloodFX = new CustomObject3D(bloodFXVisual,
+                                           tag: CustomObject3DTags.FXAnimationSingle);
+
+
+            bloodFX.SetWorldPosition(worldPosition * 0.95);                           // place an effect a bit closer than the character is to avoid mesh overlapping
+            bloodFX.Animation.IsPlaying = true;
+            Add3D(bloodFX);
+        }
+
+        //public void PlayHitAnimation(Guid playerId, Vector3D worldPosition)
+        //{
+
+        //    Get3D(playerId).Children
+        //}
 
 
         #endregion
@@ -161,6 +216,10 @@ namespace VLSGame.Rendering
         #endregion
 
         #endregion
+
+
+
+
 
         /// <summary>
         ///  Adds a new custom 3d object to the scene
@@ -188,7 +247,10 @@ namespace VLSGame.Rendering
         #endregion
 
 
-        public void Render() => renderer3D.Render();
+        public void Render()
+        {
+            renderer3D.Render();
+        }
 
     }
 }

@@ -1,6 +1,6 @@
 ﻿// EnemyManager.cs
 using System.Numerics;
-using VLSGame.Rendering;
+//using VLSGame.Rendering;
 using VLSShared.Enums;
 
 namespace VLSShared.Models
@@ -10,8 +10,12 @@ namespace VLSShared.Models
         private static readonly List<Player> players = [];
         private static readonly object _lock = new();
 
-        public static event Action<Guid, Vector3, double, double, double>? OnPlayerSpawned;
-        public static event Action<Guid, Vector3, Vector3, HitZone, float, float, int>? OnPlayerHit;
+
+        public static event Action<Guid, Vector3>? OnPlayerSpawned;
+        /// <summary>
+        /// params: last bullet location (world), hitzone (to determine an amount of blood)
+        /// </summary>
+        public static event Action<Vector3, HitZoneInfo>? OnPlayerHit;      
         public static event Action<Guid, Vector3>? OnPlayerDead;
 
         public static void AddPlayer(Player player)
@@ -20,7 +24,30 @@ namespace VLSShared.Models
             {
                 players.Add(player);
 
-                OnPlayerSpawned?.Invoke(player.Id, player.Direction, player.Distance, player.ViewportDistance, player.Scale);
+                OnPlayerSpawned?.Invoke(player.Id, player.Direction);
+            }
+        }
+         /// <summary>
+         ///  used to specify a distance (calculated in rendermanager) after setting up 3d model
+         /// </summary>
+        public static void SetPlayerDistance(Guid playerId, double distance)
+        {
+            lock (_lock)
+            {
+                var player = players.FirstOrDefault(p => p.Id == playerId);
+                    player?.Distance = distance;
+            }
+        }
+
+        /// <summary>
+        ///  used to specify a scale (calculated in rendermanager) after setting up 3d model
+        /// </summary>
+        public static void SetPlayerScale(Guid playerId, double scale)
+        {
+            lock (_lock)
+            {
+                var player = players.FirstOrDefault(p => p.Id == playerId);
+                    player?.Scale = scale;
             }
         }
 
@@ -34,53 +61,59 @@ namespace VLSShared.Models
                     Vector3 bulletDir = bullet.Direction;
                     Vector3 enemyDir = player.Direction;
 
-                    
-                    // Bullet has reached the enemy if the enemy distance is between bullet per-tick distances
-                    if (player.Distance < bullet.DistancePrevious || player.Distance > bullet.Distance)
-                        continue;
 
                     float dot = Vector3.Dot(bulletDir, enemyDir);
-                    if (dot <= 0) continue;                 // bullet and emnemy are in diametrically different directions
+                    if (dot <= 0) continue;
 
-                    // Dot of bullet ray collision with mesh plane 
-                    double t = player.ViewportDistance / dot;  
-                    Vector3 O = enemyDir * (float)player.ViewportDistance;
-                    Vector3 P = bulletDir * (float)t;
-                    Vector3 diff = P - O;
+                    // Расстояние до плоскости вдоль начального направления (не используем для отсечения, только для порядка)
+                    double tPlane = player.Distance / dot;
+                    if (tPlane < bullet.DistancePrevious || tPlane > bullet.Distance)
+                        continue; // пуля ещё не долетела до плоскости или уже далеко за ней
 
-                    // Local axes
+                    // Теперь проверяем пересечение отрезка [камера, bullet.Position] с плоскостью
+                    Vector3 camPos = Vector3.Zero;
+                    Vector3 planeNormal = enemyDir;
+                    Vector3 planePoint = enemyDir * (float)player.Distance;
+
+                    Vector3 rayDir = bullet.Position - camPos;
+                    float denom = Vector3.Dot(planeNormal, rayDir);
+                    if (Math.Abs(denom) < 1e-6) continue;
+
+                    float t = Vector3.Dot(planePoint - camPos, planeNormal) / denom;
+                    if (t < 0 || t > 1) continue; // пересечение не на отрезке
+
+                    Vector3 hitPoint = camPos + rayDir * t;
+                    Vector3 diff = hitPoint - planePoint;
+
+                    // Локальные оси (с учётом возможной вертикальности enemyDir)
                     Vector3 worldUp = new(0, 1, 0);
-                    Vector3 right = Vector3.Cross(worldUp, enemyDir);
-                    right = Vector3.Normalize(right);
-                    Vector3 realUp = Vector3.Cross(enemyDir, right);
-                    realUp = Vector3.Normalize(realUp);
+                    if (Math.Abs(Vector3.Dot(worldUp, enemyDir)) > 0.9999)
+                        worldUp = new Vector3(1, 0, 0);
+                    Vector3 right = Vector3.Normalize(Vector3.Cross(worldUp, enemyDir));
+                    Vector3 realUp = Vector3.Normalize(Vector3.Cross(enemyDir, right));
 
                     float localX = Vector3.Dot(diff, right);
                     float localY = Vector3.Dot(diff, realUp);
-
                     double halfS = player.Scale / 2;
 
-                    if (Math.Abs(localX) > halfS || Math.Abs(localY) > halfS) continue;    // Bullet did not collide a mesh plane                         
+                    if (Math.Abs(localX) > halfS || Math.Abs(localY) > halfS) continue;
 
-                    // UVs 
+                    // Попадание!
                     float u = (float)((halfS - localX) / player.Scale);
                     float v = (float)((halfS - localY) / player.Scale);
+                    HitZoneInfo zone = player.HitZoneChecker?.Invoke(u, v) ?? HitZoneInfo.None;
+                    if (zone == HitZoneInfo.None) continue;
 
-                    HitZone zone = player.HitZoneChecker?.Invoke(u, v) ?? HitZone.None;
-
-                    if (zone == HitZone.None) continue;                           // bullet did not collide the pixel w/ hitbox area
-
-                    Vector3 hitPoint = O + right * localX + realUp * localY;
-
-                    // Taking damage and dying
+                    Vector3 hitPointWorld = planePoint + right * localX + realUp * localY;
                     player.ApplyDamage(zone);
-                    OnPlayerHit?.Invoke(player.Id, bulletDir, hitPoint, zone, u, v, player.Hp);
-                    if (player.Hp <= 0)
-                    {
-                        players.RemoveAt(i);
-                        RenderManager.Instance.Remove3D(player.Id); // todo: realize using event
-                    }
-                    return true;                     
+
+                    
+                    
+
+                    OnPlayerHit?.Invoke(bullet.Position, zone);
+
+                    //if (player.Hp <= 0) players.RemoveAt(i);
+                    return true;
                 }
                 return false;
             }

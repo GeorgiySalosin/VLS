@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using VLSGame.Models;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
 using VLSGame.ViewModels;
@@ -40,7 +41,7 @@ namespace VLSGame.Rendering
 
         private readonly static ObservableCollection<CustomObject3D> loadedObjects3D = [];     // a collection of custom 3d objects that participate in the scene rendering
 
-
+        private readonly MatchTexturePool texturePool = MatchTexturePool.Instance;
 
 
 
@@ -73,6 +74,8 @@ namespace VLSGame.Rendering
             var obj = loadedObjects3D.FirstOrDefault(x => x.Id == id);
             if (obj != null)
             {
+                //foreach (CustomObject3D child in obj.Children) RemoveObject(child.Id);      // recursively delete all the parented objects if any
+
                 loadedObjects3D.Remove(obj);
                 viewport.Children.Remove(obj.model);
             }
@@ -117,11 +120,36 @@ namespace VLSGame.Rendering
             {
                 if (!viewport.Children.Contains(item.model) && item.IsVisible)
                 {
-                    viewport.Children.Add(item.model); 
+                    viewport.Children.Add(item.model);
+
                 }
+
                 else if (viewport.Children.Contains(item.model) && !item.IsVisible)
                 {
                     viewport.Children.Remove(item.model);
+                }
+
+
+                if (item.Animation.IsPlaying && item.Tag == CustomObject3DTags.FXAnimationSingle)
+                {
+                    int currentFrame = item.Animation.CurrentFrame ?? 0;
+
+                    
+                    if (currentFrame >= 20) 
+                    {
+                        RemoveObject(item);
+                        break;
+                    }
+                    else
+                    {
+                        // Получаем текстуру для текущего кадра
+                        var texture = texturePool.GetBloodFXTexture(ref currentFrame);
+                        if (texture != null)
+                            item.SetTexture(texture);
+
+                        // Переходим к следующему кадру
+                        item.Animation.CurrentFrame = currentFrame + 1;
+                    }
                 }
             }
         }

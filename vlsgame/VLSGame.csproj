@@ -13,6 +13,26 @@
 
   <ItemGroup>
     <None Remove="Content\Animation\BallisticsFX\BulletDebug.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud03.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud04.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud05.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud06.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud07.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud08.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud09.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud10.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud11.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud12.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud13.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud14.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud15.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud16.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud17.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud18.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png" />
+    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png" />
     <None Remove="Content\checkmark.png" />
     <None Remove="Content\Lobby\T_MapPreview_Combined.png" />
     <None Remove="Content\Lobby\T_MapPreview_Fog.png" />
@@ -31,10 +51,72 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud03.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud04.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud05.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud06.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud07.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud08.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud09.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud10.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud11.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud12.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud13.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud14.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud15.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud17.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud18.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\checkmark.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Lobby\T_MapPreview_Combined.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Animation\BallisticsFX\BulletDebug.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

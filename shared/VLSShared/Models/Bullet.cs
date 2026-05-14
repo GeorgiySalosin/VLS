@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 
-
 namespace VLSShared.Models
 {
     public class Bullet(Vector3 startPos, Vector3 cameraLook,
@@ -16,20 +15,17 @@ namespace VLSShared.Models
         private const float G = 9.81f; // Ускорение свободного падения, м/с2
         private const float FormFactor = (float)(Mass * 2.2 / ((D * 39.37) * (D * 39.37) * G1)); // Формула форм-фактора + перевод кг в фунты, м в дюймы
 
-        private int X { get; set; }
-        private int Y { get; set; }
-
-        public double DistancePrevious { get; set; } = 0;          // To track the interval on which bullet teleports (between two ticks)
+        public double DistancePrevious { get; set; } = 0;
         public double Distance { get; set; } = 0;
         private double FlightTime { get; set; } = 0;
 
         private readonly Func<int, int, double> GetDistanceAtPixel = getDistanceAtPixel;
         private readonly Func<Vector3, (int X, int Y)> GetPixelFromDirection = getTextureCoordinatesFromDirection;
 
-        private Vector3 Position = startPos; // мировые координаты (камера в (0,0,0))
+        public Vector3 Position { get; private set; } = startPos; // мировые координаты
         private Vector3 Velocity = cameraLook * V0; // вектор скорости, м/с
 
-        public Guid Id { get; } = Guid.NewGuid();           // ID is required to track 3d object related to concrete bullet
+        public Guid Id { get; } = Guid.NewGuid();
         public Vector3 Direction { get; private set; } = cameraLook;
 
         internal void Update(float dt)
@@ -38,14 +34,14 @@ namespace VLSShared.Models
             if (V < 0.1) IsLanded = true;
             if (IsLanded) return;
 
-            // 1. Коэффициент лобового сопротивления (зависит от скорости)
+            // 1. Коэффициент лобового сопротивления
             float Cd = ComputeCd(V);
 
             // 2. Сила сопротивления воздуха
-            Vector3 dragForce = (float)(-0.5 * PAir * V * V * Cd * S) * Vector3.Divide(Velocity, (float)V);
+            Vector3 dragForce = (float)(-0.5 * PAir * V * V * Cd * S) * Vector3.Divide(Velocity, V);
 
             // 3. Сила тяжести
-            Vector3 gravityForce = new (0, -Mass * G, 0);
+            Vector3 gravityForce = new(0, -Mass * G, 0);
 
             // 4. Ускорение
             Vector3 acceleration = (dragForce + gravityForce) / Mass;
@@ -54,14 +50,12 @@ namespace VLSShared.Models
             Velocity += acceleration * dt;
             Position += Velocity * dt;
 
-            // 6. Проверка попадания по карте глубины
-            Vector3 direction = Position;
-            direction = Vector3.Normalize(direction);
+            // 6. Обновление направления (для ориентации объекта)
+            Direction = Vector3.Normalize(Velocity);
 
-            Direction = direction;
-            
-
-            var (pixelX, pixelY) = GetPixelFromDirection(direction);
+            // 7. Проверка попадания по карте глубины
+            Vector3 directionFromCamera = Vector3.Normalize(Position);
+            var (pixelX, pixelY) = GetPixelFromDirection(directionFromCamera);
             double distance = Position.Length();
             double depth = GetDistanceAtPixel(pixelX, pixelY);
 
@@ -70,19 +64,18 @@ namespace VLSShared.Models
                 IsLanded = true;
             }
 
-            X = pixelX;
-            Y = pixelY;
-
             DistancePrevious = Distance;
             Distance = distance;
-
             FlightTime += dt;
+            System.Diagnostics.Debug.WriteLine(
+    $"[Bullet {Id.ToString().Substring(0, 8)}] Physics Pos: ({Position.X:F3}, {Position.Y:F3}, {Position.Z:F3}) Dist={Position.Length():F1}");
         }
+
         public bool IsLanded { get; set; } = false;
+
         private float ComputeCd(double V)
         {
             float M = (float)(V / 340.0);
-            // предопределённые точки (M, Cd_G1)
             (float m, float cd)[] points = new (float, float)[]
             {
                 (0.0f, 0.15f), (0.8f, 0.20f), (0.95f, 0.32f),
@@ -90,7 +83,7 @@ namespace VLSShared.Models
                 (1.5f, 0.36f), (2.0f, 0.33f), (2.5f, 0.30f),
                 (3.0f, 0.29f)
             };
-            // линейная интерполяция
+
             for (int i = 0; i < points.Length - 1; i++)
                 if (M >= points[i].m && M <= points[i + 1].m)
                 {
@@ -98,13 +91,14 @@ namespace VLSShared.Models
                     float cd = points[i].cd + t * (points[i + 1].cd - points[i].cd);
                     return FormFactor * cd;
                 }
-            // за пределами таблицы
+
             return FormFactor * (M < points[0].m ? points[0].cd : points[^1].cd);
         }
 
         public override string ToString()
         {
-            return $"Bullet at ({X}, {Y}), Distance: {Distance:F1} m, FlightTime: {FlightTime:F2} s\nIsLanded: {IsLanded}";
+            return $" Distance: {Distance:F1} m, FlightTime: {FlightTime:F2} s, " +
+                   $"Position: ({Position.X:F2}, {Position.Y:F2}, {Position.Z:F2})";
         }
     }
 }
