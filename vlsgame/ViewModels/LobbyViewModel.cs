@@ -93,8 +93,8 @@ namespace VLSGame.ViewModels
 
             // currently we only use the test panorama
 
-            string ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Test_W.png");
-            string DepthMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Test_D.png");
+            string ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunny\W001.png");
+            string DepthMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Depth\W001.png");
 
             if (!System.IO.File.Exists(ColorMapPath))
             {
