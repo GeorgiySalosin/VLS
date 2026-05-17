@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reflection.Metadata.Ecma335;
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Commands;
@@ -91,10 +92,25 @@ namespace VLSGame.ViewModels
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
-            // currently we only use the test panorama
+            // We need to know what weather the user has selected
+            int mapIndex = ChoiceRandomWeather();
 
-            string ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunny\W001.png");
+            string ColorMapPath;
             string DepthMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Depth\W001.png");
+
+            switch (mapIndex) {
+                case 1:
+                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunny\W001.png");
+                    break;
+                case 2:
+                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Foggy\W001.png");
+                    break;
+                case 3:
+                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunset\W001.png");
+                    break;
+                default:
+                    throw new Exception("A non-existent weather was selected");
+            }
 
             if (!System.IO.File.Exists(ColorMapPath))
             {
@@ -110,7 +126,7 @@ namespace VLSGame.ViewModels
                 return;
             }
 
-            await StartSinglePlayerAsync(ColorMapPath);
+            await StartSinglePlayerAsync(ColorMapPath); // So far, we are launching strictly a singleplayer.
 
             // Открываем окно Match с обоими путями
             var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
@@ -332,6 +348,31 @@ namespace VLSGame.ViewModels
             SaveSelectedMapsToConfig();
             SaveSelectedGamemodeToConfig();
         }
+
+        private int ChoiceRandomWeather()
+        {
+            var settings = Configuration.Instance.GameSettings;
+            if (settings != null && settings.SelectedMapIds != null && settings.SelectedMapIds.Any())
+            {
+                Random rnd = new Random();
+                int index = rnd.Next(settings.SelectedMapIds.Count);
+                int mapIndex = settings.SelectedMapIds[index];
+                return mapIndex;
+            }
+            else // It will need to be tested
+            {
+                var allIds = MapViewModels.Select(vm => vm.Id).ToList();
+
+                var config = Configuration.Instance;
+                if (config.GameSettings == null) throw new Exception("config.GameSettings is null");
+
+                config.GameSettings.SelectedMapIds = allIds;
+                config.SaveConfiguration();
+
+                return ChoiceRandomWeather();
+            }
+        }
+
         #endregion
     }
 }
