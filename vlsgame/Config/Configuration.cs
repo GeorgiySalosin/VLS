@@ -13,6 +13,7 @@ namespace VLSGame.Config
         );
 
         public GameSettings GameSettings { get; private set; }
+        public CameraAnimationSettings CameraAnimationSettings { get; private set; } = new CameraAnimationSettings();
 
         private Configuration()
         {
@@ -61,7 +62,6 @@ namespace VLSGame.Config
                     throw new InvalidOperationException("Invalid Json configuration");
                 }
 
-                ValidateSettings(settings);
                 GameSettings = settings;
                 return true;
             }
@@ -95,31 +95,6 @@ namespace VLSGame.Config
             }
         }
 
-        private void ValidateSettings(GameSettings settings)
-        {
-            if (settings.MouseSensitivity <= 0)
-                throw new InvalidOperationException("mouse_sensitivity must be greater 0");
 
-            if (settings.SpeedBufferSize <= 0)
-                throw new InvalidOperationException("speed_buffer_size  must be greater 0");
-
-            if (settings.MinSpeedThreshold < 0)
-                throw new InvalidOperationException("min_speed_threshold  must be greater 0");
-
-            if (settings.MaxSpeedThreshold <= settings.MinSpeedThreshold)
-                throw new InvalidOperationException("max_speed_threshold  must be greater min_speed_threshold");
-
-            if (settings.MinSensitivityScale <= 0 || settings.MinSensitivityScale > 1)
-                throw new InvalidOperationException("min_sensitivity_scale  must be in range (0, 1]");
-
-            if (settings.ZoomSpeed <= 0)
-                throw new InvalidOperationException("zoom_speed  must be greater 0");
-
-            if (settings.MinFOV <= 0 || settings.MinFOV >= settings.MaxFOV)
-                throw new InvalidOperationException("min_fov must be greater 0 and smaller max_fov");
-
-            if (settings.MaxFOV <= settings.MinFOV)
-                throw new InvalidOperationException("max_fov  must be greater больше min_fov");
-        }
     }
 }

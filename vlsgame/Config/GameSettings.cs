@@ -27,14 +27,19 @@ namespace VLSGame.Config
         [JsonPropertyName("clamp_vrotation_max")]
         public double ClampVRotationMax { get; set; } = .7f;    // Same but blocks looking high
 
-        [JsonPropertyName("zoom_speed")]
-        public double ZoomSpeed { get; set; } = .1f;            // Currently: an amount of FOV reduced per a single mousewheel step
+
 
         [JsonPropertyName("min_fov")]
         public double MinFOV { get; set; } = 6f;        // Just a general setting that restricts zooming by a 15x
 
         [JsonPropertyName("max_fov")]
         public double MaxFOV { get; set; } = 90f;       // The base fov (no zoom)
+
+        [JsonPropertyName("min_fov_scope")]
+        public double MinFOVScope { get; set; } = 6f;        // The minimal FOV that can be set in scope
+
+        [JsonPropertyName("max_fov_scope")]
+        public double MaxFOVScope { get; set; } = 30f;       // The maximal FOV that can be set in scope
 
         [JsonPropertyName("max_sniping_distance")]
         public double MaxSnipingDistance { get; set; } = 2048f;       // The distance up to which we can count hits (The range that was written into the depth map) - after this distance we gonna abandon the bullet

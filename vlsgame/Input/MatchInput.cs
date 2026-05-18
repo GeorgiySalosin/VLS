@@ -26,6 +26,11 @@ namespace VLSGame.Input
         private double currentRotationX;
         private double currentRotationY;
 
+        private double smoothRotationX, smoothRotationY;
+        private const double MouseSmoothing = 0.85; // 0 = нет сглаживания, 1 = максимальное
+
+        private bool isAiming = false;
+
         // WinAPI methods
         [DllImport("user32.dll")]
         private static extern bool SetCursorPos(int X, int Y);
@@ -82,12 +87,24 @@ namespace VLSGame.Input
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            viewModel?.Shoot();
+            if (viewModel == null) return;
+
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                viewModel.Shoot();
+            }
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                isAiming = true;
+                viewModel.CameraProperties.TargetFOV = Configuration.Instance.CameraAnimationSettings.AimingFOV;
+            }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
             if (viewModel == null || window == null) return;
+
+
 
             Point currentPosition = e.GetPosition(window);
             DateTime currentTime = DateTime.Now;
@@ -110,13 +127,30 @@ namespace VLSGame.Input
                 currentRotationX -= deltaY * adaptiveSensitivity;
 
                 //  Blocking camera view if looking too low/high
-                currentRotationX = Math.Max(-Math.PI / 2 + Configuration.Instance.GameSettings.ClampVRotationMin,
-                                            Math.Min(Math.PI / 2 - Configuration.Instance.GameSettings.ClampVRotationMax,
-                                                    currentRotationX));
+                //currentRotationX = Math.Max(-Math.PI / 2 + Configuration.Instance.GameSettings.ClampVRotationMin,
+                //                            Math.Min(Math.PI / 2 - Configuration.Instance.GameSettings.ClampVRotationMax,
+                //                                    currentRotationX));
+
+                // Получаем текущее анимационное смещение (радианы)
+                double animX = viewModel.CameraProperties.AnimationRotationX;
+
+                // Общие границы для итогового угла
+                double totalMin = -Math.PI / 2 + Configuration.Instance.GameSettings.ClampVRotationMin;
+                double totalMax = Math.PI / 2 - Configuration.Instance.GameSettings.ClampVRotationMax;
+
+                // Динамические границы для пользовательского угла
+                double userMin = totalMin - animX;
+                double userMax = totalMax - animX;
+
+                currentRotationX = Math.Max(userMin, Math.Min(userMax, currentRotationX));
+
+               
 
                 // As for horizontal rotation - it's unrestricted
-                viewModel.CameraProperties.RotationX = currentRotationX;
-                viewModel.CameraProperties.RotationY = currentRotationY;
+                viewModel.CameraProperties.UserRotationX = currentRotationX;
+                viewModel.CameraProperties.UserRotationY = currentRotationY;
+
+
 
                 // Return mouse to the center
                 Point centerInScreen = window.PointToScreen(centerInWindow);
@@ -137,22 +171,23 @@ namespace VLSGame.Input
         {
             if (viewModel == null) return;
 
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                speedBuffer.Clear();
 
-                window?.ReleaseMouseCapture();
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                isAiming = false;
+                viewModel.CameraProperties.TargetFOV = Configuration.Instance.CameraAnimationSettings.DefaultFOV;
             }
         }
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (viewModel == null) return;
-
-            viewModel.CameraProperties.FieldOfView -= e.Delta * Configuration.Instance.GameSettings.ZoomSpeed;
-            viewModel.CameraProperties.FieldOfView = Math.Max(Configuration.Instance.GameSettings.MinFOV,
-                                             Math.Min(Configuration.Instance.GameSettings.MaxFOV,
-                                                     viewModel.CameraProperties.FieldOfView));
+            double delta = e.Delta * Configuration.Instance.CameraAnimationSettings.ZoomSpeedManual / 120.0;        // why tf is divided by 120?     whatever.. works nice
+            double newTarget = viewModel.CameraProperties.TargetFOV - delta;
+            newTarget = Math.Max(Configuration.Instance.GameSettings.MinFOVScope,
+                                 Math.Min(Configuration.Instance.GameSettings.MaxFOVScope, newTarget));
+            viewModel.CameraProperties.TargetFOV = newTarget;
+            Configuration.Instance.CameraAnimationSettings.AimingFOV = newTarget;       // the next time scope will auto zoom up to previously set level
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -188,7 +223,7 @@ namespace VLSGame.Input
                                  (1.0 - Configuration.Instance.GameSettings.MinSensitivityScale) * (1 - Math.Pow(1 - t, 2));
             }
 
-            return Configuration.Instance.GameSettings.MouseSensitivity * (viewModel?.CameraProperties?.FieldOfView ?? 90.0)/90.0 * sensitivityScale;
+            return Configuration.Instance.GameSettings.MouseSensitivity * (viewModel?.CameraProperties?.FieldOfView ?? 90.0)/90.0 * sensitivityScale;       // if no data we use 90 as default fov
         }
     }
 }
