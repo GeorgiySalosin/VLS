@@ -28,7 +28,7 @@ namespace VLSGame.Rendering
 
         private static bool isInitialized = false;
 
-        public void Initialize(Viewport3D viewport, Panel hudPanel, string mapName = "Test")
+        public void Initialize(Viewport3D viewport, Panel hudPanel, string colorMapPath, string depthMapPath)
         {
             if (isInitialized) return;
             renderer3D.Initialize(viewport);
@@ -37,7 +37,7 @@ namespace VLSGame.Rendering
             RegisterLayer(new HudLayer(hudPanel));
             RegisterLayer(new HudLayer(hudPanel));
 
-            texturePool.UpdateEnvironmentTexture(mapName);      // Loads new environment textures
+            texturePool.UpdateEnvironmentTexture(colorMapPath, depthMapPath);      // Loads new environment textures
 
             isInitialized = true;
         }
@@ -84,12 +84,12 @@ namespace VLSGame.Rendering
             Add3D(environment);
         }
 
-        public void UpdateEnvironment(string path)
-        {
-            var environment = Get3D(CustomObject3DTags.World);
-            texturePool.UpdateEnvironmentTexture(path);
+        //public void UpdateEnvironment(string path)
+        //{
+        //    var environment = Get3D(CustomObject3DTags.World);
+        //    texturePool.UpdateEnvironmentTexture(path);
 
-        }
+        //}
 
         #endregion
 

@@ -73,6 +73,8 @@ namespace VLSGame.ViewModels
 
 
         private int _frameCounter;
+        private readonly string colorMapPath;
+        private readonly string depthMapPath;
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
@@ -108,11 +110,14 @@ namespace VLSGame.ViewModels
                 if (e.PropertyName == nameof(CameraProperties.LookDirection))
                     OnPropertyChanged(nameof(FormattedLookDirection));
             };
+
+            this.colorMapPath = colorMapPath;
+            this.depthMapPath = depthMapPath;
         }
 
         public void OnViewLoaded()
         {
-            renderManager.Initialize(viewport, hud);
+            renderManager.Initialize(viewport, hud, colorMapPath, depthMapPath);
 
             renderManager.CreateEnvironmentObject3D();       // Create a world panorama
             renderManager.SetLight();

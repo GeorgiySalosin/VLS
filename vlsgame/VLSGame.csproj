@@ -45,8 +45,12 @@
     <None Remove="Content\Animation\Rifle\Test_Debug_Scope.png" />
     <None Remove="Content\Enemy\Test_Enemy.png" />
     <None Remove="Content\Enemy\Test_Enemy_Coll.png" />
-    <None Remove="Content\Maps\Test_D.png" />
-    <None Remove="Content\Maps\Test_W.png" />
+    <None Remove="Content\Maps\Depth\W001.png" />
+    <None Remove="Content\Maps\Foggy\W001.png" />
+    <None Remove="Content\Maps\Sunny\W001.png" />
+    <None Remove="Content\Maps\Sunset\W001.png" />
+    <None Remove="Content\Maps\Test\Test_D.png" />
+    <None Remove="Content\Maps\Test\Test_W.png" />
     <None Remove="Content\ui\T_CrossAIM.png" />
   </ItemGroup>
 
@@ -141,10 +145,22 @@
     <Content Include="Content\Enemy\Test_Enemy_Coll.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Maps\Test_D.png">
+    <Content Include="Content\Maps\Depth\W001.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Maps\Test_W.png">
+    <Content Include="Content\Maps\Foggy\W001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\Sunny\W001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\Sunset\W001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\Test\Test_D.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Maps\Test\Test_W.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\T_CrossAIM.png">
@@ -153,6 +169,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.16">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.13.0.20260302" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
