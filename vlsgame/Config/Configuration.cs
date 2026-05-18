@@ -13,6 +13,7 @@ namespace VLSGame.Config
         );
 
         public GameSettings GameSettings { get; private set; }
+        public CameraAnimationSettings CameraAnimationSettings { get; private set; } = new CameraAnimationSettings();
 
         private Configuration()
         {

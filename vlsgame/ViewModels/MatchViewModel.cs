@@ -1,5 +1,6 @@
 using OpenCvSharp;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -12,7 +13,6 @@ using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
-
 
 namespace VLSGame.ViewModels
 {
@@ -56,6 +56,8 @@ namespace VLSGame.ViewModels
         private readonly RenderManager renderManager = RenderManager.Instance;
         //private readonly PanoramaData panoramaData;
 
+        private CameraAnimationController animationController;
+
         private BitmapSource? mapTexture;
         //public BitmapSource? MapTexture { get => mapTexture; private set => Set(ref mapTexture, value); }
 
@@ -68,10 +70,16 @@ namespace VLSGame.ViewModels
         private int lastPixelY = -1;
         private double cachedDistance = 0;
 
+
+
+        private int _frameCounter;
+
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
             this.gameMode = gameMode;
 
+            var animSettings = Configuration.Instance.CameraAnimationSettings; // добавляете в GameSettings
+            animationController = new CameraAnimationController(CameraProperties, animSettings);
 
             BulletManager.LastBulletInfoChanged += info => LastBullet = info;
 
@@ -115,7 +123,7 @@ namespace VLSGame.ViewModels
             Vector3D cameraLook3D = CameraProperties.LookDirection;
             Vector3 cameraLook = V3(cameraLook3D);
 
-            Player player = new(new Vector3(-.3f, -.16f, .94f))
+            Player player = new(new Vector3(.4608f, -.0027f, .8875f))
             {
                 HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
             };
@@ -142,24 +150,36 @@ namespace VLSGame.ViewModels
         #region GAME EVENTS 
         private void StartGameLoop()
         {
-            gameTimer = new()
-            {
-                Interval = TimeSpan.FromSeconds(deltaTime)
-            };
+            //gameTimer = new()
+            //{
+            //    Interval = TimeSpan.FromSeconds(deltaTime)
+            //};
+            //gameTimer.Tick += OnGameTick;
+            //gameTimer.Start();
+
+            gameTimer = new DispatcherTimer(DispatcherPriority.Input, Application.Current.Dispatcher);
+            gameTimer.Interval = TimeSpan.FromSeconds(deltaTime);
             gameTimer.Tick += OnGameTick;
             gameTimer.Start();
         }
 
         private void OnGameTick(object? sender, EventArgs e)
         {
-            
+            // Обновляем FOV (плавное приближение/отдаление)
+            CameraProperties.UpdateFOV(deltaTime, (float)Configuration.Instance.CameraAnimationSettings.ZoomSpeed);
+
+            animationController.Update(deltaTime);
             BulletManager.UpdateBullets(deltaTime);
             renderManager.Render();
             GetCenterDistance();
+            _frameCounter++;
+            if (_frameCounter % 60 == 0)
+                System.Diagnostics.Debug.WriteLine($"FOV: {CameraProperties.FieldOfView:F2} / Target: {CameraProperties.TargetFOV:F2}");
         }
 
         internal void Shoot()
         {
+            
             Vector3 startPos = new(0, 0, 0);    // ??? Do we really need it here
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
@@ -177,6 +197,7 @@ namespace VLSGame.ViewModels
 
             Bullet bullet = new (startPos, cameraLook, renderManager.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
+            animationController.TriggerRecoil();
         }
         #endregion
 
@@ -189,7 +210,7 @@ namespace VLSGame.ViewModels
 
         public string LastBullet { get => lastBullet; set => Set(ref lastBullet, value); }
 
-        public string FormattedLookDirection => $"LookDirection: {CameraProperties.LookDirection.X:F2}, {CameraProperties.LookDirection.Y:F2}, {CameraProperties.LookDirection.Z:F2}";
+        public string FormattedLookDirection => $"LookDirection: {CameraProperties.LookDirection.X:F4}, {CameraProperties.LookDirection.Y:F4}, {CameraProperties.LookDirection.Z:F4}";
 
         #endregion
 

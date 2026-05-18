@@ -33,7 +33,7 @@ namespace VLSShared.Models
         // Static pre-created instances
         public static readonly HitZoneInfo None = new(HitZone.None, 0, 0.0);
         public static readonly HitZoneInfo Head = new(HitZone.Head, 105, 7.0);
-        public static readonly HitZoneInfo Body = new(HitZone.Body, 60, 5.5);
-        public static readonly HitZoneInfo Limb = new(HitZone.Limb, 34, 4.0);
+        public static readonly HitZoneInfo Body = new(HitZone.Body, 60, 4.0);
+        public static readonly HitZoneInfo Limb = new(HitZone.Limb, 34, 3.0);
     }
 }
