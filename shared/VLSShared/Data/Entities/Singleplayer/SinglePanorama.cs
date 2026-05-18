@@ -1,4 +1,4 @@
-﻿namespace VLSShared.Data.Entities
+﻿namespace VLSShared.Data.Entities.Singleplayer
 {
     public class SinglePanorama : Panorama
     {

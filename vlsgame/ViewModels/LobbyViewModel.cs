@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Reflection.Metadata.Ecma335;
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Commands;
@@ -8,6 +7,7 @@ using VLSGame.Models;
 using VLSGame.Services;
 using VLSGame.Views;
 using VLSShared.Interfaces;
+using VLSShared.Data;
 
 namespace VLSGame.ViewModels
 {
@@ -200,6 +200,8 @@ namespace VLSGame.ViewModels
 
         internal LobbyViewModel()
         {
+            DatabaseInitializer.Initialize(); // Creating a database
+
             #region Initialize models
 
             var models = new[]
