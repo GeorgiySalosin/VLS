@@ -3,11 +3,10 @@ using System.Windows;
 using System.Windows.Input;
 using VLSGame.Commands;
 using VLSGame.Config;
-using VLSGame.Models;
 using VLSGame.Services;
 using VLSGame.Views;
-using VLSShared.Interfaces;
 using VLSShared.Data;
+using VLSShared.Interfaces;
 
 namespace VLSGame.ViewModels
 {
@@ -200,22 +199,20 @@ namespace VLSGame.ViewModels
 
         internal LobbyViewModel()
         {
-            DatabaseInitializer.Initialize(); // Creating a database
+            DatabaseInitializer.Initialize(); // Initialize a database
 
-            #region Initialize models
-
-            var models = new[]
-            {
-                new MapButtonData { Id = 1, Title = "Sunny", Subtitle = "common map", MapBackgroundImagePath = "/Content/Lobby/T_MapPreview_Sun.png" },
-                new MapButtonData { Id = 2, Title = "Overcast", Subtitle = "for nature lovers", MapBackgroundImagePath = "/Content/Lobby/T_MapPreview_Fog.png" },
-                new MapButtonData { Id = 3, Title = "Dark", Subtitle = "prove your skill!", MapBackgroundImagePath = "/Content/Lobby/T_MapPreview_Sunset.png" }
-            };
-
+            // Downloading weathers from DB
+            var weathers = DatabaseService.GetAllWeathers();
             MapViewModels = new ObservableCollection<MapButtonDataViewModel>(
-                models.Select(m => new MapButtonDataViewModel(m))
+                weathers.Select(w => new MapButtonDataViewModel
+                {
+                    Id = w.Id,
+                    Title = w.Title,
+                    Subtitle = w.Description,
+                    MapBackgroundImage = w.PreviewPath
+                }
+                )
             );
-
-            #endregion
 
             #region Import config
 

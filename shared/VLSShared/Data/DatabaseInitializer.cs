@@ -9,7 +9,7 @@ namespace VLSShared.Data
         /// <summary>
         /// Gets the default connection string (the folder with the executable file).
         /// </summary>
-        public static string DefaultConnectionString
+        public static string DefaultConnectionString // maybe it should be in AppDbContext
         {
             get
             {
@@ -49,9 +49,9 @@ namespace VLSShared.Data
             {
                 string basePath = Path.Combine("Content", "Lobby"); // need to test
                 context.Weathers.AddRange(
-                    new Weather { Title = "Sunny", Description = "common map", PreviewPath = Path.Combine(basePath, "T_MapPreview_Sun") },
-                    new Weather { Title = "Foggy", Description = "for nature lovers", PreviewPath = Path.Combine(basePath, "T_MapPreview_Fog") },
-                    new Weather { Title = "Sunset", Description = "prove your skill!", PreviewPath = Path.Combine(basePath, "T_MapPreview_Sunset") }
+                    new Weather { Title = "Sunny", Description = "common map", PreviewPath = Path.Combine(basePath, "T_MapPreview_Sun.png") },
+                    new Weather { Title = "Foggy", Description = "for nature lovers", PreviewPath = Path.Combine(basePath, "T_MapPreview_Fog.png") },
+                    new Weather { Title = "Sunset", Description = "prove your skill!", PreviewPath = Path.Combine(basePath, "T_MapPreview_Sunset.png") }
                     );
                 context.SaveChanges();
             }

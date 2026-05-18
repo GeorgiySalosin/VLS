@@ -1,20 +1,19 @@
 ﻿using System.Windows;
-using VLSGame.Models;
 
 namespace VLSGame.ViewModels
 {
     // Wrapper for UI + implementation of INotifyPropertyChanged
-    internal class MapButtonDataViewModel(MapButtonData data) : ViewModelBase
+    internal class MapButtonDataViewModel : ViewModelBase
     {
-        private readonly MapButtonData data = data;
+        public int Id { get; init; }
+        public string Title { get; init; }
+        public string Subtitle { get; init; }
+        public string MapBackgroundImage { get; init; }
+
+        private const string checkmark = "/Content/checkmark.png";
+        public string Checkmark => checkmark;
+
         private Visibility checkmarkVisibility = Visibility.Visible;
-
-        public int Id => data.Id;
-        public string Title => data.Title;
-        public string Subtitle => data.Subtitle;
-        public string MapBackgroundImage => data.MapBackgroundImagePath;
-        public string Checkmark => data.Checkmark;
-
         public Visibility CheckmarkVisibility
         {
             get => checkmarkVisibility;
