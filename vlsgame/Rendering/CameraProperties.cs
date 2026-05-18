@@ -16,7 +16,7 @@ namespace VLSGame.Rendering
         public double RotationX => UserRotationX + AnimationRotationX;
         public double RotationY => UserRotationY + AnimationRotationY;
 
-        // Пользовательские углы (ввод мыши)
+        // Mouse input
         public double UserRotationX
         {
             get => _userRotationX;

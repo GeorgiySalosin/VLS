@@ -166,7 +166,7 @@ namespace VLSGame.ViewModels
         private void OnGameTick(object? sender, EventArgs e)
         {
             // Обновляем FOV (плавное приближение/отдаление)
-            CameraProperties.UpdateFOV(deltaTime, (float)Configuration.Instance.CameraAnimationSettings.ZoomSpeed);
+            CameraProperties.UpdateFOV(deltaTime, (float)Configuration.Instance.CameraAnimationSettings.ZoomSpeedAuto);
 
             animationController.Update(deltaTime);
             BulletManager.UpdateBullets(deltaTime);

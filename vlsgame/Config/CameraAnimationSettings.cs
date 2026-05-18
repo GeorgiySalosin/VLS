@@ -4,34 +4,74 @@ namespace VLSGame.Config
 {
     public class CameraAnimationSettings
     {
-        // ----- Idle Sway (лёгкое шевеление) -----
-        public double SwayAmplitude { get; set; } = 0.06;   // градусы
-        public double SwayFrequencyX { get; set; } = 0.47793;  // Гц
-        public double SwayFrequencyY { get; set; } = 0.659;  // Гц
+        // ----- Idle Sway  -----
+        public double SwayAmplitude { get; set; } = 0.06;   // degree
+        public double SwayFrequencyX { get; set; } = 0.47793;  // hertz
+        public double SwayFrequencyY { get; set; } = 0.659;  // hertz
 
-        // ----- Recoil (отдача) -----
-        public double RecoilVerticalBase { get; set; } = 2.0;     // градусы
+        // ----- Recoil -----
+        /// <summary>
+        /// the amount the camera jumps on shot (angular °)
+        /// </summary>
+        public double RecoilVerticalBase { get; set; } = 2.0;
+        /// <summary>
+        /// variation thresold of the amount the camera jumps on shot (angular °)
+        /// </summary>
         public double RecoilVerticalRandom { get; set; } = 0.4;
+        /// <summary>
+        /// the max amount the camera jumps on shot (angular °)
+        /// </summary>
         public double RecoilVerticalMaxDeg { get; set; } = 4.0;
 
         // Скорость нарастания подброса (градусов в секунду)
         public double RecoilVerticalRiseSpeed { get; set; } = 45.0;
-        public double RecoilVerticalRecoverySpeed { get; set; } = 12.0; // град/сек
+        /// <summary>
+        /// the speed the camera is pulled back with after shot (angular °/ s)
+        /// </summary>
+        public double RecoilVerticalRecoverySpeed { get; set; } = 10.0;
 
-        // Степень ease-out для возврата (1 – линейно, 2 – квадратично, 3 – кубическое замедление)
-        public double RecoilVerticalReturnEase { get; set; } = 2.0;
+        /// <summary>
+        /// how much higher will the camera (target point) be after the shot than it was before it (angular °)
+        /// </summary>
+        public double RecoilVerticalRecoverShift { get; set; } = 0.2;
 
-        public double RecoilVerticalRecoverShift { get; set; } = 0.2;   // насколько прицел после выстрела будет выше, чем был до него
+        /// <summary>
+        /// the random thresold of the cameras horizontal offset on shot (angular °)
+        /// </summary>
+        public double RecoilHorizontalRange { get; set; } = 0.6;
 
-        public double RecoilHorizontalRange { get; set; } = 0.6;     // градусы
+        /// <summary>
+        /// the max amount of the cameras horizontal offset on shot (angular °)
+        /// </summary>
         public double RecoilHorizontalMaxDeg { get; set; } = 1.8;
-        public double RecoilHorizontalInterpSpeed { get; set; } = 14.0; // ед/сек
+
+        /// <summary>
+        /// the speed of a horizontal component of recoil
+        /// </summary>
+        public double RecoilHorizontalInterpSpeed { get; set; } = 14.0;
+
 
         // ----- Zoom -----
-        public double DefaultFOV { get; set; } = 90;
-        public double AimingFOV { get; set; } = 45;
-        public float ZoomSpeed { get; set; } = 12.0f;
 
-        public double RecoilVerticalMaxRad => RecoilVerticalMaxDeg * Math.PI / 180.0;
+        /// <summary>
+        /// the default idle FOV (no zoom)
+        /// </summary>
+        public double DefaultFOV { get; set; } = 90;
+
+        /// <summary>
+        /// the target of zooming with RMB
+        /// </summary>
+        public double AimingFOV { get; set; } = 11.25;
+
+        /// <summary>
+        /// the step of changing fov automatically (when zooming in/out)
+        /// </summary>
+        public float ZoomSpeedAuto { get; set; } = 12.0f;
+
+        /// <summary>
+        /// the step of changing fov manually (with a wheel scroll)
+        /// </summary>
+        public float ZoomSpeedManual { get; set; } = 2.0f;
+
     }
 }

@@ -171,12 +171,6 @@ namespace VLSGame.Input
         {
             if (viewModel == null) return;
 
-            if (e.ChangedButton == MouseButton.Left)        // DEPRECATED
-            {
-                speedBuffer.Clear();
-
-                window?.ReleaseMouseCapture();
-            }
 
             else if (e.ChangedButton == MouseButton.Right)
             {
@@ -188,11 +182,12 @@ namespace VLSGame.Input
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (viewModel == null) return;
-            double delta = e.Delta * Configuration.Instance.CameraAnimationSettings.ZoomSpeed / 120.0;
+            double delta = e.Delta * Configuration.Instance.CameraAnimationSettings.ZoomSpeedManual / 120.0;        // why tf is divided by 120?     whatever.. works nice
             double newTarget = viewModel.CameraProperties.TargetFOV - delta;
-            newTarget = Math.Max(Configuration.Instance.GameSettings.MinFOV,
-                                 Math.Min(Configuration.Instance.GameSettings.MaxFOV, newTarget));
+            newTarget = Math.Max(Configuration.Instance.GameSettings.MinFOVScope,
+                                 Math.Min(Configuration.Instance.GameSettings.MaxFOVScope, newTarget));
             viewModel.CameraProperties.TargetFOV = newTarget;
+            Configuration.Instance.CameraAnimationSettings.AimingFOV = newTarget;       // the next time scope will auto zoom up to previously set level
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -228,7 +223,7 @@ namespace VLSGame.Input
                                  (1.0 - Configuration.Instance.GameSettings.MinSensitivityScale) * (1 - Math.Pow(1 - t, 2));
             }
 
-            return Configuration.Instance.GameSettings.MouseSensitivity * (viewModel?.CameraProperties?.FieldOfView ?? 90.0)/90.0 * sensitivityScale;
+            return Configuration.Instance.GameSettings.MouseSensitivity * (viewModel?.CameraProperties?.FieldOfView ?? 90.0)/90.0 * sensitivityScale;       // if no data we use 90 as default fov
         }
     }
 }
