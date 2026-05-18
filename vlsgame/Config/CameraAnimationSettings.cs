@@ -21,10 +21,9 @@ namespace VLSGame.Config
         /// <summary>
         /// the max amount the camera jumps on shot (angular °)
         /// </summary>
-        public double RecoilVerticalMaxDeg { get; set; } = 4.0;
 
-        // Скорость нарастания подброса (градусов в секунду)
-        public double RecoilVerticalRiseSpeed { get; set; } = 45.0;
+        // the speed the camera jumps with on shot (angular °/ s)
+        public double RecoilVerticalRiseSpeed { get; set; } = 60.0;
         /// <summary>
         /// the speed the camera is pulled back with after shot (angular °/ s)
         /// </summary>

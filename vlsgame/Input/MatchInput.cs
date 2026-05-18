@@ -169,7 +169,7 @@ namespace VLSGame.Input
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (viewModel == null) return;
+            if (viewModel == null || !isAiming) return;     // restrict zooming bypassing the RMB
 
 
             else if (e.ChangedButton == MouseButton.Right)
