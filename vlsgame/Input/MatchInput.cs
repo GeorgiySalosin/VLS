@@ -181,7 +181,7 @@ namespace VLSGame.Input
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (viewModel == null) return;
+            if (viewModel == null || !isAiming) return;     // restrict zooming in/out with mouse wheel
             double delta = e.Delta * Configuration.Instance.CameraAnimationSettings.ZoomSpeedManual / 120.0;        // why tf is divided by 120?     whatever.. works nice
             double newTarget = viewModel.CameraProperties.TargetFOV - delta;
             newTarget = Math.Max(Configuration.Instance.GameSettings.MinFOVScope,
