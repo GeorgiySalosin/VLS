@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using VLSGame.Rendering.Content2D;
+using VLSGame.Rendering.Content3D;
 
 namespace VLSGame.Rendering
 {
@@ -14,6 +15,8 @@ namespace VLSGame.Rendering
         private Panel? panel;
         private readonly List<CustomObject2D> objects = new();
         private readonly Dictionary<CustomObject2D, Image> uiMap = new();
+        private readonly Dictionary<CustomObject2D, List<ImageSource>> animationFrames = new();
+        private readonly Dictionary<CustomObject2D, Action> animationCallbacks = new();
         private bool isInitialized = false;
 
         private Renderer2D() { }
@@ -25,12 +28,16 @@ namespace VLSGame.Rendering
             isInitialized = true;
         }
 
-        public void AddObject(CustomObject2D obj)
+        public void AddObject(CustomObject2D obj, List<ImageSource>? frames = null, Action? onComplete = null)
         {
             if (obj == null || panel == null) return;
             if (objects.Contains(obj)) return;
 
-            // Создаём Image и сразу добавляем в Panel
+            if (frames != null)
+                animationFrames[obj] = frames;
+            if (onComplete != null)
+                animationCallbacks[obj] = onComplete;
+
             var img = new Image
             {
                 Source = obj.Texture,
@@ -40,29 +47,25 @@ namespace VLSGame.Rendering
                 VerticalAlignment = VerticalAlignment.Center,
                 Visibility = obj.IsVisible ? Visibility.Visible : Visibility.Collapsed
             };
-
-            CenterImage(img, obj, panel as Canvas);
-
             panel.Children.Add(img);
-
             objects.Add(obj);
             uiMap[obj] = img;
+
+            if (panel is Canvas canvas)
+                CenterImage(img, obj, canvas);
         }
+
         private void CenterImage(Image img, CustomObject2D obj, Canvas canvas)
         {
-            // Получаем фактические размеры текстуры
             double width = obj.Texture.Width;
             double height = obj.Texture.Height;
-
-
-            double centerX = canvas.ActualWidth / 2;
-            double centerY = canvas.ActualHeight / 2;
-
-            double left = centerX - width / 2;
-            double top = centerY - height / 2;
-
-            Canvas.SetLeft(img, left);
-            Canvas.SetTop(img, top);
+            if (double.IsNaN(width) || double.IsNaN(height) || width <= 0 || height <= 0)
+            {
+                img.Loaded += (s, e) => CenterImage(img, obj, canvas);
+                return;
+            }
+            Canvas.SetLeft(img, (canvas.ActualWidth / 2) - (width / 2));
+            Canvas.SetTop(img, (canvas.ActualHeight / 2) - (height / 2));
         }
 
         public void RemoveObject(Guid id)
@@ -73,16 +76,8 @@ namespace VLSGame.Rendering
                 panel?.Children.Remove(img);
                 uiMap.Remove(obj);
                 objects.Remove(obj);
-            }
-        }
-
-        public void RemoveObject(CustomObject2D obj)
-        {
-            if (obj != null && uiMap.TryGetValue(obj, out var img))
-            {
-                panel?.Children.Remove(img);
-                uiMap.Remove(obj);
-                objects.Remove(obj);
+                animationFrames.Remove(obj);
+                animationCallbacks.Remove(obj);
             }
         }
 
@@ -93,11 +88,33 @@ namespace VLSGame.Rendering
         {
             if (panel == null) return;
 
-            // Обновляем видимость и трансформации у всех существующих Image
             foreach (var kvp in uiMap)
             {
                 var obj = kvp.Key;
                 var img = kvp.Value;
+
+                // Анимация (как в 3D)
+                if (obj.Animation.IsPlaying && animationFrames.TryGetValue(obj, out var frames))
+                {
+                    int step = obj.Animation.IsReversed ? -1 : 1;
+                    int newFrame = (obj.Animation.CurrentFrame ?? 0) + step;
+                    if (newFrame < 0 || newFrame >= frames.Count)
+                    {
+                        obj.Animation.Stop();
+                        obj.Animation.CurrentFrame = obj.Animation.IsReversed ? 0 : frames.Count - 1;
+                        if (animationCallbacks.TryGetValue(obj, out var callback))
+                            callback?.Invoke();
+                    }
+                    else
+                    {
+                        obj.Animation.CurrentFrame = newFrame;
+                        obj.Texture = frames[newFrame];
+                        img.Source = obj.Texture;
+                        // Если панель Canvas – перецентрируем (размер мог измениться)
+                        if (panel is Canvas canvas)
+                            CenterImage(img, obj, canvas);
+                    }
+                }
 
                 img.Visibility = obj.IsVisible ? Visibility.Visible : Visibility.Collapsed;
                 UpdateImageTransform(img, obj);
@@ -107,9 +124,7 @@ namespace VLSGame.Rendering
         private static void UpdateImageTransform(Image img, CustomObject2D obj)
         {
             if (Math.Abs(obj.Scale - 1.0) < 0.001 && obj.X == 0 && obj.Y == 0)
-            {
                 img.RenderTransform = null;
-            }
             else
             {
                 var group = new TransformGroup();
@@ -125,6 +140,8 @@ namespace VLSGame.Rendering
                 panel?.Children.Remove(img);
             uiMap.Clear();
             objects.Clear();
+            animationFrames.Clear();
+            animationCallbacks.Clear();
         }
     }
 }

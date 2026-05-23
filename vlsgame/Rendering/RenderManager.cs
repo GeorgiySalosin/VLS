@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using VLSGame.Config;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content3D;
@@ -43,7 +44,73 @@ namespace VLSGame.Rendering
 
 
 
-        #region 2D API
+        #region 2D 
+
+        private CustomObject2D? crosshair2D;
+        private CustomObject2D? scope2D;
+        private CameraProperties? cameraProperties;
+
+        public void Initialize2D(CameraProperties cameraProperties)
+        {
+            this.cameraProperties = cameraProperties;
+            cameraProperties.PropertyChanged += OnCameraPropertyChanged;
+            CreateCrosshair2D();
+            CreateScope2D();
+            Update2DVisibility();
+        }
+
+        private void OnCameraPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CameraProperties.FieldOfView))
+                Update2DVisibility();
+        }
+
+        private void Update2DVisibility()
+        {
+            if (cameraProperties == null) return;
+            bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV;
+            crosshair2D?.IsVisible = !isScoped;
+            
+        }
+
+        private void CreateCrosshair2D()
+        {
+            var tex = MatchTexturePool.Instance.GetCrosshairTexture();
+            crosshair2D = new CustomObject2D(tex, tag: "Crosshair") { IsVisible = true };
+            Add2D(crosshair2D);
+        }
+
+        private void CreateScope2D()
+        {
+            var frames = MatchTexturePool.Instance.GetSVLK14SZoomingFrames();
+            if (frames == null || frames.Count == 0) return;
+            var firstFrame = frames[0];
+            scope2D = new CustomObject2D(firstFrame, tag: "Scope");
+            // Добавляем с кадрами и коллбэком
+            renderer2D.AddObject(scope2D, frames.ToList(), OnScopeAnimationComplete);
+        }
+
+        private void OnScopeAnimationComplete()
+        {
+            Update2DVisibility();
+        }
+
+        public void StartScopeAnimationForward()
+        {
+            if (scope2D == null) return;
+            scope2D.Animation.PlayForward();
+            Update2DVisibility();
+        }
+
+        public void StartScopeAnimationBackward()
+        {
+            if (scope2D == null) return;
+            scope2D.Animation.PlayBackward();
+            Update2DVisibility();
+        }
+
+
+
         public void Add2D(CustomObject2D obj) => renderer2D.AddObject(obj);
         public void Remove2D(Guid id) => renderer2D.RemoveObject(id);
         public CustomObject2D? Get2D(Guid id) => renderer2D.GetObject(id);
@@ -161,7 +228,7 @@ namespace VLSGame.Rendering
         {
             var mesh = PlaneMesh(fxScale);
 
-            var texture = texturePool.GetEmptyTexture();
+            var texture = texturePool.GetEmptyTexture3D();
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
             var bloodFXVisual = new ModelVisual3D { Content = geometryModel };
@@ -172,7 +239,7 @@ namespace VLSGame.Rendering
 
 
             bloodFX.SetWorldPosition(worldPosition * 0.95);                           // place an effect a bit closer than the character is to avoid mesh overlapping
-            bloodFX.Animation.IsPlaying = true;
+            bloodFX.Animation.PlayForward();
             Add3D(bloodFX);
         }
 

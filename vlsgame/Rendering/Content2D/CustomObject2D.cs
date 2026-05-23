@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Media;
+using VLSGame.Rendering.Content3D;
 
 namespace VLSGame.Rendering.Content2D
 {
@@ -12,5 +13,7 @@ namespace VLSGame.Rendering.Content2D
         public double Y { get; set; }
         public double Scale { get; set; } = 1.0;
         public bool IsVisible { get; set; } = true;
+
+        public Animation Animation { get; } = new();
     }
 }

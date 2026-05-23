@@ -20,9 +20,9 @@ namespace VLSGame.Models
 
         #region 3D-rendered textures (ImageBrushes)
 
+        private readonly ImageBrush emptyBrush = new();
+        public ImageBrush GetEmptyTexture3D() => emptyBrush;
 
-        private readonly ImageBrush Empty = new();
-        public ImageBrush GetEmptyTexture() => Empty;
 
 
         #region Bullet 
@@ -45,7 +45,6 @@ namespace VLSGame.Models
         }
         #endregion
 
-
         #region Enemy 
         private readonly ImageBrush Test_Enemy = LoadTextureTransparent(@"Content\Enemy\Test_Enemy.png");
 
@@ -53,7 +52,6 @@ namespace VLSGame.Models
 
         private readonly Mat Test_Enemy_Coll = LoadCV(@"Content\Enemy\Test_Enemy_Coll.png");
         #endregion
-
 
         #region Blood FX 
         private readonly List<ImageBrush> Animation_Blood =
@@ -85,12 +83,11 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
             if (frame >= Animation_Blood.Count)
             {
                 frame = -1;
-                return Empty;
+                return GetEmptyTexture3D();
             }
             return Animation_Blood[frame];
         }
         #endregion
-
 
         #region World
         private ImageBrush World_Color;
@@ -126,44 +123,130 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
         }
         #endregion
 
-        #endregion
-
-
-        #region 2D-rendered textures (ImageSource)
-
-        private readonly int screenWidth = 2560; // значение по умолчанию, будет обновлено
-        /// <summary>
-        /// Устанавливает размер экрана для адаптивной загрузки текстур.
-        /// Вызовите один раз при инициализации матча.
-        /// </summary>
-
-
-        /// <summary>
-        /// Загружает 2D текстуры. Вызовите после SetScreenSize.
-        /// </summary>
-        private ImageSource crosshairTexture = LoadTextureFixedDpi("pack://application:,,,/Content/ui/T_CrossAIM.png", 96);
-        private ImageSource scopeTexture = LoadTextureAdaptive("pack://application:,,,/Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_025.png");
-
-        public ImageSource GetCrosshairTexture() => crosshairTexture;
-        public ImageSource GetScopeTexture() => scopeTexture;
-
-        /// <summary>
-        /// Загружает текстуру с принудительным DPI (обычно 96) – для чёткого пиксельного отображения.
-        /// </summary>
-        private static ImageSource LoadTextureFixedDpi(string path, double targetDpi)
+        #region Utils 
+        private static ImageBrush LoadTexture(string path)
         {
+
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            bitmap.UriSource = new Uri(path, UriKind.Relative);
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.EndInit();
             bitmap.Freeze();
 
-            // Если DPI совпадает – возвращаем как есть
+
+            var brush = new ImageBrush(bitmap)
+            {
+                ViewportUnits = BrushMappingMode.Absolute,
+                TileMode = TileMode.None,
+                Stretch = Stretch.Fill
+            };
+            return brush;
+        }
+
+        private static ImageBrush LoadTextureTransparent(string path, double opacity = 0.5)
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path, UriKind.Relative);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();        // remove if changing transparency dynamically
+
+            var brush = new ImageBrush(bitmap)
+            {
+                ViewportUnits = BrushMappingMode.Absolute,
+                TileMode = TileMode.None,
+                Stretch = Stretch.Fill,
+                Opacity = opacity   // дополнительное ослабление прозрачности
+            };
+            return brush;
+        }
+
+        private static Mat LoadCV(string path) => Cv2.ImRead(path, ImreadModes.Unchanged);  
+        #endregion
+
+        #endregion
+
+
+
+        #region 2D-rendered textures (ImageSource)
+
+        private readonly ImageSource emptySource = new BitmapImage();
+        public ImageSource GetEmptyTexture2D() => emptySource;
+
+
+
+        #region HUD stuff 
+        private ImageSource crosshairTexture = LoadTextureFixedDpi(@"Content/ui/T_CrossAIM.png");
+        #endregion
+
+        #region RifleAnimations 
+
+        private readonly List<ImageSource> Animation_SVLK14S_Zooming =
+            [
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_000.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_001.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_002.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_003.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_004.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_005.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_006.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_007.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_008.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_009.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_010.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_011.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_012.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_013.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_014.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_015.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_016.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_017.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_018.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_019.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_020.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_021.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_022.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_023.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_024.png"),
+            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_025.png")
+            ];
+        public ImageSource? GetSVLK14SZoomingTexture(ref int frame)
+        {
+            if (frame >= Animation_SVLK14S_Zooming.Count)
+            {
+                frame = -1;
+                return GetEmptyTexture2D();
+            }
+            return Animation_SVLK14S_Zooming[frame];
+        }
+        public IReadOnlyList<ImageSource> GetSVLK14SZoomingFrames() => Animation_SVLK14S_Zooming;
+
+
+        public ImageSource GetCrosshairTexture() => crosshairTexture;
+        #endregion
+
+
+        #region Utils 
+        /// <summary>
+        /// Load texture w/ forced DPI (idk but fucking wpf requires strictly 96 dpi otherwise it will smear a texture at its own wish)
+        /// This Will make a texture stay same pixel size through different screen resolutions
+        /// </summary>
+        private static ImageSource LoadTextureFixedDpi(string path, double targetDpi = 96.0)
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path, UriKind.Relative);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            // Matching dpi - no conversion
             if (Math.Abs(bitmap.DpiX - targetDpi) < 0.01 && Math.Abs(bitmap.DpiY - targetDpi) < 0.01)
                 return bitmap;
 
-            // Иначе перерендериваем с нужным DPI
+            // re-render otherwise using correct dpi
             var visual = new DrawingVisual();
             using (var context = visual.RenderOpen())
             {
@@ -189,23 +272,17 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
         {
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            bitmap.UriSource = new Uri(path, UriKind.Relative);
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.EndInit();
             bitmap.Freeze();
-
-            // Проверка загрузки
-            if (bitmap.PixelWidth == 0 || bitmap.PixelHeight == 0)
-                throw new InvalidOperationException($"Failed to load texture: {path}");
 
             double screenWidth = SystemParameters.PrimaryScreenWidth;
             int targetWidth = (int)(screenWidth * 16.0 / 15.0);
             int targetHeight = (int)(bitmap.PixelHeight * ((double)targetWidth / bitmap.PixelWidth));
 
-            if (targetWidth <= 0 || targetHeight <= 0)
-                throw new InvalidOperationException("Invalid target size");
 
-            // Отрисовка с новым размером и DPI 96
+
             var drawingVisual = new DrawingVisual();
             using (var context = drawingVisual.RenderOpen())
             {
@@ -216,10 +293,15 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
             renderBitmap.Render(drawingVisual);
             renderBitmap.Freeze();
             return renderBitmap;
-        }
+        } 
         #endregion
 
-        #region Utility 
+
+        #endregion
+
+
+
+        #region Shared Utils
         /// <summary>
         /// Get hitzone from U, V coordinates of Enemy plane mesh
         /// </summary>
@@ -282,46 +364,6 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
             return (pixelX, pixelY);
         }
 
-        private static ImageBrush LoadTexture(string path)
-        {
-
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.Relative);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-            bitmap.Freeze();
-
-
-            var brush = new ImageBrush(bitmap)
-            {
-                ViewportUnits = BrushMappingMode.Absolute,
-                TileMode = TileMode.None,
-                Stretch = Stretch.Fill
-            };
-            return brush;
-        }
-
-        private static ImageBrush LoadTextureTransparent(string path, double opacity = 0.5)
-        {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.Relative);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-            bitmap.Freeze();        // remove if changing transparency dynamically
-
-            var brush = new ImageBrush(bitmap)
-            {
-                ViewportUnits = BrushMappingMode.Absolute,
-                TileMode = TileMode.None,
-                Stretch = Stretch.Fill,
-                Opacity = opacity   // дополнительное ослабление прозрачности
-            };
-            return brush;
-        }
-
-        private static Mat LoadCV(string path) => Cv2.ImRead(path, ImreadModes.Unchanged); 
         #endregion
     }
 }

@@ -121,11 +121,10 @@ namespace VLSGame.ViewModels
         public void OnViewLoaded()
         {
             renderManager.Initialize(viewport, hud, colorMapPath, depthMapPath);
+            renderManager.Initialize2D(CameraProperties);   
 
             renderManager.CreateEnvironmentObject3D();       // Create a world panorama
             renderManager.SetLight();
-            
-            SetupLayers();
             StartGameLoop();
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
@@ -138,29 +137,7 @@ namespace VLSGame.ViewModels
             PlayerManager.AddPlayer(player);
         }
 
-        private void SetupLayers()
-        {
-            var crosshairTex = MatchTexturePool.Instance.GetCrosshairTexture();
-            var scopeTex = MatchTexturePool.Instance.GetScopeTexture();
 
-            crosshairObject = new CustomObject2D(crosshairTex, tag: "Crosshair") { IsVisible = true };
-            scopeObject = new CustomObject2D(scopeTex, tag: "Scope") { IsVisible = false };
-
-            RenderManager.Instance.Add2D(crosshairObject);
-            RenderManager.Instance.Add2D(scopeObject);
-
-            CameraProperties.PropertyChanged += OnCameraPropertyChanged;
-        }
-
-        private void OnCameraPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(CameraProperties.FieldOfView))
-            {
-                bool isScoped = CameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV;
-                if (crosshairObject != null) crosshairObject.IsVisible = !isScoped;
-                if (scopeObject != null) scopeObject.IsVisible = isScoped;
-            }
-        }
 
 
 

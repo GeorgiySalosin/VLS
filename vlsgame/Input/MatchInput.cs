@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Config;
+using VLSGame.Rendering;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Input
@@ -86,7 +87,6 @@ namespace VLSGame.Input
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (viewModel == null) return;
-
             if (e.ChangedButton == MouseButton.Left)
             {
                 viewModel.Shoot();
@@ -95,8 +95,23 @@ namespace VLSGame.Input
             {
                 isAiming = true;
                 viewModel.CameraProperties.TargetFOV = Configuration.Instance.CameraAnimationSettings.AimingFOV;
+                RenderManager.Instance.StartScopeAnimationForward();
             }
         }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (viewModel == null) return;     // restrict zooming bypassing the RMB
+
+
+            if (e.ChangedButton == MouseButton.Right)
+            {
+                isAiming = false;
+                viewModel.CameraProperties.TargetFOV = Configuration.Instance.CameraAnimationSettings.DefaultFOV;
+                RenderManager.Instance.StartScopeAnimationBackward();
+            }
+        }
+
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
@@ -165,17 +180,7 @@ namespace VLSGame.Input
             }
         }
 
-        private void OnMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (viewModel == null) return;     // restrict zooming bypassing the RMB
 
-
-            else if (e.ChangedButton == MouseButton.Right)
-            {
-                isAiming = false;
-                viewModel.CameraProperties.TargetFOV = Configuration.Instance.CameraAnimationSettings.DefaultFOV;
-            }
-        }
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
