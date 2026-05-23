@@ -1,5 +1,6 @@
 using OpenCvSharp;
 using System.CodeDom;
+using System.Diagnostics;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
@@ -80,6 +81,8 @@ namespace VLSGame.ViewModels
         private readonly string colorMapPath;
         private readonly string depthMapPath;
 
+        private int tickCounter;
+        private DateTime lastFpsTime = DateTime.Now;
 
         private DateTime lastTickTime = DateTime.Now;
 
@@ -180,6 +183,15 @@ namespace VLSGame.ViewModels
             BulletManager.UpdateBullets(deltaTime);
             renderManager.Render();
             GetCenterDistance();
+
+            tickCounter++;
+            if ((DateTime.Now - lastFpsTime).TotalSeconds >= 1.0)
+            {
+                int fps = tickCounter;
+                tickCounter = 0;
+                lastFpsTime = DateTime.Now;
+                Debug.WriteLine($"[GameLoop] FPS: {fps}");
+            }
         }
 
 
