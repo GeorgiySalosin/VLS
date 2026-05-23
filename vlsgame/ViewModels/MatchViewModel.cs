@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using VLSGame.Config;
+using VLSGame.Input;
 using VLSGame.Models;
 using VLSGame.Rendering;
 using VLSGame.Rendering.Content2D;
@@ -78,6 +79,11 @@ namespace VLSGame.ViewModels
         private int _frameCounter;
         private readonly string colorMapPath;
         private readonly string depthMapPath;
+
+
+        private DateTime lastTickTime = DateTime.Now;
+
+
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
@@ -157,19 +163,27 @@ namespace VLSGame.ViewModels
             gameTimer.Start();
         }
 
+
+
         private void OnGameTick(object? sender, EventArgs e)
         {
-            // Обновляем FOV (плавное приближение/отдаление)
+            // 1. FOV
             CameraProperties.UpdateFOV(deltaTime, (float)Configuration.Instance.CameraAnimationSettings.ZoomSpeedAuto);
 
+            // 2. Анимации (меняют AnimationRotationX/Y -> устанавливают флаг dirty)
             animationController.Update(deltaTime);
+
+            // 3. Применяем все изменения к ViewModel (пересчёт RotationX/Y, LookDirection, уведомления)
+            CameraProperties.ApplyPendingChanges();
+
+            // 4. Обновление пуль и рендер
             BulletManager.UpdateBullets(deltaTime);
             renderManager.Render();
             GetCenterDistance();
-            _frameCounter++;
-            if (_frameCounter % 60 == 0)
-                System.Diagnostics.Debug.WriteLine($"FOV: {CameraProperties.FieldOfView:F2} / Target: {CameraProperties.TargetFOV:F2}");
         }
+
+
+
 
         internal void Shoot()
         {

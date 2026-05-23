@@ -22,11 +22,17 @@ namespace VLSGame.Input
         private DateTime lastMoveTime;
         private readonly Queue<double> speedBuffer = new();
 
-        private double currentRotationX;
-        private double currentRotationY;
 
-        private double smoothRotationX, smoothRotationY;
-        private const double MouseSmoothing = 0.85; // 0 = нет сглаживания, 1 = максимальное
+
+        private double accumulatedDeltaX;
+        private double accumulatedDeltaY;
+        private readonly object deltaLock = new();
+
+        // Вместо Queue<double> speedBuffer:
+        private double smoothedSpeed = 0.0;
+        // Для расчёта реального времени между кадрами (если хотим точную скорость)
+        private DateTime lastApplyTime = DateTime.Now;
+
 
         private bool isAiming = false;
 
@@ -117,69 +123,123 @@ namespace VLSGame.Input
         {
             if (viewModel == null || window == null) return;
 
-
-
             Point currentPosition = e.GetPosition(window);
-            DateTime currentTime = DateTime.Now;
+            Point centerInWindow = new(window.ActualWidth / 2, window.ActualHeight / 2);
 
-            // Get screen center
-            Point centerInWindow = new (window.ActualWidth / 2, window.ActualHeight / 2);
-            
-            double deltaX = currentPosition.X - centerInWindow.X;
-            double deltaY = currentPosition.Y - centerInWindow.Y;
-            
-            if (Math.Abs(deltaX) > 0 || Math.Abs(deltaY) > 0)
+            double dx = currentPosition.X - centerInWindow.X;
+            double dy = currentPosition.Y - centerInWindow.Y;
+
+            if (Math.Abs(dx) > 0 || Math.Abs(dy) > 0)
             {
-                double distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-                double timeDelta = (currentTime - lastMoveTime).TotalMilliseconds;
-                
-                double speed = distance / timeDelta;
-                double adaptiveSensitivity = CalculateAdaptiveSensitivity(speed);
-                
-                currentRotationY -= deltaX * adaptiveSensitivity;
-                currentRotationX -= deltaY * adaptiveSensitivity;
+                DateTime now = DateTime.Now;
+                double timeDelta = (now - lastMoveTime).TotalMilliseconds;
+                if (timeDelta <= 0) timeDelta = 1; // защита от нуля
 
-                //  Blocking camera view if looking too low/high
-                //currentRotationX = Math.Max(-Math.PI / 2 + Configuration.Instance.GameSettings.ClampVRotationMin,
-                //                            Math.Min(Math.PI / 2 - Configuration.Instance.GameSettings.ClampVRotationMax,
-                //                                    currentRotationX));
+                double distance = Math.Sqrt(dx * dx + dy * dy);
+                double speed = distance / timeDelta;          // пикселей в миллисекунду
 
-                // Получаем текущее анимационное смещение (радианы)
+                // Экспоненциальное сглаживание (вместо очереди)
+                const double SmoothingFactor = 0.2;
+                smoothedSpeed = smoothedSpeed + (speed - smoothedSpeed) * SmoothingFactor;
+
+                // Адаптивная чувствительность (точь-в-точь оригинал)
+                double sensitivityScale = CalculateAdaptiveSensitivity(smoothedSpeed);
+
+                double baseSens = Configuration.Instance.GameSettings.MouseSensitivity
+                                * ((viewModel?.CameraProperties?.FieldOfView ?? 90.0) / 90.0);
+                double sensitivity = baseSens * sensitivityScale;
+
+                double newRotY = viewModel.CameraProperties.UserRotationY - dx * sensitivity;
+                double newRotX = viewModel.CameraProperties.UserRotationX - dy * sensitivity;
+
+                // Вертикальный clamp с учётом анимации
                 double animX = viewModel.CameraProperties.AnimationRotationX;
-
-                // Общие границы для итогового угла
-                double totalMin = -Math.PI / 2 + Configuration.Instance.GameSettings.ClampVRotationMin;
-                double totalMax = Math.PI / 2 - Configuration.Instance.GameSettings.ClampVRotationMax;
-
-                // Динамические границы для пользовательского угла
+                var cfg = Configuration.Instance.GameSettings;
+                double totalMin = -Math.PI / 2 + cfg.ClampVRotationMin;
+                double totalMax = Math.PI / 2 - cfg.ClampVRotationMax;
                 double userMin = totalMin - animX;
                 double userMax = totalMax - animX;
+                newRotX = Math.Max(userMin, Math.Min(userMax, newRotX));
 
-                currentRotationX = Math.Max(userMin, Math.Min(userMax, currentRotationX));
+                // Мгновенное присвоение без уведомлений (флаг dirty внутри CameraProperties)
+                viewModel.CameraProperties.UserRotationX = newRotX;
+                viewModel.CameraProperties.UserRotationY = newRotY;
 
-               
-
-                // As for horizontal rotation - it's unrestricted
-                viewModel.CameraProperties.UserRotationX = currentRotationX;
-                viewModel.CameraProperties.UserRotationY = currentRotationY;
-
-
-
-                // Return mouse to the center
+                // Возврат курсора
                 Point centerInScreen = window.PointToScreen(centerInWindow);
                 SetCursorPos((int)centerInScreen.X, (int)centerInScreen.Y);
-
-                // Last pos is screen center again
                 lastMousePosition = centerInWindow;
-                lastMoveTime = currentTime;
+                lastMoveTime = now;
             }
             else
             {
                 lastMousePosition = currentPosition;
-                lastMoveTime = currentTime;
+                lastMoveTime = DateTime.Now;
             }
         }
 
+        /// <summary>
+        /// Вызывается ОДИН раз за кадр из игрового цикла.
+        /// Применяет накопленное движение с адаптивной чувствительностью.
+        /// </summary>
+        public void ApplyMouseInput(CameraProperties camera, double frameDeltaTime)
+        {
+            double dx, dy;
+            lock (deltaLock)
+            {
+                dx = accumulatedDeltaX;
+                dy = accumulatedDeltaY;
+                accumulatedDeltaX = 0;
+                accumulatedDeltaY = 0;
+            }
+
+            if (Math.Abs(dx) < 0.001 && Math.Abs(dy) < 0.001)
+                return;
+
+            // Реальная скорость мыши (пикселей в секунду)
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+            double instantSpeed = distance / frameDeltaTime; // frameDeltaTime > 0
+
+            // Экспоненциальное сглаживание скорости (замена очереди)
+            const double smoothing = 0.2;
+            smoothedSpeed += (instantSpeed - smoothedSpeed) * smoothing;
+
+            // Адаптивная чувствительность (ваш оригинальный алгоритм)
+            double sensitivityScale = CalculateAdaptiveSensitivity(smoothedSpeed);
+
+            double baseSens = Configuration.Instance.GameSettings.MouseSensitivity
+                            * (camera.FieldOfView / 90.0);
+            double sensitivity = baseSens * sensitivityScale;
+
+            double newRotY = camera.UserRotationY - dx * sensitivity;
+            double newRotX = camera.UserRotationX - dy * sensitivity;
+
+            // Вертикальный clamp с учётом анимации
+            double animX = camera.AnimationRotationX;
+            var cfg = Configuration.Instance.GameSettings;
+            double totalMin = -Math.PI / 2 + cfg.ClampVRotationMin;
+            double totalMax = Math.PI / 2 - cfg.ClampVRotationMax;
+            double userMin = totalMin - animX;
+            double userMax = totalMax - animX;
+            newRotX = Math.Max(userMin, Math.Min(userMax, newRotX));
+
+            camera.UserRotationX = newRotX;
+            camera.UserRotationY = newRotY;
+        }
+
+        private double CalculateAdaptiveSensitivity(double speed)
+        {
+            var cfg = Configuration.Instance.GameSettings;
+            if (speed <= cfg.MinSpeedThreshold)
+                return cfg.MinSensitivityScale;
+            if (speed >= cfg.MaxSpeedThreshold)
+                return 1.0;
+
+            double t = (speed - cfg.MinSpeedThreshold) /
+                      (cfg.MaxSpeedThreshold - cfg.MinSpeedThreshold);
+            return cfg.MinSensitivityScale +
+                   (1.0 - cfg.MinSensitivityScale) * (1 - Math.Pow(1 - t, 2));
+        }
 
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -201,32 +261,5 @@ namespace VLSGame.Input
             }
         }
 
-        private double CalculateAdaptiveSensitivity(double speed)
-        {
-            speedBuffer.Enqueue(speed);
-            if (speedBuffer.Count > Configuration.Instance.GameSettings.SpeedBufferSize)
-                speedBuffer.Dequeue();
-
-            double smoothedSpeed = speedBuffer.Average();
-            double sensitivityScale;
-
-            if (smoothedSpeed <= Configuration.Instance.GameSettings.MinSpeedThreshold)
-            {
-                sensitivityScale = Configuration.Instance.GameSettings.MinSensitivityScale;
-            }
-            else if (smoothedSpeed >= Configuration.Instance.GameSettings.MaxSpeedThreshold)
-            {
-                sensitivityScale = 1.0;
-            }
-            else
-            {
-                double t = (smoothedSpeed - Configuration.Instance.GameSettings.MinSpeedThreshold) /
-                          (Configuration.Instance.GameSettings.MaxSpeedThreshold - Configuration.Instance.GameSettings.MinSpeedThreshold);
-                sensitivityScale = Configuration.Instance.GameSettings.MinSensitivityScale +
-                                 (1.0 - Configuration.Instance.GameSettings.MinSensitivityScale) * (1 - Math.Pow(1 - t, 2));
-            }
-
-            return Configuration.Instance.GameSettings.MouseSensitivity * (viewModel?.CameraProperties?.FieldOfView ?? 90.0)/90.0 * sensitivityScale;       // if no data we use 90 as default fov
-        }
     }
 }
