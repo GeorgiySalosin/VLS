@@ -1,4 +1,5 @@
 ﻿using OpenCvSharp;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -15,8 +16,14 @@ namespace VLSGame.Models
 
         private static readonly Random rnd = new ();
 
+
+
+        #region 3D-rendered textures (ImageBrushes)
+
+
         private readonly ImageBrush Empty = new();
         public ImageBrush GetEmptyTexture() => Empty;
+
 
         #region Bullet 
         private readonly ImageBrush T_Tracer_Common01 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common01.png");
@@ -35,20 +42,23 @@ namespace VLSGame.Models
                 2 => T_Tracer_Common03,
                 3 => T_Tracer_Common04
             };
-        } 
+        }
         #endregion
 
+
+        #region Enemy 
         private readonly ImageBrush Test_Enemy = LoadTextureTransparent(@"Content\Enemy\Test_Enemy.png");
 
         public ImageBrush GetEnemyTexture() => Test_Enemy;
 
         private readonly Mat Test_Enemy_Coll = LoadCV(@"Content\Enemy\Test_Enemy_Coll.png");
+        #endregion
 
 
-
-        private readonly List<ImageBrush> Animation_Blood = 
-        [
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png"),
+        #region Blood FX 
+        private readonly List<ImageBrush> Animation_Blood =
+[
+LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud03.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud04.png"),
@@ -68,7 +78,7 @@ namespace VLSGame.Models
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud18.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png")
-        ];
+];
 
         public ImageBrush? GetBloodFXTexture(ref int frame)
         {
@@ -79,30 +89,8 @@ namespace VLSGame.Models
             }
             return Animation_Blood[frame];
         }
+        #endregion
 
-        public HitZoneInfo GetHitZoneFromUV(float u, float v)
-        {
-            if (Test_Enemy_Coll == null)
-                return HitZoneInfo.None;
-
-            int width = Test_Enemy_Coll.Width;
-            int height = Test_Enemy_Coll.Height;
-
-            int pixelX = (int)(u * (width - 1));
-            int pixelY = (int)(v * (height - 1));
-
-            pixelX = Math.Clamp(pixelX, 0, width - 1);
-            pixelY = Math.Clamp(pixelY, 0, height - 1);
-
-            Vec3b color = Test_Enemy_Coll.At<Vec3b>(pixelY, pixelX);
-            // OpenCV: Vec3b -> Item0 = Blue, Item1 = Green, Item2 = Red
-
-            if (color.Item2 > 128) return HitZoneInfo.Head;   // RED channel
-            if (color.Item1 > 128) return HitZoneInfo.Body;   // GREEN channel
-            if (color.Item0 > 128) return HitZoneInfo.Limb;  // BLUE channel
-
-            return HitZoneInfo.None;
-        }
 
         #region World
         private ImageBrush World_Color;
@@ -135,10 +123,132 @@ namespace VLSGame.Models
             World_Depth = LoadCV(depthMapPath);
             World_Depth_Width = World_Depth.Width;
             World_Depth_Height = World_Depth.Height;
-        } 
+        }
         #endregion
 
-        // Enter texture coordinates of pixel to recieve its depth from the depth map
+        #endregion
+
+
+        #region 2D-rendered textures (ImageSource)
+
+        private readonly int screenWidth = 2560; // значение по умолчанию, будет обновлено
+        /// <summary>
+        /// Устанавливает размер экрана для адаптивной загрузки текстур.
+        /// Вызовите один раз при инициализации матча.
+        /// </summary>
+
+
+        /// <summary>
+        /// Загружает 2D текстуры. Вызовите после SetScreenSize.
+        /// </summary>
+        private ImageSource crosshairTexture = LoadTextureFixedDpi("pack://application:,,,/Content/ui/T_CrossAIM.png", 96);
+        private ImageSource scopeTexture = LoadTextureAdaptive("pack://application:,,,/Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_025.png");
+
+        public ImageSource GetCrosshairTexture() => crosshairTexture;
+        public ImageSource GetScopeTexture() => scopeTexture;
+
+        /// <summary>
+        /// Загружает текстуру с принудительным DPI (обычно 96) – для чёткого пиксельного отображения.
+        /// </summary>
+        private static ImageSource LoadTextureFixedDpi(string path, double targetDpi)
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            // Если DPI совпадает – возвращаем как есть
+            if (Math.Abs(bitmap.DpiX - targetDpi) < 0.01 && Math.Abs(bitmap.DpiY - targetDpi) < 0.01)
+                return bitmap;
+
+            // Иначе перерендериваем с нужным DPI
+            var visual = new DrawingVisual();
+            using (var context = visual.RenderOpen())
+            {
+                context.DrawImage(bitmap, new System.Windows.Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight));
+            }
+
+            var renderBitmap = new RenderTargetBitmap(
+                bitmap.PixelWidth, bitmap.PixelHeight,
+                targetDpi, targetDpi,
+                PixelFormats.Pbgra32);
+
+            renderBitmap.Render(visual);
+            renderBitmap.Freeze();
+            return renderBitmap;
+        }
+
+
+        /// <summary>
+        /// Загружает текстуру с адаптивным размером: ширина = screenWidth * 16 / 15,
+        /// высота пропорциональна исходному соотношению сторон.
+        /// </summary>
+        private static ImageSource LoadTextureAdaptive(string path)
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            // Проверка загрузки
+            if (bitmap.PixelWidth == 0 || bitmap.PixelHeight == 0)
+                throw new InvalidOperationException($"Failed to load texture: {path}");
+
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            int targetWidth = (int)(screenWidth * 16.0 / 15.0);
+            int targetHeight = (int)(bitmap.PixelHeight * ((double)targetWidth / bitmap.PixelWidth));
+
+            if (targetWidth <= 0 || targetHeight <= 0)
+                throw new InvalidOperationException("Invalid target size");
+
+            // Отрисовка с новым размером и DPI 96
+            var drawingVisual = new DrawingVisual();
+            using (var context = drawingVisual.RenderOpen())
+            {
+                context.DrawImage(bitmap, new System.Windows.Rect(0, 0, targetWidth, targetHeight));
+            }
+
+            var renderBitmap = new RenderTargetBitmap(targetWidth, targetHeight, 96, 96, PixelFormats.Pbgra32);
+            renderBitmap.Render(drawingVisual);
+            renderBitmap.Freeze();
+            return renderBitmap;
+        }
+        #endregion
+
+        #region Utility 
+        /// <summary>
+        /// Get hitzone from U, V coordinates of Enemy plane mesh
+        /// </summary>
+        public HitZoneInfo GetHitZoneFromUV(float u, float v)
+        {
+            if (Test_Enemy_Coll == null)
+                return HitZoneInfo.None;
+
+            int width = Test_Enemy_Coll.Width;
+            int height = Test_Enemy_Coll.Height;
+
+            int pixelX = (int)(u * (width - 1));
+            int pixelY = (int)(v * (height - 1));
+
+            pixelX = Math.Clamp(pixelX, 0, width - 1);
+            pixelY = Math.Clamp(pixelY, 0, height - 1);
+
+            Vec3b color = Test_Enemy_Coll.At<Vec3b>(pixelY, pixelX);
+            // OpenCV: Vec3b -> Item0 = Blue, Item1 = Green, Item2 = Red
+
+            if (color.Item2 > 128) return HitZoneInfo.Head;   // RED channel
+            if (color.Item1 > 128) return HitZoneInfo.Body;   // GREEN channel
+            if (color.Item0 > 128) return HitZoneInfo.Limb;  // BLUE channel
+
+            return HitZoneInfo.None;
+        }
+
+        /// <summary>
+        /// Enter texture coordinates of pixel to recieve its depth from the depth map
         public double GetDistanceAtPixel(int x, int y)
         {
             if (World_Depth == null || x < 0 || x >= World_Depth_Width || y >= World_Depth_Height)
@@ -147,7 +257,6 @@ namespace VLSGame.Models
             return (World_Depth.At<ushort>(y, x) / (double)ushort.MaxValue)
                    * Configuration.Instance.GameSettings.MaxSnipingDistance;
         }
-
 
         /// <summary>
         /// Takes a direction vector and converts it to pixel coordinates of a sphere mesh clamped by a depthmap resolution (used for getting a specified pixel of depth map)
@@ -212,6 +321,7 @@ namespace VLSGame.Models
             return brush;
         }
 
-        private static Mat LoadCV(string path) => Cv2.ImRead(path, ImreadModes.Unchanged);
+        private static Mat LoadCV(string path) => Cv2.ImRead(path, ImreadModes.Unchanged); 
+        #endregion
     }
 }

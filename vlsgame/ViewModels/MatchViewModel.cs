@@ -1,4 +1,5 @@
 using OpenCvSharp;
+using System.CodeDom;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,7 +10,7 @@ using System.Windows.Threading;
 using VLSGame.Config;
 using VLSGame.Models;
 using VLSGame.Rendering;
-using VLSGame.Rendering.Content2D.HUD;
+using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content3D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
@@ -71,6 +72,8 @@ namespace VLSGame.ViewModels
         private double cachedDistance = 0;
 
 
+        private CustomObject2D? crosshairObject;
+        private CustomObject2D? scopeObject;
 
         private int _frameCounter;
         private readonly string colorMapPath;
@@ -137,19 +140,28 @@ namespace VLSGame.ViewModels
 
         private void SetupLayers()
         {
-            // HUD 
-            var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
+            var crosshairTex = MatchTexturePool.Instance.GetCrosshairTexture();
+            var scopeTex = MatchTexturePool.Instance.GetScopeTexture();
 
-            hudLayer?.Initialize(this);
-            var crosshair = new CrosshairTexture();
-            hudLayer?.RegisterTexture(crosshair);
-            hudLayer?.ShowTexture("Crosshair");
+            crosshairObject = new CustomObject2D(crosshairTex, tag: "Crosshair") { IsVisible = true };
+            scopeObject = new CustomObject2D(scopeTex, tag: "Scope") { IsVisible = false };
 
-            var scope = new TestScopeTexture();
-            hudLayer?.RegisterTexture(scope);
-            //hudLayer?.ShowTexture("Scope");
+            RenderManager.Instance.Add2D(crosshairObject);
+            RenderManager.Instance.Add2D(scopeObject);
 
+            CameraProperties.PropertyChanged += OnCameraPropertyChanged;
         }
+
+        private void OnCameraPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CameraProperties.FieldOfView))
+            {
+                bool isScoped = CameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV;
+                if (crosshairObject != null) crosshairObject.IsVisible = !isScoped;
+                if (scopeObject != null) scopeObject.IsVisible = isScoped;
+            }
+        }
+
 
 
         #region GAME EVENTS 

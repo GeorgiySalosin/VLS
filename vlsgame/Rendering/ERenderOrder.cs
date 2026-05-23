@@ -1,6 +1,6 @@
 ﻿namespace VLSGame.Rendering
 {
-    public enum RenderOrder
+    public enum Layer2DRenderingOrder
     {
         Background = 0,
         Projectile = 1,

@@ -4,7 +4,6 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
-using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
 using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
@@ -21,7 +20,8 @@ namespace VLSGame.Rendering
         #region Initialization  
 
         public static RenderManager Instance { get; } = new();
-        private static readonly Renderer3D renderer3D = Renderer3D.Instance;    // A tool responsible for rendering of all 3D.
+        private static readonly Renderer3D renderer3D = Renderer3D.Instance;    // A tool responsible for rendering of all 3D. Renders stuff to Viewport3D
+        private static readonly Renderer2D renderer2D = Renderer2D.Instance;    // A tool responsible for rendering of all 2D. Renders stuff to Panel
         private static readonly MatchTexturePool texturePool = MatchTexturePool.Instance;           // Pre-loading all in-game textures and reusing them!
 
         private RenderManager() { }
@@ -31,11 +31,9 @@ namespace VLSGame.Rendering
         public void Initialize(Viewport3D viewport, Panel hudPanel, string colorMapPath, string depthMapPath)
         {
             if (isInitialized) return;
+
             renderer3D.Initialize(viewport);
-
-
-            RegisterLayer(new HudLayer(hudPanel));
-            RegisterLayer(new HudLayer(hudPanel));
+            renderer2D.Initialize(hudPanel);
 
             texturePool.UpdateEnvironmentTexture(colorMapPath, depthMapPath);      // Loads new environment textures
 
@@ -45,23 +43,12 @@ namespace VLSGame.Rendering
 
 
 
-        #region 2D 
-        private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
-
-        public void RegisterLayer(Layer layer)
-        {
-            if (!Layers.ContainsKey(layer.Order))
-            {
-                Layers.Add(layer.Order, layer);
-            }
-        }
-
-        public T? GetLayer<T>() where T : Layer => Layers.Values.OfType<T>().FirstOrDefault();
-
-
-
+        #region 2D API
+        public void Add2D(CustomObject2D obj) => renderer2D.AddObject(obj);
+        public void Remove2D(Guid id) => renderer2D.RemoveObject(id);
+        public CustomObject2D? Get2D(Guid id) => renderer2D.GetObject(id);
+        public CustomObject2D? Get2D(string tag) => renderer2D.GetObject(tag);
         #endregion
-        //TODO: Create a new Renderer 2D Class, Move those into it.
 
 
         #region 3D 
@@ -249,6 +236,7 @@ namespace VLSGame.Rendering
 
         public void Render()
         {
+            renderer2D.Render();
             renderer3D.Render();
         }
 

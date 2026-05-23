@@ -2,8 +2,6 @@
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Config;
-using VLSGame.Rendering;
-using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Input

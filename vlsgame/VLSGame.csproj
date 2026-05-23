@@ -33,6 +33,33 @@
     <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud18.png" />
     <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png" />
     <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_000.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_001.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_002.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_003.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_004.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_005.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_006.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_007.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_008.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_009.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_010.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_011.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_012.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_013.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_014.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_015.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_016.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_017.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_018.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_019.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_020.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_021.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_022.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_023.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_024.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_025.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\T_Scope_Lens.png" />
     <None Remove="Content\checkmark.png" />
     <None Remove="Content\Lobby\T_MapPreview_Combined.png" />
     <None Remove="Content\Lobby\T_MapPreview_Fog.png" />
@@ -113,6 +140,84 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_000.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_002.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_003.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_004.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_005.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_006.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_007.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_008.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_009.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_010.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_011.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_012.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_013.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_014.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_015.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_016.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_017.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_018.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_019.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_020.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_022.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_023.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_024.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_025.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\T_Scope_Lens.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\checkmark.png">
@@ -203,6 +308,7 @@
 
   <ItemGroup>
     <Folder Include="Content\Animation\BallisticsFX\" />
+    <Folder Include="Rendering\Content2D\HUD\" />
   </ItemGroup>
 
 </Project>
