@@ -13,6 +13,7 @@ using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
+using Window = System.Windows.Window;
 
 namespace VLSGame.ViewModels
 {
@@ -70,13 +71,17 @@ namespace VLSGame.ViewModels
         private int lastPixelY = -1;
         private double cachedDistance = 0;
 
-
-
         private int _frameCounter;
         private readonly string colorMapPath;
         private readonly string depthMapPath;
 
-        public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
+        private readonly Window loadingWindow;
+        private readonly IProgress<LoadingProgress>? loadProgress;
+        internal event Action? LoadingComplete; // событие по завершении загрузки
+
+        public MatchViewModel(IGameMode gameMode,
+            string colorMapPath, string depthMapPath,
+            IProgress<LoadingProgress> progress, Window? loadingWindow = null)
         {
             this.gameMode = gameMode;
 
@@ -113,6 +118,9 @@ namespace VLSGame.ViewModels
 
             this.colorMapPath = colorMapPath;
             this.depthMapPath = depthMapPath;
+
+            loadProgress = progress;
+            this.loadingWindow = loadingWindow;
         }
 
         public void OnViewLoaded()
@@ -133,6 +141,25 @@ namespace VLSGame.ViewModels
                 HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
             };
             PlayerManager.AddPlayer(player);
+        }
+        public async Task OnViewLoadedAsync()
+        {
+            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, loadProgress);
+            renderManager.CreateEnvironmentObject3D();
+            renderManager.SetLight();
+            SetupLayers();
+            StartGameLoop();
+
+            Vector3D cameraLook3D = CameraProperties.LookDirection;
+            Vector3 cameraLook = V3(cameraLook3D);
+            Player player = new(new Vector3(.4608f, -.0027f, .8875f))
+            {
+                HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
+            };
+            PlayerManager.AddPlayer(player);
+
+            loadingWindow?.Close();
+            LoadingComplete?.Invoke();     // сигнализируем, что можно показать окно матча
         }
 
         private void SetupLayers()

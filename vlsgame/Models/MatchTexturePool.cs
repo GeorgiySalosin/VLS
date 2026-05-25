@@ -1,4 +1,6 @@
 ﻿using OpenCvSharp;
+using System.IO;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -135,8 +137,74 @@ namespace VLSGame.Models
             World_Depth = LoadCV(depthMapPath);
             World_Depth_Width = World_Depth.Width;
             World_Depth_Height = World_Depth.Height;
-        } 
+        }
+
+        /// <summary>
+        /// Асинхронно загружает цветную карту и карту глубины с отчётом о прогрессе.
+        /// </summary>
+        public async Task UpdateEnvironmentTextureAsync(string colorMapPath, string depthMapPath, IProgress<LoadingProgress>? progress)
+        {
+            // 1. Загружаем цветную карту в память (с прогрессом)
+            byte[] colorData = await ReadFileWithProgressAsync(colorMapPath, progress, "Color map");
+            // 2. Загружаем карту глубины в память
+            byte[] depthData = await ReadFileWithProgressAsync(depthMapPath, progress, "Depth map");
+
+            // Теперь создаём объекты в потоке UI (т.к. BitmapImage требует STA)
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                // Создаём BitmapImage из массива байтов
+                var bitmap = new BitmapImage();
+                using (var stream = new MemoryStream(colorData))
+                {
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = stream;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                }
+                World_Color = new ImageBrush(bitmap)
+                {
+                    ViewportUnits = BrushMappingMode.Absolute,
+                    TileMode = TileMode.None,
+                    Stretch = Stretch.Fill
+                };
+                World_Color_Width = bitmap.PixelWidth;
+                World_Color_Height = bitmap.PixelHeight;
+
+                // Загружаем карту глубины через OpenCV (Mat из памяти)
+                World_Depth = Cv2.ImDecode(depthData, ImreadModes.Unchanged);
+                World_Depth_Width = World_Depth.Width;
+                World_Depth_Height = World_Depth.Height;
+            });
+        }
         #endregion
+
+        private async Task<byte[]> ReadFileWithProgressAsync(string filePath, IProgress<LoadingProgress>? progress, string fileDescription)
+        {
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
+            long totalBytes = stream.Length;
+            var buffer = new byte[8192];
+            var result = new MemoryStream();
+            long bytesReadTotal = 0;
+
+            int bytesRead;
+            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                await result.WriteAsync(buffer, 0, bytesRead);
+                bytesReadTotal += bytesRead;
+
+                // Рассчитываем прогресс (0-100) для этого файла
+                int percent = (int)((double)bytesReadTotal / totalBytes * 100);
+                progress?.Report(new LoadingProgress
+                {
+                    Percent = percent,
+                    CurrentFile = fileDescription,
+                    BytesLoaded = bytesReadTotal,
+                    TotalBytes = totalBytes
+                });
+            }
+            return result.ToArray();
+        }
 
         // Enter texture coordinates of pixel to recieve its depth from the depth map
         public double GetDistanceAtPixel(int x, int y)

@@ -126,13 +126,34 @@ namespace VLSGame.ViewModels
                 return;
             }
 
-            await StartSinglePlayerAsync(ColorMapPath); // So far, we are launching strictly a singleplayer.
+            var loadingWindow = new LoadingWindow();
+            loadingWindow.Owner = Application.Current.MainWindow;
+            loadingWindow.Show();
 
-            // Открываем окно Match с обоими путями
-            var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
-            var matchWindow = new Match(matchViewModel);
-            matchWindow.Show();
-            CloseRequested?.Invoke(this, EventArgs.Empty);
+            var progress = new Progress<LoadingProgress>(report =>
+            {
+                // Обновляем UI (прогресс-бар)
+                loadingWindow.viewModel.UpdateProgress(report.Percent, report.CurrentFile);
+            });
+
+            try
+            {
+                await StartSinglePlayerAsync(ColorMapPath);
+
+                var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath, progress, loadingWindow);
+                var matchWindow = new Match(matchViewModel);
+                // Не показываем окно матча сразу, ждём завершения загрузки
+                matchViewModel.LoadingComplete += () =>
+                {
+                    matchWindow.Show();
+                    CloseRequested?.Invoke(this, EventArgs.Empty);
+                };
+            }
+            catch (Exception ex)
+            {
+                loadingWindow.Close();
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion

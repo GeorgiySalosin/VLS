@@ -35,9 +35,23 @@ namespace VLSGame.Rendering
 
 
             RegisterLayer(new HudLayer(hudPanel));
-            RegisterLayer(new HudLayer(hudPanel));
+            //RegisterLayer(new HudLayer(hudPanel)); duplicate lines
 
             texturePool.UpdateEnvironmentTexture(colorMapPath, depthMapPath);      // Loads new environment textures
+
+            isInitialized = true;
+        }
+
+        public async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
+            string colorMapPath, string depthMapPath,
+            IProgress<LoadingProgress>? progress)
+        {
+            if (isInitialized) return;
+            renderer3D.Initialize(viewport);
+
+            RegisterLayer(new HudLayer(hudPanel));
+
+            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress);
 
             isInitialized = true;
         }
