@@ -10,7 +10,8 @@
         }
         internal void UpdateProgress(int percent, string currentFile)
         {
-            ProgressBarValue = percent;
+            System.Diagnostics.Debug.WriteLine($"Progress: {percent}% - {currentFile}");
+            ProgressBarValue = percent; // предполагаем, что ProgressBarValue вызывает Set
         }
     }
 }

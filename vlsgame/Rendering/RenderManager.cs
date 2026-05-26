@@ -47,11 +47,13 @@ namespace VLSGame.Rendering
             IProgress<LoadingProgress>? progress)
         {
             if (isInitialized) return;
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 3D renderer");
             renderer3D.Initialize(viewport);
 
             RegisterLayer(new HudLayer(hudPanel));
-
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: updating environment textures...");
             await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress);
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: textures loaded");
 
             isInitialized = true;
         }

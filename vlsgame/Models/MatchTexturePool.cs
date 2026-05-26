@@ -144,15 +144,17 @@ namespace VLSGame.Models
         /// </summary>
         public async Task UpdateEnvironmentTextureAsync(string colorMapPath, string depthMapPath, IProgress<LoadingProgress>? progress)
         {
-            // 1. Загружаем цветную карту в память (с прогрессом)
+            System.Diagnostics.Debug.WriteLine($"Loading color map: {colorMapPath}");
             byte[] colorData = await ReadFileWithProgressAsync(colorMapPath, progress, "Color map");
-            // 2. Загружаем карту глубины в память
-            byte[] depthData = await ReadFileWithProgressAsync(depthMapPath, progress, "Depth map");
+            System.Diagnostics.Debug.WriteLine($"Color map loaded, size: {colorData.Length} bytes");
 
-            // Теперь создаём объекты в потоке UI (т.к. BitmapImage требует STA)
+            System.Diagnostics.Debug.WriteLine($"Loading depth map: {depthMapPath}");
+            byte[] depthData = await ReadFileWithProgressAsync(depthMapPath, progress, "Depth map");
+            System.Diagnostics.Debug.WriteLine($"Depth map loaded, size: {depthData.Length} bytes");
+
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                // Создаём BitmapImage из массива байтов
+                System.Diagnostics.Debug.WriteLine("Creating BitmapImage from color data...");
                 var bitmap = new BitmapImage();
                 using (var stream = new MemoryStream(colorData))
                 {
@@ -162,19 +164,15 @@ namespace VLSGame.Models
                     bitmap.EndInit();
                     bitmap.Freeze();
                 }
-                World_Color = new ImageBrush(bitmap)
-                {
-                    ViewportUnits = BrushMappingMode.Absolute,
-                    TileMode = TileMode.None,
-                    Stretch = Stretch.Fill
-                };
+                World_Color = new ImageBrush(bitmap) { ViewportUnits = BrushMappingMode.Absolute, TileMode = TileMode.None, Stretch = Stretch.Fill };
                 World_Color_Width = bitmap.PixelWidth;
                 World_Color_Height = bitmap.PixelHeight;
 
-                // Загружаем карту глубины через OpenCV (Mat из памяти)
+                System.Diagnostics.Debug.WriteLine("Decoding depth map...");
                 World_Depth = Cv2.ImDecode(depthData, ImreadModes.Unchanged);
                 World_Depth_Width = World_Depth.Width;
                 World_Depth_Height = World_Depth.Height;
+                System.Diagnostics.Debug.WriteLine("Textures ready");
             });
         }
         #endregion

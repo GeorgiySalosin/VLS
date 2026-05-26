@@ -142,9 +142,12 @@ namespace VLSGame.ViewModels
             };
             PlayerManager.AddPlayer(player);
         }
-        public async Task OnViewLoadedAsync()
+        public async Task LoadTexturesAsync(IProgress<LoadingProgress> progress)
         {
-            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, loadProgress);
+            System.Diagnostics.Debug.WriteLine("LoadTexturesAsync started");
+            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress);
+            System.Diagnostics.Debug.WriteLine("InitializeAsync completed");
+
             renderManager.CreateEnvironmentObject3D();
             renderManager.SetLight();
             SetupLayers();
@@ -158,8 +161,13 @@ namespace VLSGame.ViewModels
             };
             PlayerManager.AddPlayer(player);
 
-            loadingWindow?.Close();
-            LoadingComplete?.Invoke();     // сигнализируем, что можно показать окно матча
+            System.Diagnostics.Debug.WriteLine("LoadTexturesAsync finished");
+        }
+
+        // Новый метод для асинхронной загрузки игры
+        public async Task LoadGameAsync(IProgress<LoadingProgress> progress)
+        {
+            await LoadTexturesAsync(progress);
         }
 
         private void SetupLayers()

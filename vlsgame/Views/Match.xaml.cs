@@ -25,7 +25,6 @@ namespace VLSGame.Views
             // Now we will load data asynchronously to display progress
             //Loaded += OnLoaded; 
             Loaded += (s, e) => inputHandler.Initialize(viewModel, this);
-            Loaded += async (s, e) => await viewModel.OnViewLoadedAsync();
 
             Closed += OnClosed;
         }

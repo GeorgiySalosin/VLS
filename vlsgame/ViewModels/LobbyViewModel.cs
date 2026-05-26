@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection.Metadata.Ecma335;
 using System.Windows;
 using System.Windows.Input;
@@ -92,37 +93,21 @@ namespace VLSGame.ViewModels
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
-            // We need to know what weather the user has selected
             int mapIndex = ChoiceRandomWeather();
-
             string ColorMapPath;
             string DepthMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Depth\W001.png");
 
-            switch (mapIndex) {
-                case 1:
-                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunny\W001.png");
-                    break;
-                case 2:
-                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Foggy\W001.png");
-                    break;
-                case 3:
-                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunset\W001.png");
-                    break;
-                default:
-                    throw new Exception("A non-existent weather was selected");
+            switch (mapIndex)
+            {
+                case 1: ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunny\W001.png"); break;
+                case 2: ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Foggy\W001.png"); break;
+                case 3: ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunset\W001.png"); break;
+                default: throw new Exception("A non-existent weather was selected");
             }
 
-            if (!System.IO.File.Exists(ColorMapPath))
+            if (!File.Exists(ColorMapPath) || !File.Exists(DepthMapPath))
             {
-                MessageBox.Show($"Color map was not found from {ColorMapPath}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (!System.IO.File.Exists(DepthMapPath))
-            {
-                MessageBox.Show($"Depth map was not found from {DepthMapPath}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Map files not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -132,7 +117,6 @@ namespace VLSGame.ViewModels
 
             var progress = new Progress<LoadingProgress>(report =>
             {
-                // Обновляем UI (прогресс-бар)
                 loadingWindow.viewModel.UpdateProgress(report.Percent, report.CurrentFile);
             });
 
@@ -142,17 +126,20 @@ namespace VLSGame.ViewModels
 
                 var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath, progress, loadingWindow);
                 var matchWindow = new Match(matchViewModel);
-                // Не показываем окно матча сразу, ждём завершения загрузки
-                matchViewModel.LoadingComplete += () =>
-                {
-                    matchWindow.Show();
-                    CloseRequested?.Invoke(this, EventArgs.Empty);
-                };
+
+                // Загружаем текстуры (окно матча ещё не показано)
+                await matchViewModel.LoadGameAsync(progress);
+
+                // Теперь всё готово – закрываем загрузочное окно и показываем игру
+                loadingWindow.Close();
+                matchWindow.Show();
+                CloseRequested?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
                 loadingWindow.Close();
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Diagnostics.Debug.WriteLine($"StartGame failed: {ex}");
             }
         }
 
