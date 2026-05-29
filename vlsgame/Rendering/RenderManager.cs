@@ -27,19 +27,6 @@ namespace VLSGame.Rendering
 
         private static bool isInitialized = false;
 
-        public void Initialize(Viewport3D viewport, Panel hudPanel, string colorMapPath, string depthMapPath)
-        {
-            if (isInitialized) return;
-            renderer3D.Initialize(viewport);
-
-
-            RegisterLayer(new HudLayer(hudPanel));
-
-            texturePool.UpdateEnvironmentTexture(colorMapPath, depthMapPath);      // Loads new environment textures
-
-            isInitialized = true;
-        }
-
         internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
             string colorMapPath, string depthMapPath,
             IProgress<LoadingProgress>? progress)
@@ -56,8 +43,6 @@ namespace VLSGame.Rendering
             isInitialized = true;
         }
         #endregion
-
-
 
         #region 2D 
         private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
@@ -97,13 +82,6 @@ namespace VLSGame.Rendering
             CustomObject3D environment = new(sphereVisual, tag: CustomObject3DTags.World);
             Add3D(environment);
         }
-
-        //public void UpdateEnvironment(string path)
-        //{
-        //    var environment = Get3D(CustomObject3DTags.World);
-        //    texturePool.UpdateEnvironmentTexture(path);
-
-        //}
 
         #endregion
 
@@ -230,10 +208,6 @@ namespace VLSGame.Rendering
         #endregion
 
         #endregion
-
-
-
-
 
         /// <summary>
         ///  Adds a new custom 3d object to the scene

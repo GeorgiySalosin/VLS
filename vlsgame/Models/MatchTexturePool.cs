@@ -119,24 +119,6 @@ namespace VLSGame.Models
         {
             return World_Color;
         }
-        /// <summary>
-        /// UPDATES WORLD TEXTURES. USE THE BASE NAME OF TEXTURE PAIR that is in @"Content\Maps" directory.   E.X. @"Content\Maps\Test_W.png" -> "Test"
-        /// </summary>
-        public void UpdateEnvironmentTexture(string colorMapPath, string depthMapPath)
-        {
-            World_Color = LoadTexture(colorMapPath);
-
-            if (World_Color.ImageSource is BitmapImage bmp)
-            {
-                World_Color_Width = bmp.PixelWidth;
-                World_Color_Height = bmp.PixelHeight;
-            }
-
-
-            World_Depth = LoadCV(depthMapPath);
-            World_Depth_Width = World_Depth.Width;
-            World_Depth_Height = World_Depth.Height;
-        }
 
         /// <summary>
         /// Asynchronously loads a color map and a depth map with a progress report.

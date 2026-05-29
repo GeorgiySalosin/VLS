@@ -116,25 +116,6 @@ namespace VLSGame.ViewModels
             this.depthMapPath = depthMapPath;
         }
 
-        public void OnViewLoaded()
-        {
-            renderManager.Initialize(viewport, hud, colorMapPath, depthMapPath);
-
-            renderManager.CreateEnvironmentObject3D();       // Create a world panorama
-            renderManager.SetLight();
-            
-            SetupLayers();
-            StartGameLoop();
-
-            Vector3D cameraLook3D = CameraProperties.LookDirection;
-            Vector3 cameraLook = V3(cameraLook3D);
-
-            Player player = new(new Vector3(.4608f, -.0027f, .8875f))
-            {
-                HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
-            };
-            PlayerManager.AddPlayer(player);
-        }
         internal async Task LoadTexturesAsync(IProgress<LoadingProgress> progress)
         {
             System.Diagnostics.Debug.WriteLine("LoadTexturesAsync started");
