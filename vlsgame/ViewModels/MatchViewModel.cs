@@ -79,7 +79,7 @@ namespace VLSGame.ViewModels
         private readonly IProgress<LoadingProgress>? loadProgress;
         internal event Action? LoadingComplete; // событие по завершении загрузки
 
-        public MatchViewModel(IGameMode gameMode,
+        internal MatchViewModel(IGameMode gameMode,
             string colorMapPath, string depthMapPath,
             IProgress<LoadingProgress> progress, Window? loadingWindow = null)
         {
@@ -142,7 +142,7 @@ namespace VLSGame.ViewModels
             };
             PlayerManager.AddPlayer(player);
         }
-        public async Task LoadTexturesAsync(IProgress<LoadingProgress> progress)
+        internal async Task LoadTexturesAsync(IProgress<LoadingProgress> progress)
         {
             System.Diagnostics.Debug.WriteLine("LoadTexturesAsync started");
             await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress);
@@ -165,7 +165,7 @@ namespace VLSGame.ViewModels
         }
 
         // Новый метод для асинхронной загрузки игры
-        public async Task LoadGameAsync(IProgress<LoadingProgress> progress)
+        internal async Task LoadGameAsync(IProgress<LoadingProgress> progress)
         {
             await LoadTexturesAsync(progress);
         }

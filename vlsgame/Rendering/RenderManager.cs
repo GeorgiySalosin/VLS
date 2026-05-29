@@ -6,7 +6,6 @@ using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
-using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
 
@@ -42,7 +41,7 @@ namespace VLSGame.Rendering
             isInitialized = true;
         }
 
-        public async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
+        internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
             string colorMapPath, string depthMapPath,
             IProgress<LoadingProgress>? progress)
         {

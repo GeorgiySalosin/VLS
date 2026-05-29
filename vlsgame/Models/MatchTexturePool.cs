@@ -142,7 +142,7 @@ namespace VLSGame.Models
         /// <summary>
         /// Асинхронно загружает цветную карту и карту глубины с отчётом о прогрессе.
         /// </summary>
-        public async Task UpdateEnvironmentTextureAsync(string colorMapPath, string depthMapPath, IProgress<LoadingProgress>? progress)
+        internal async Task UpdateEnvironmentTextureAsync(string colorMapPath, string depthMapPath, IProgress<LoadingProgress>? progress)
         {
             System.Diagnostics.Debug.WriteLine($"Loading color map: {colorMapPath}");
             byte[] colorData = await ReadFileWithProgressAsync(colorMapPath, progress, "Color map");
@@ -197,13 +197,7 @@ namespace VLSGame.Models
                 if (percent != lastReportedPercent)
                 {
                     lastReportedPercent = percent;
-                    progress?.Report(new LoadingProgress
-                    {
-                        Percent = percent,
-                        CurrentFile = fileDescription,
-                        BytesLoaded = bytesReadTotal,
-                        TotalBytes = totalBytes
-                    });
+                    progress?.Report(new LoadingProgress(percent, bytesReadTotal, totalBytes, fileDescription));
                 }
             }
             return result.ToArray();
