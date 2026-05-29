@@ -95,13 +95,13 @@ namespace VLSGame.ViewModels
 
             int mapIndex = ChoiceRandomWeather();
             string ColorMapPath;
-            string DepthMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Depth\W001.png");
+            string DepthMapPath = Path.Combine(basePath, @"Content\Maps\Depth\W001.png");
 
             switch (mapIndex)
             {
-                case 1: ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunny\W001.png"); break;
-                case 2: ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Foggy\W001.png"); break;
-                case 3: ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunset\W001.png"); break;
+                case 1: ColorMapPath = Path.Combine(basePath, @"Content\Maps\Sunny\W001.png"); break;
+                case 2: ColorMapPath = Path.Combine(basePath, @"Content\Maps\Foggy\W001.png"); break;
+                case 3: ColorMapPath = Path.Combine(basePath, @"Content\Maps\Sunset\W001.png"); break;
                 default: throw new Exception("A non-existent weather was selected");
             }
 

@@ -184,6 +184,7 @@ namespace VLSGame.Models
             var buffer = new byte[8192];
             var result = new MemoryStream();
             long bytesReadTotal = 0;
+            int lastReportedPercent = -1;
 
             int bytesRead;
             while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -191,15 +192,19 @@ namespace VLSGame.Models
                 await result.WriteAsync(buffer, 0, bytesRead);
                 bytesReadTotal += bytesRead;
 
-                // Рассчитываем прогресс (0-100) для этого файла
                 int percent = (int)((double)bytesReadTotal / totalBytes * 100);
-                progress?.Report(new LoadingProgress
+                // Сообщаем только если процент изменился (и не чаще 1%)
+                if (percent != lastReportedPercent)
                 {
-                    Percent = percent,
-                    CurrentFile = fileDescription,
-                    BytesLoaded = bytesReadTotal,
-                    TotalBytes = totalBytes
-                });
+                    lastReportedPercent = percent;
+                    progress?.Report(new LoadingProgress
+                    {
+                        Percent = percent,
+                        CurrentFile = fileDescription,
+                        BytesLoaded = bytesReadTotal,
+                        TotalBytes = totalBytes
+                    });
+                }
             }
             return result.ToArray();
         }
