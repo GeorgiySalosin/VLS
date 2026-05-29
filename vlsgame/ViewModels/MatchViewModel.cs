@@ -42,12 +42,13 @@ namespace VLSGame.ViewModels
         }  
         #endregion
 
-
         #region Timer settings
 
         private DispatcherTimer gameTimer;
         private const int tickHz = 60;
         private const float deltaTime = 1f / tickHz;
+
+        private bool isGameLoopStarted = false;
 
         #endregion
 
@@ -75,17 +76,12 @@ namespace VLSGame.ViewModels
         private readonly string colorMapPath;
         private readonly string depthMapPath;
 
-        private readonly Window loadingWindow;
-        private readonly IProgress<LoadingProgress>? loadProgress;
-        internal event Action? LoadingComplete; // событие по завершении загрузки
-
         internal MatchViewModel(IGameMode gameMode,
-            string colorMapPath, string depthMapPath,
-            IProgress<LoadingProgress> progress, Window? loadingWindow = null)
+            string colorMapPath, string depthMapPath)
         {
             this.gameMode = gameMode;
 
-            var animSettings = Configuration.Instance.CameraAnimationSettings; // добавляете в GameSettings
+            var animSettings = Configuration.Instance.CameraAnimationSettings; // adding it to GameSettings
             animationController = new CameraAnimationController(CameraProperties, animSettings);
 
             BulletManager.LastBulletInfoChanged += info => LastBullet = info;
@@ -118,9 +114,6 @@ namespace VLSGame.ViewModels
 
             this.colorMapPath = colorMapPath;
             this.depthMapPath = depthMapPath;
-
-            loadProgress = progress;
-            this.loadingWindow = loadingWindow;
         }
 
         public void OnViewLoaded()
@@ -151,7 +144,6 @@ namespace VLSGame.ViewModels
             renderManager.CreateEnvironmentObject3D();
             renderManager.SetLight();
             SetupLayers();
-            StartGameLoop();
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
             Vector3 cameraLook = V3(cameraLook3D);
@@ -162,12 +154,6 @@ namespace VLSGame.ViewModels
             PlayerManager.AddPlayer(player);
 
             System.Diagnostics.Debug.WriteLine("LoadTexturesAsync finished");
-        }
-
-        // Новый метод для асинхронной загрузки игры
-        internal async Task LoadGameAsync(IProgress<LoadingProgress> progress)
-        {
-            await LoadTexturesAsync(progress);
         }
 
         private void SetupLayers()
@@ -188,15 +174,10 @@ namespace VLSGame.ViewModels
 
 
         #region GAME EVENTS 
-        private void StartGameLoop()
+        internal void StartGameLoop()
         {
-            //gameTimer = new()
-            //{
-            //    Interval = TimeSpan.FromSeconds(deltaTime)
-            //};
-            //gameTimer.Tick += OnGameTick;
-            //gameTimer.Start();
-
+            if (isGameLoopStarted) return;
+            isGameLoopStarted = true;
             gameTimer = new DispatcherTimer(DispatcherPriority.Input, Application.Current.Dispatcher);
             gameTimer.Interval = TimeSpan.FromSeconds(deltaTime);
             gameTimer.Tick += OnGameTick;

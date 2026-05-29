@@ -1,8 +1,5 @@
 ﻿using System.Windows;
-using System.Windows.Media;
 using VLSGame.Input;
-using VLSGame.Rendering;
-using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Views
@@ -22,9 +19,11 @@ namespace VLSGame.Views
             viewModel.Viewport = MainViewport;
             viewModel.Hud = HudPanel;
 
-            // Now we will load data asynchronously to display progress
-            //Loaded += OnLoaded; 
-            Loaded += (s, e) => inputHandler.Initialize(viewModel, this);
+            Loaded += (s, e) =>
+            {
+                inputHandler.Initialize(viewModel, this);
+                viewModel.StartGameLoop();
+            };
 
             Closed += OnClosed;
         }

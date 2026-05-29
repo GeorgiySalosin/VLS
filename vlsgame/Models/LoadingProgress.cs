@@ -1,6 +1,6 @@
 ﻿namespace VLSGame.Models
 {
-    internal class LoadingProgress
+    internal sealed class LoadingProgress
     {
         internal readonly int Percent;
         internal readonly long BytesLoaded;

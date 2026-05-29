@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
-using System.Reflection.Metadata.Ecma335;
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Commands;
@@ -12,11 +11,13 @@ using VLSShared.Interfaces;
 
 namespace VLSGame.ViewModels
 {
-    internal class LobbyViewModel : ViewModelBase
+    internal sealed class LobbyViewModel : ViewModelBase
     {
         public ObservableCollection<MapButtonDataViewModel> MapViewModels { get; init; }
 
         internal event EventHandler? CloseRequested; // event for View closing
+
+        private IGameMode? CurrentGameMode;
 
         #region View's properties
 
@@ -47,23 +48,6 @@ namespace VLSGame.ViewModels
             private set => Set(ref selectModeImagePath, value);
         }
         private const string combinedSelectModeImagePath = "/Content/Lobby/T_MapPreview_Combined.png";
-
-        #endregion
-
-        #region SinglePlayer
-
-        private IGameMode? currentGameMode;
-        public IGameMode? CurrentGameMode => currentGameMode;
-        private async Task StartSinglePlayerAsync(string panoramaPath)
-        {
-            currentGameMode = new SinglePlayerGameMode();
-            await currentGameMode.StartAsync();
-
-            if (currentGameMode is SinglePlayerGameMode singlePlayer)
-            {
-                singlePlayer.SetPanoramaPath(panoramaPath);
-            }
-        }
 
         #endregion
 
@@ -122,15 +106,13 @@ namespace VLSGame.ViewModels
 
             try
             {
-                await StartSinglePlayerAsync(ColorMapPath);
-
-                var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath, progress, loadingWindow);
+                var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
                 var matchWindow = new Match(matchViewModel);
 
-                // Загружаем текстуры (окно матча ещё не показано)
-                await matchViewModel.LoadGameAsync(progress);
+                // Loading textures (the match window is not yet displayed)
+                await matchViewModel.LoadTexturesAsync(progress);
 
-                // Теперь всё готово – закрываем загрузочное окно и показываем игру
+                // Now everything is ready – close the loading window and show the game
                 loadingWindow.Close();
                 matchWindow.Show();
                 CloseRequested?.Invoke(this, EventArgs.Empty);
@@ -188,7 +170,7 @@ namespace VLSGame.ViewModels
         private bool CanActivateSingleplayerCommandExecute(object p) => true;
         private void OnActivateSingleplayerCommandExecuted(object p)
         {
-            currentGameMode = new SinglePlayerGameMode(); // We update the state and update the UI when the settings are saved
+            CurrentGameMode = new SinglePlayerGameMode(); // We update the state and update the UI when the settings are saved
         }
 
         #endregion
@@ -199,7 +181,7 @@ namespace VLSGame.ViewModels
         private bool CanActivateMultiplayerCommandExecute(object p) => true;
         private void OnActivateMultiplayerCommandExecuted(object p)
         {
-            currentGameMode = new MultiPlayerGameMode(); // We update the state and update the UI when the settings are saved
+            CurrentGameMode = new MultiPlayerGameMode(); // We update the state and update the UI when the settings are saved
         }
 
         #endregion
@@ -260,7 +242,7 @@ namespace VLSGame.ViewModels
 
         private void ToggleGamemode(IGameMode gameMode)
         {
-            currentGameMode = gameMode;
+            CurrentGameMode = gameMode;
             DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
         }
 
@@ -344,10 +326,10 @@ namespace VLSGame.ViewModels
 
             // Compare
             if (config.GameSettings.SelectedGameMode != null &&
-                config.GameSettings.SelectedGameMode == currentGameMode)
+                config.GameSettings.SelectedGameMode == CurrentGameMode)
                 return; // nothing changed
 
-            config.GameSettings.SelectedGameMode = currentGameMode;
+            config.GameSettings.SelectedGameMode = CurrentGameMode;
             config.SaveConfiguration();
         }
 
