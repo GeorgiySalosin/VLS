@@ -34,7 +34,6 @@ namespace VLSGame.Rendering
 
 
             RegisterLayer(new HudLayer(hudPanel));
-            //RegisterLayer(new HudLayer(hudPanel)); duplicate lines
 
             texturePool.UpdateEnvironmentTexture(colorMapPath, depthMapPath);      // Loads new environment textures
 
@@ -51,7 +50,7 @@ namespace VLSGame.Rendering
 
             RegisterLayer(new HudLayer(hudPanel));
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: updating environment textures...");
-            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress);
+            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress); // Loads new environment textures
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: textures loaded");
 
             isInitialized = true;

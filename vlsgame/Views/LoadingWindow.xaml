@@ -10,12 +10,19 @@
         Title="Loading" WindowStartupLocation="CenterOwner"
         Width="400" Height="150" WindowStyle="None" ResizeMode="NoResize"
         >
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Loading game, please wait..." FontSize="16" HorizontalAlignment="Center" Margin="0,0,0,15"/>
-        <ProgressBar Grid.Row="1" Height="25" Value="{Binding ProgressBarValue, Mode=OneWay}"/>
+        <TextBlock Grid.Row="0" FontSize="16" Text="Loading game, please wait..." Margin="0,0,0,15"/>
+        <ProgressBar Grid.Row="1" Height="25" Value="{Binding ProgressBarValue, Mode=OneWay}" Margin="0,0,0,15"/>
+        <TextBlock Grid.Row="2" FontSize="15" Text="{Binding LoadingDescription}" Margin="0,0,0,15"/>
     </Grid>
 </Window>

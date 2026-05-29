@@ -5,7 +5,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.Config;
-using VLSShared.Enums;
 using VLSShared.Models;
 namespace VLSGame.Models
 {
@@ -140,7 +139,7 @@ namespace VLSGame.Models
         }
 
         /// <summary>
-        /// Асинхронно загружает цветную карту и карту глубины с отчётом о прогрессе.
+        /// Asynchronously loads a color map and a depth map with a progress report.
         /// </summary>
         internal async Task UpdateEnvironmentTextureAsync(string colorMapPath, string depthMapPath, IProgress<LoadingProgress>? progress)
         {
@@ -193,7 +192,7 @@ namespace VLSGame.Models
                 bytesReadTotal += bytesRead;
 
                 int percent = (int)((double)bytesReadTotal / totalBytes * 100);
-                // Сообщаем только если процент изменился (и не чаще 1%)
+                // We only inform you if the percentage has changed.
                 if (percent != lastReportedPercent)
                 {
                     lastReportedPercent = percent;
