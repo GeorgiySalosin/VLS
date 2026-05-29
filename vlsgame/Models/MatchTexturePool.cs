@@ -179,6 +179,9 @@ namespace VLSGame.Models
             byte[] depthData = await LoadFileWithCombinedProgress(depthMapPath, "Depth map");
             System.Diagnostics.Debug.WriteLine($"Depth map loaded, size: {depthData.Length} bytes");
 
+            // Needed to update the ProgressBar
+            await Task.Delay(50);
+
             // Create UI objects on the dispatcher thread
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
@@ -204,37 +207,6 @@ namespace VLSGame.Models
             });
         }
         #endregion
-
-        private async Task<byte[]> ReadFileWithProgressAsync(string filePath, IProgress<LoadingProgress>? progress, string fileDescription)
-        {
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
-            long totalBytes = stream.Length;
-            var buffer = new byte[8192];
-            var result = new MemoryStream();
-            long bytesReadTotal = 0;
-            int lastReportedPercent = -1;
-
-            int bytesRead;
-            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-            {
-                await result.WriteAsync(buffer, 0, bytesRead);
-                bytesReadTotal += bytesRead;
-
-                int percent = (int)((double)bytesReadTotal / totalBytes * 100);
-                // We only inform you if the percentage has changed.
-                if (percent != lastReportedPercent)
-                {
-                    lastReportedPercent = percent;
-                    progress?.Report(new LoadingProgress(percent, bytesReadTotal, totalBytes, fileDescription));
-                }
-            }
-
-            // Ensure 100% is reported and give UI time to render
-            progress?.Report(new LoadingProgress(100, totalBytes, totalBytes, fileDescription));
-            await Task.Delay(10); // 10 ms is enough for the progress bar to update
-
-            return result.ToArray();
-        }
 
         // Enter texture coordinates of pixel to recieve its depth from the depth map
         public double GetDistanceAtPixel(int x, int y)
