@@ -199,6 +199,11 @@ namespace VLSGame.Models
                     progress?.Report(new LoadingProgress(percent, bytesReadTotal, totalBytes, fileDescription));
                 }
             }
+
+            // Ensure 100% is reported and give UI time to render
+            progress?.Report(new LoadingProgress(100, totalBytes, totalBytes, fileDescription));
+            await Task.Delay(10); // 10 ms is enough for the progress bar to update
+
             return result.ToArray();
         }
 
