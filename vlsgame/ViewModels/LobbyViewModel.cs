@@ -19,6 +19,8 @@ namespace VLSGame.ViewModels
 
         private IGameMode? CurrentGameMode;
 
+        public LoadingViewModel LoadingVM { get; }
+
         #region View's properties
 
         private Visibility visibilityGridMode = Visibility.Hidden;
@@ -60,7 +62,7 @@ namespace VLSGame.ViewModels
         #region ToggleModeGrid
 
         public ICommand ToggleModeGridCommand { get; }
-        private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
+        private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible && LoadingVM.Visibility != Visibility.Visible;
         private void OnToggleModeGridCommandExecuted(object p)
         {
             FullReloadFromConfig();
@@ -72,7 +74,7 @@ namespace VLSGame.ViewModels
         #region StartGame
 
         public ICommand StartGameCommand { get; }
-        private bool CanStartGameCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
+        private bool CanStartGameCommandExecute(object p) => VisibilityGridMode != Visibility.Visible && LoadingVM.Visibility != Visibility.Visible;
         private async void OnStartGameCommandExecuted(object p)
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -95,13 +97,11 @@ namespace VLSGame.ViewModels
                 return;
             }
 
-            var loadingWindow = new LoadingWindow();
-            loadingWindow.Owner = Application.Current.MainWindow;
-            loadingWindow.Show();
+            LoadingVM.Visibility = Visibility.Visible; // Shows the ProgressBar
 
             var progress = new Progress<LoadingProgress>(report =>
             {
-                loadingWindow.viewModel.UpdateProgress(report.Percent, report.CurrentFile);
+                LoadingVM.UpdateProgress(report.Percent, report.CurrentFile);
             });
 
             try
@@ -112,14 +112,12 @@ namespace VLSGame.ViewModels
                 // Loading textures (the match window is not yet displayed)
                 await matchViewModel.LoadTexturesAsync(progress);
 
-                // Now everything is ready – close the loading window and show the game
-                loadingWindow.Close();
+                // Now everything is ready – show the game
                 matchWindow.Show();
                 CloseRequested?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-                loadingWindow.Close();
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 System.Diagnostics.Debug.WriteLine($"StartGame failed: {ex}");
             }
@@ -218,6 +216,8 @@ namespace VLSGame.ViewModels
             #endregion
 
             FullReloadFromConfig();
+
+            LoadingVM = new LoadingViewModel();
 
             #region Initialize commands
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
