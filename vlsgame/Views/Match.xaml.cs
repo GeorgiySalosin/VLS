@@ -28,13 +28,6 @@ namespace VLSGame.Views
             Closed += OnClosed;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            inputHandler.Initialize(viewModel, this);
-            viewModel.OnViewLoaded();                       //   Since we gave ViewModel these refs for our viewport & panel,  now we notify it can work with em 
-        }
-
-
         private void OnClosed(object? sender, EventArgs e)
         {
             inputHandler.UnsubscribeEvents();
