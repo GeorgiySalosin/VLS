@@ -116,7 +116,10 @@ namespace VLSGame.ViewModels
             this.depthMapPath = depthMapPath;
         }
 
-        internal async Task LoadTexturesAsync(IProgress<LoadingProgress> progress)
+
+        internal async Task LoadTexturesAsync(
+            IProgress<LoadingProgress> progress,
+            CancellationToken token)
         {
             System.Diagnostics.Debug.WriteLine("LoadTexturesAsync started");
             await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress, token);
