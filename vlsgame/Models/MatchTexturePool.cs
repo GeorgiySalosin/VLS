@@ -121,20 +121,56 @@ namespace VLSGame.Models
         }
 
         /// <summary>
-        /// Asynchronously loads a color map and a depth map with a progress report.
+        /// Asynchronously loads a color map and a depth map with a combined progress report.
         /// </summary>
-        internal async Task UpdateEnvironmentTextureAsync(string colorMapPath, string depthMapPath, IProgress<LoadingProgress>? progress)
+        internal async Task UpdateEnvironmentTextureAsync(
+            string colorMapPath, string depthMapPath,
+            IProgress<LoadingProgress>? progress, CancellationToken token)
         {
+            // Calculate total size of both files
+            var colorFileInfo = new FileInfo(colorMapPath);
+            var depthFileInfo = new FileInfo(depthMapPath);
+            long totalBytes = colorFileInfo.Length + depthFileInfo.Length;
+            long totalBytesRead = 0;
+            int lastReportedPercent = -1;
+
+            // Local function to load a single file and update the combined progress
+            async Task<byte[]> LoadFileWithCombinedProgress(string filePath, string description)
+            {
+                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
+                var buffer = new byte[8192];
+                var result = new MemoryStream();
+                int bytesRead;
+                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
+                {
+                    token.ThrowIfCancellationRequested();
+                    await result.WriteAsync(buffer, 0, bytesRead);
+                    totalBytesRead += bytesRead;
+                    int percent = (int)((double)totalBytesRead / totalBytes * 100);
+                    if (percent != lastReportedPercent)
+                    {
+                        lastReportedPercent = percent;
+                        progress?.Report(new LoadingProgress(percent, totalBytesRead, totalBytes, description));
+                    }
+                }
+                return result.ToArray();
+            }
+
             System.Diagnostics.Debug.WriteLine($"Loading color map: {colorMapPath}");
-            byte[] colorData = await ReadFileWithProgressAsync(colorMapPath, progress, "Color map");
+            byte[] colorData = await LoadFileWithCombinedProgress(colorMapPath, "Color map");
             System.Diagnostics.Debug.WriteLine($"Color map loaded, size: {colorData.Length} bytes");
 
             System.Diagnostics.Debug.WriteLine($"Loading depth map: {depthMapPath}");
-            byte[] depthData = await ReadFileWithProgressAsync(depthMapPath, progress, "Depth map");
+            byte[] depthData = await LoadFileWithCombinedProgress(depthMapPath, "Depth map");
             System.Diagnostics.Debug.WriteLine($"Depth map loaded, size: {depthData.Length} bytes");
 
+            // Needed to update the ProgressBar
+            await Task.Delay(50);
+
+            // Create UI objects on the dispatcher thread
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
+                token.ThrowIfCancellationRequested();
                 System.Diagnostics.Debug.WriteLine("Creating BitmapImage from color data...");
                 var bitmap = new BitmapImage();
                 using (var stream = new MemoryStream(colorData))
@@ -157,32 +193,6 @@ namespace VLSGame.Models
             });
         }
         #endregion
-
-        private async Task<byte[]> ReadFileWithProgressAsync(string filePath, IProgress<LoadingProgress>? progress, string fileDescription)
-        {
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
-            long totalBytes = stream.Length;
-            var buffer = new byte[8192];
-            var result = new MemoryStream();
-            long bytesReadTotal = 0;
-            int lastReportedPercent = -1;
-
-            int bytesRead;
-            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-            {
-                await result.WriteAsync(buffer, 0, bytesRead);
-                bytesReadTotal += bytesRead;
-
-                int percent = (int)((double)bytesReadTotal / totalBytes * 100);
-                // We only inform you if the percentage has changed.
-                if (percent != lastReportedPercent)
-                {
-                    lastReportedPercent = percent;
-                    progress?.Report(new LoadingProgress(percent, bytesReadTotal, totalBytes, fileDescription));
-                }
-            }
-            return result.ToArray();
-        }
 
         // Enter texture coordinates of pixel to recieve its depth from the depth map
         public double GetDistanceAtPixel(int x, int y)

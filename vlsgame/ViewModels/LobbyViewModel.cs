@@ -19,6 +19,10 @@ namespace VLSGame.ViewModels
 
         private IGameMode? CurrentGameMode;
 
+        public LoadingViewModel LoadingVM { get; }
+
+        private CancellationTokenSource? LoadingCTS;
+
         #region View's properties
 
         private Visibility visibilityGridMode = Visibility.Hidden;
@@ -60,7 +64,7 @@ namespace VLSGame.ViewModels
         #region ToggleModeGrid
 
         public ICommand ToggleModeGridCommand { get; }
-        private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
+        private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible && LoadingVM.Visibility != Visibility.Visible;
         private void OnToggleModeGridCommandExecuted(object p)
         {
             FullReloadFromConfig();
@@ -72,7 +76,7 @@ namespace VLSGame.ViewModels
         #region StartGame
 
         public ICommand StartGameCommand { get; }
-        private bool CanStartGameCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
+        private bool CanStartGameCommandExecute(object p) => VisibilityGridMode != Visibility.Visible && LoadingVM.Visibility != Visibility.Visible;
         private async void OnStartGameCommandExecuted(object p)
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -95,31 +99,38 @@ namespace VLSGame.ViewModels
                 return;
             }
 
-            var loadingWindow = new LoadingWindow();
-            loadingWindow.Owner = Application.Current.MainWindow;
-            loadingWindow.Show();
+            LoadingVM.Visibility = Visibility.Visible; // Shows the ProgressBar
 
             var progress = new Progress<LoadingProgress>(report =>
             {
-                loadingWindow.viewModel.UpdateProgress(report.Percent, report.CurrentFile);
+                LoadingVM.UpdateProgress(report.Percent, report.CurrentFile);
             });
 
+            LoadingCTS?.Cancel();
+            LoadingCTS = new CancellationTokenSource();
+            var token = LoadingCTS.Token;
+
+            Match? matchWindow = null;
             try
             {
                 var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
-                var matchWindow = new Match(matchViewModel);
+                matchWindow = new Match(matchViewModel);
 
                 // Loading textures (the match window is not yet displayed)
-                await matchViewModel.LoadTexturesAsync(progress);
+                await matchViewModel.LoadTexturesAsync(progress, token);
+                token.ThrowIfCancellationRequested();
 
-                // Now everything is ready – close the loading window and show the game
-                loadingWindow.Close();
+                // Now everything is ready – show the game
                 matchWindow.Show();
                 CloseRequested?.Invoke(this, EventArgs.Empty);
             }
+            catch (OperationCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("Loading cancelled by user.");
+                matchWindow?.Close();
+            }
             catch (Exception ex)
             {
-                loadingWindow.Close();
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 System.Diagnostics.Debug.WriteLine($"StartGame failed: {ex}");
             }
@@ -219,6 +230,8 @@ namespace VLSGame.ViewModels
 
             FullReloadFromConfig();
 
+            LoadingVM = new LoadingViewModel();
+
             #region Initialize commands
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
             StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
@@ -245,6 +258,8 @@ namespace VLSGame.ViewModels
             CurrentGameMode = gameMode;
             DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
         }
+
+        internal void CancelLoading() => LoadingCTS?.Cancel();
 
         #region Config funcs
         private void ReloadSelectedMapsFromConfig()
