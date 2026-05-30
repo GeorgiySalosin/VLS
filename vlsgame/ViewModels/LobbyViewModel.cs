@@ -110,10 +110,11 @@ namespace VLSGame.ViewModels
             LoadingCTS = new CancellationTokenSource();
             var token = LoadingCTS.Token;
 
+            Match? matchWindow = null;
             try
             {
                 var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
-                var matchWindow = new Match(matchViewModel);
+                matchWindow = new Match(matchViewModel);
 
                 // Loading textures (the match window is not yet displayed)
                 await matchViewModel.LoadTexturesAsync(progress, token);
@@ -126,7 +127,7 @@ namespace VLSGame.ViewModels
             catch (OperationCanceledException)
             {
                 System.Diagnostics.Debug.WriteLine("Loading cancelled by user.");
-                Application.Current.Shutdown();
+                matchWindow?.Close();
             }
             catch (Exception ex)
             {

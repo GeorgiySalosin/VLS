@@ -153,10 +153,5 @@ namespace VLSGame.Rendering
                 }
             }
         }
-
-
-
-
-
     }
 }
