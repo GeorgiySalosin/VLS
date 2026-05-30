@@ -21,6 +21,8 @@ namespace VLSGame.ViewModels
 
         public LoadingViewModel LoadingVM { get; }
 
+        private CancellationTokenSource? LoadingCTS;
+
         #region View's properties
 
         private Visibility visibilityGridMode = Visibility.Hidden;
@@ -104,17 +106,27 @@ namespace VLSGame.ViewModels
                 LoadingVM.UpdateProgress(report.Percent, report.CurrentFile);
             });
 
+            LoadingCTS?.Cancel();
+            LoadingCTS = new CancellationTokenSource();
+            var token = LoadingCTS.Token;
+
             try
             {
                 var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
                 var matchWindow = new Match(matchViewModel);
 
                 // Loading textures (the match window is not yet displayed)
-                await matchViewModel.LoadTexturesAsync(progress);
+                await matchViewModel.LoadTexturesAsync(progress, token);
+                token.ThrowIfCancellationRequested();
 
                 // Now everything is ready – show the game
                 matchWindow.Show();
                 CloseRequested?.Invoke(this, EventArgs.Empty);
+            }
+            catch (OperationCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("Loading cancelled by user.");
+                Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
@@ -245,6 +257,8 @@ namespace VLSGame.ViewModels
             CurrentGameMode = gameMode;
             DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
         }
+
+        internal void CancelLoading() => LoadingCTS?.Cancel();
 
         #region Config funcs
         private void ReloadSelectedMapsFromConfig()

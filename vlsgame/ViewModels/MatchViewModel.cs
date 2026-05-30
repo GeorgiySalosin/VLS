@@ -135,12 +135,15 @@ namespace VLSGame.ViewModels
             };
             PlayerManager.AddPlayer(player);
         }
-        internal async Task LoadTexturesAsync(IProgress<LoadingProgress> progress)
+        internal async Task LoadTexturesAsync(
+            IProgress<LoadingProgress> progress,
+            CancellationToken token)
         {
             System.Diagnostics.Debug.WriteLine("LoadTexturesAsync started");
-            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress);
+            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress, token);
             System.Diagnostics.Debug.WriteLine("InitializeAsync completed");
 
+            token.ThrowIfCancellationRequested();
             renderManager.CreateEnvironmentObject3D();
             renderManager.SetLight();
             SetupLayers();

@@ -42,7 +42,7 @@ namespace VLSGame.Rendering
 
         internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
             string colorMapPath, string depthMapPath,
-            IProgress<LoadingProgress>? progress)
+            IProgress<LoadingProgress>? progress, CancellationToken token)
         {
             if (isInitialized) return;
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 3D renderer");
@@ -50,7 +50,7 @@ namespace VLSGame.Rendering
 
             RegisterLayer(new HudLayer(hudPanel));
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: updating environment textures...");
-            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress); // Loads new environment textures
+            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token); // Loads new environment textures
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: textures loaded");
 
             isInitialized = true;

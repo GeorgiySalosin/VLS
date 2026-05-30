@@ -141,7 +141,9 @@ namespace VLSGame.Models
         /// <summary>
         /// Asynchronously loads a color map and a depth map with a combined progress report.
         /// </summary>
-        internal async Task UpdateEnvironmentTextureAsync(string colorMapPath, string depthMapPath, IProgress<LoadingProgress>? progress)
+        internal async Task UpdateEnvironmentTextureAsync(
+            string colorMapPath, string depthMapPath,
+            IProgress<LoadingProgress>? progress, CancellationToken token)
         {
             // Calculate total size of both files
             var colorFileInfo = new FileInfo(colorMapPath);
@@ -157,8 +159,9 @@ namespace VLSGame.Models
                 var buffer = new byte[8192];
                 var result = new MemoryStream();
                 int bytesRead;
-                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
                 {
+                    token.ThrowIfCancellationRequested();
                     await result.WriteAsync(buffer, 0, bytesRead);
                     totalBytesRead += bytesRead;
                     int percent = (int)((double)totalBytesRead / totalBytes * 100);
@@ -185,6 +188,7 @@ namespace VLSGame.Models
             // Create UI objects on the dispatcher thread
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
+                token.ThrowIfCancellationRequested();
                 System.Diagnostics.Debug.WriteLine("Creating BitmapImage from color data...");
                 var bitmap = new BitmapImage();
                 using (var stream = new MemoryStream(colorData))
