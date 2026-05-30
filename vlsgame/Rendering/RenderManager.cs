@@ -6,7 +6,6 @@ using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
-using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
 
@@ -35,9 +34,24 @@ namespace VLSGame.Rendering
 
 
             RegisterLayer(new HudLayer(hudPanel));
-            RegisterLayer(new HudLayer(hudPanel));
 
             texturePool.UpdateEnvironmentTexture(colorMapPath, depthMapPath);      // Loads new environment textures
+
+            isInitialized = true;
+        }
+
+        internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
+            string colorMapPath, string depthMapPath,
+            IProgress<LoadingProgress>? progress, CancellationToken token)
+        {
+            if (isInitialized) return;
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 3D renderer");
+            renderer3D.Initialize(viewport);
+
+            RegisterLayer(new HudLayer(hudPanel));
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: updating environment textures...");
+            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token); // Loads new environment textures
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: textures loaded");
 
             isInitialized = true;
         }

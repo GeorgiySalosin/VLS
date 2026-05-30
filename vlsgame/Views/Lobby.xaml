@@ -27,125 +27,134 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="492"/>
-            <ColumnDefinition Width="1428"/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <Button Grid.Row="0" Content="Start" Width="428" Height="132" Command="{Binding StartGameCommand}"/>
-            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="32,0,32,32">
-                <Button Height="200" Margin="0,0,0,0" Command="{Binding ToggleModeGridCommand}">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border>
-                                <Border.Background>
-                                    <ImageBrush ImageSource="{Binding SelectModeImagePath}" Stretch="UniformToFill"/>
-                                </Border.Background>
-                                <ContentPresenter
-                                    Content="{TemplateBinding Content}"
-                                    ContentTemplate="{TemplateBinding ContentTemplate}"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                    <TextBlock Text="select mode >>" HorizontalAlignment="Right" FontSize="35"/>
-                </Button>
-                <Grid Height="32" Background="Gray">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="{Binding MapText}" FontSize="22" 
-                               VerticalAlignment="Center" Margin="5,5,0,0"/>
-                    <TextBlock Grid.Column="2" Text="{Binding DisplayGamemode}" FontSize="22" 
-                               VerticalAlignment="Center" Margin="0,5,5,0"/>
-                </Grid>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Column="1" Visibility="{Binding VisibilityGridMode}">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Button Grid.Row="0" Content="X" Width="92" Height="92"
-                    VerticalAlignment="Top" HorizontalAlignment="Right"
-                    Command="{Binding ExitChoiceMapsCommand}"/>
-            <Grid Grid.Row="1">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="492"/>
+                <ColumnDefinition Width="1428"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="Map"/>
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding MapViewModels}"> <!--MapButtons-->
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" 
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Top"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Width="360" Height="240" Margin="0,0,32,32"
-                                    Command="{Binding DataContext.ToggleMapCommand, 
-                                    RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding}">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border>
-                                            <Border.Background>
-                                                <ImageBrush ImageSource="{Binding MapBackgroundImage}" Stretch="UniformToFill"/>
-                                            </Border.Background>
-                                            <ContentPresenter
-                                                    Content="{TemplateBinding Content}"
-                                                    ContentTemplate="{TemplateBinding ContentTemplate}"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="auto"/>
-                                    </Grid.RowDefinitions>
-                                    <Image Grid.Row="0"
-                                                Source="{Binding Checkmark}"
-                                                Visibility="{Binding CheckmarkVisibility}"
-                                                Width="32" Height="32" 
-                                                VerticalAlignment="Top" HorizontalAlignment="Right"
-                                                Margin="10"/>
-                                    <StackPanel Grid.Row="1" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding Title}" 
-                                                        FontSize="20" Foreground="White"/>
-                                        <TextBlock Text="{Binding Subtitle}" 
-                                                        FontSize="12" Foreground="LightGray"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <TextBlock Grid.Row="2" Text="Mode"/>
-                <Grid Grid.Row="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
-                            Content="Singleplayer" Command="{Binding ActivateSingleplayerCommand}"/>
-                    <Button Grid.Column="1" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
-                            Content="Multiplayer" Command="{Binding ActivateMultiplayerCommand}"/>
-                </Grid>
+                <Button Grid.Row="0" Content="Start" Width="428" Height="132" Command="{Binding StartGameCommand}"/>
+                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="32,0,32,32">
+                    <Button Height="200" Margin="0,0,0,0" Command="{Binding ToggleModeGridCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border>
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding SelectModeImagePath}" Stretch="UniformToFill"/>
+                                    </Border.Background>
+                                    <ContentPresenter
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock Text="select mode >>" HorizontalAlignment="Right" FontSize="35"/>
+                    </Button>
+                    <Grid Height="32" Background="Gray">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding MapText}" FontSize="22" 
+                                   VerticalAlignment="Center" Margin="5,5,0,0"/>
+                        <TextBlock Grid.Column="2" Text="{Binding DisplayGamemode}" FontSize="22" 
+                                   VerticalAlignment="Center" Margin="0,5,5,0"/>
+                    </Grid>
+                </StackPanel>
             </Grid>
-            <Button Grid.Row="2" Content="Ok" Width="268" Height="92"
-                    VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                    Command="{Binding SaveMapsCommand}"/>
+            <Grid Grid.Column="1" Visibility="{Binding VisibilityGridMode}">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Content="X" Width="92" Height="92"
+                        VerticalAlignment="Top" HorizontalAlignment="Right"
+                        Command="{Binding ExitChoiceMapsCommand}"/>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Map"/>
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding MapViewModels}"> <!--MapButtons-->
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" 
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Top"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Width="360" Height="240" Margin="0,0,32,32"
+                                        Command="{Binding DataContext.ToggleMapCommand, 
+                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border>
+                                                <Border.Background>
+                                                    <ImageBrush ImageSource="{Binding MapBackgroundImage}" Stretch="UniformToFill"/>
+                                                </Border.Background>
+                                                <ContentPresenter
+                                                        Content="{TemplateBinding Content}"
+                                                        ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Image Grid.Row="0"
+                                                    Source="{Binding Checkmark}"
+                                                    Visibility="{Binding CheckmarkVisibility}"
+                                                    Width="32" Height="32" 
+                                                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                                                    Margin="10"/>
+                                        <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" 
+                                                            FontSize="20" Foreground="White"/>
+                                            <TextBlock Text="{Binding Subtitle}" 
+                                                            FontSize="12" Foreground="LightGray"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Grid.Row="2" Text="Mode"/>
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
+                                Content="Singleplayer" Command="{Binding ActivateSingleplayerCommand}"/>
+                        <Button Grid.Column="1" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
+                                Content="Multiplayer" Command="{Binding ActivateMultiplayerCommand}"/>
+                    </Grid>
+                </Grid>
+                <Button Grid.Row="2" Content="Ok" Width="268" Height="92"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                        Command="{Binding SaveMapsCommand}"/>
+            </Grid>
         </Grid>
+        <local:LoadingControl Grid.Row="1" 
+                              DataContext="{Binding LoadingVM}" 
+                              Visibility="{Binding Visibility}"/>
     </Grid>
 </Window>

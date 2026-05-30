@@ -1,9 +1,10 @@
 ﻿using OpenCvSharp;
+using System.IO;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.Config;
-using VLSShared.Enums;
 using VLSShared.Models;
 namespace VLSGame.Models
 {
@@ -135,7 +136,80 @@ namespace VLSGame.Models
             World_Depth = LoadCV(depthMapPath);
             World_Depth_Width = World_Depth.Width;
             World_Depth_Height = World_Depth.Height;
-        } 
+        }
+
+        /// <summary>
+        /// Asynchronously loads a color map and a depth map with a combined progress report.
+        /// </summary>
+        internal async Task UpdateEnvironmentTextureAsync(
+            string colorMapPath, string depthMapPath,
+            IProgress<LoadingProgress>? progress, CancellationToken token)
+        {
+            // Calculate total size of both files
+            var colorFileInfo = new FileInfo(colorMapPath);
+            var depthFileInfo = new FileInfo(depthMapPath);
+            long totalBytes = colorFileInfo.Length + depthFileInfo.Length;
+            long totalBytesRead = 0;
+            int lastReportedPercent = -1;
+
+            // Local function to load a single file and update the combined progress
+            async Task<byte[]> LoadFileWithCombinedProgress(string filePath, string description)
+            {
+                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
+                var buffer = new byte[8192];
+                var result = new MemoryStream();
+                int bytesRead;
+                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
+                {
+                    token.ThrowIfCancellationRequested();
+                    await result.WriteAsync(buffer, 0, bytesRead);
+                    totalBytesRead += bytesRead;
+                    int percent = (int)((double)totalBytesRead / totalBytes * 100);
+                    if (percent != lastReportedPercent)
+                    {
+                        lastReportedPercent = percent;
+                        progress?.Report(new LoadingProgress(percent, totalBytesRead, totalBytes, description));
+                    }
+                }
+                return result.ToArray();
+            }
+
+            System.Diagnostics.Debug.WriteLine($"Loading color map: {colorMapPath}");
+            byte[] colorData = await LoadFileWithCombinedProgress(colorMapPath, "Color map");
+            System.Diagnostics.Debug.WriteLine($"Color map loaded, size: {colorData.Length} bytes");
+
+            System.Diagnostics.Debug.WriteLine($"Loading depth map: {depthMapPath}");
+            byte[] depthData = await LoadFileWithCombinedProgress(depthMapPath, "Depth map");
+            System.Diagnostics.Debug.WriteLine($"Depth map loaded, size: {depthData.Length} bytes");
+
+            // Needed to update the ProgressBar
+            await Task.Delay(50);
+
+            // Create UI objects on the dispatcher thread
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                token.ThrowIfCancellationRequested();
+                System.Diagnostics.Debug.WriteLine("Creating BitmapImage from color data...");
+                var bitmap = new BitmapImage();
+                using (var stream = new MemoryStream(colorData))
+                {
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = stream;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                }
+                World_Color = new ImageBrush(bitmap) { ViewportUnits = BrushMappingMode.Absolute, TileMode = TileMode.None, Stretch = Stretch.Fill };
+                World_Color_Width = bitmap.PixelWidth;
+                World_Color_Height = bitmap.PixelHeight;
+
+                System.Diagnostics.Debug.WriteLine("Decoding depth map...");
+                World_Depth = Cv2.ImDecode(depthData, ImreadModes.Unchanged);
+                World_Depth_Width = World_Depth.Width;
+                World_Depth_Height = World_Depth.Height;
+                System.Diagnostics.Debug.WriteLine("Textures ready");
+            });
+        }
         #endregion
 
         // Enter texture coordinates of pixel to recieve its depth from the depth map
