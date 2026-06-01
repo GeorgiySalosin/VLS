@@ -1,5 +1,5 @@
 ﻿using System;
-using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 
 namespace VLSGame.Rendering
 {

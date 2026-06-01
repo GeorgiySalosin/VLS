@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
-using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 using VLSGame.Models;
 using VLSGame.Rendering;
 using VLSGame.Rendering.Content2D;

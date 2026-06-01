@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VLSGame.Config
+namespace VLSGame.Config.GameConfig
 {
     public class CameraAnimationSettings
     {

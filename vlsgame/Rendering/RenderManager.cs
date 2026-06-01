@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content3D;

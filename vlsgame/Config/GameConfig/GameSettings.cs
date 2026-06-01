@@ -2,7 +2,7 @@
 using VLSGame.Services;
 using VLSShared.Interfaces;
 
-namespace VLSGame.Config
+namespace VLSGame.Config.GameConfig
 {
     public class GameSettings
     {

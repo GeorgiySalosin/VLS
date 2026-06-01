@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using VLSGame.Commands;
 using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 using VLSGame.Models;
 using VLSGame.Services;
 using VLSGame.Views;

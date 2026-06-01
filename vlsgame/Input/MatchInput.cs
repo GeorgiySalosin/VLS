@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
-using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 using VLSGame.Rendering;
 using VLSGame.ViewModels;
 
