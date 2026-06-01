@@ -1,10 +1,11 @@
-﻿using System.Numerics;
+﻿using System.Formats.Asn1;
+using System.Numerics;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using VLSGame.Config;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
-using VLSGame.Rendering.Content2D.HUD;
 using VLSGame.Rendering.Content3D;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
@@ -20,7 +21,8 @@ namespace VLSGame.Rendering
         #region Initialization  
 
         public static RenderManager Instance { get; } = new();
-        private static readonly Renderer3D renderer3D = Renderer3D.Instance;    // A tool responsible for rendering of all 3D.
+        private static readonly Renderer3D renderer3D = Renderer3D.Instance;    // A tool responsible for rendering of all 3D. Renders stuff to Viewport3D
+        private static readonly Renderer2D renderer2D = Renderer2D.Instance;    // A tool responsible for rendering of all 2D. Renders stuff to Panel
         private static readonly MatchTexturePool texturePool = MatchTexturePool.Instance;           // Pre-loading all in-game textures and reusing them!
 
         private RenderManager() { }
@@ -34,8 +36,9 @@ namespace VLSGame.Rendering
             if (isInitialized) return;
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 3D renderer");
             renderer3D.Initialize(viewport);
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 2D renderer");
+            renderer2D.Initialize(hudPanel);
 
-            RegisterLayer(new HudLayer(hudPanel));
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: updating environment textures...");
             await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token); // Loads new environment textures
             System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: textures loaded");
@@ -45,22 +48,77 @@ namespace VLSGame.Rendering
         #endregion
 
         #region 2D 
-        private readonly SortedDictionary<RenderOrder, Layer> Layers = [];
 
-        public void RegisterLayer(Layer layer)
+        private CustomObject2D? crosshair2D;
+        private CustomObject2D? scope2D;
+        private CameraProperties? cameraProperties;
+
+        public void Initialize2D(CameraProperties cameraProperties)
         {
-            if (!Layers.ContainsKey(layer.Order))
-            {
-                Layers.Add(layer.Order, layer);
-            }
+            this.cameraProperties = cameraProperties;
+            cameraProperties.PropertyChanged += OnCameraPropertyChanged;
+            CreateCrosshair2D();
+            CreateScope2D();
+            Update2DVisibility();
         }
 
-        public T? GetLayer<T>() where T : Layer => Layers.Values.OfType<T>().FirstOrDefault();
+        private void OnCameraPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CameraProperties.FieldOfView))
+                Update2DVisibility();
+        }
+
+        private void Update2DVisibility()
+        {
+            if (cameraProperties == null) return;
+            bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV;
+            crosshair2D?.IsVisible = !isScoped;
+            
+        }
+
+        private void CreateCrosshair2D()
+        {
+            var tex = MatchTexturePool.Instance.GetCrosshairTexture();
+            crosshair2D = new CustomObject2D(tex, tag: "Crosshair") { IsVisible = true };
+            Add2D(crosshair2D);
+        }
+
+        private void CreateScope2D()
+        {
+            var frames = MatchTexturePool.Instance.GetSVLK14SZoomingFrames();
+            if (frames == null || frames.Count == 0) return;
+            var firstFrame = frames[0];
+            scope2D = new CustomObject2D(firstFrame, tag: "Scope");
+            // Добавляем с кадрами и коллбэком
+            renderer2D.AddObject(scope2D, frames.ToList(), OnScopeAnimationComplete);
+        }
+
+        private void OnScopeAnimationComplete()
+        {
+            Update2DVisibility();
+        }
+
+        public void StartScopeAnimationForward()
+        {
+            if (scope2D == null) return;
+            scope2D.Animation.PlayForward();
+            Update2DVisibility();
+        }
+
+        public void StartScopeAnimationBackward()
+        {
+            if (scope2D == null) return;
+            scope2D.Animation.PlayBackward();
+            Update2DVisibility();
+        }
 
 
 
+        public void Add2D(CustomObject2D obj) => renderer2D.AddObject(obj);
+        public void Remove2D(Guid id) => renderer2D.RemoveObject(id);
+        public CustomObject2D? Get2D(Guid id) => renderer2D.GetObject(id);
+        public CustomObject2D? Get2D(string tag) => renderer2D.GetObject(tag);
         #endregion
-        //TODO: Create a new Renderer 2D Class, Move those into it.
 
 
         #region 3D 
@@ -166,7 +224,7 @@ namespace VLSGame.Rendering
         {
             var mesh = PlaneMesh(fxScale);
 
-            var texture = texturePool.GetEmptyTexture();
+            var texture = texturePool.GetEmptyTexture3D();
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
             var bloodFXVisual = new ModelVisual3D { Content = geometryModel };
@@ -177,7 +235,7 @@ namespace VLSGame.Rendering
 
 
             bloodFX.SetWorldPosition(worldPosition * 0.95);                           // place an effect a bit closer than the character is to avoid mesh overlapping
-            bloodFX.Animation.IsPlaying = true;
+            bloodFX.Animation.PlayForward();
             Add3D(bloodFX);
         }
 
@@ -237,6 +295,7 @@ namespace VLSGame.Rendering
 
         public void Render()
         {
+            renderer2D.Render();
             renderer3D.Render();
         }
 

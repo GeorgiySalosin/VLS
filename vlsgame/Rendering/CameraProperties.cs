@@ -5,27 +5,27 @@ namespace VLSGame.Rendering
 {
     public class CameraProperties : ViewModelBase
     {
-        private double _userRotationX = 0;
-        private double _userRotationY = 0;
-        private double _animationRotationX = 0;
-        private double _animationRotationY = 0;
+        private double _userRotationX;
+        private double _userRotationY;
+        private double _animationRotationX;
+        private double _animationRotationY;
         private double _fieldOfView = 90;
         private double _targetFOV = 90;
+        private Vector3D _lookDirection = new Vector3D(0, 0, 1);
+        private bool _isDirty = false;
 
-        // Итоговые углы для камеры (сумма пользовательского ввода и анимаций)
-        public double RotationX => UserRotationX + AnimationRotationX;
-        public double RotationY => UserRotationY + AnimationRotationY;
+        public double RotationX => _userRotationX + _animationRotationX;
+        public double RotationY => _userRotationY + _animationRotationY;
 
-        // Mouse input
         public double UserRotationX
         {
             get => _userRotationX;
             set
             {
-                if (Set(ref _userRotationX, value))
+                if (Math.Abs(_userRotationX - value) > 1e-9)
                 {
-                    OnPropertyChanged(nameof(RotationX));
-                    OnPropertyChanged(nameof(LookDirection));
+                    _userRotationX = value;
+                    _isDirty = true;            // не вызываем уведомления сразу
                 }
             }
         }
@@ -35,24 +35,23 @@ namespace VLSGame.Rendering
             get => _userRotationY;
             set
             {
-                if (Set(ref _userRotationY, value))
+                if (Math.Abs(_userRotationY - value) > 1e-9)
                 {
-                    OnPropertyChanged(nameof(RotationY));
-                    OnPropertyChanged(nameof(LookDirection));
+                    _userRotationY = value;
+                    _isDirty = true;
                 }
             }
         }
 
-        // Анимационные углы (sway, recoil и т.д.)
         public double AnimationRotationX
         {
             get => _animationRotationX;
             set
             {
-                if (Set(ref _animationRotationX, value))
+                if (Math.Abs(_animationRotationX - value) > 1e-9)
                 {
-                    OnPropertyChanged(nameof(RotationX));
-                    OnPropertyChanged(nameof(LookDirection));
+                    _animationRotationX = value;
+                    _isDirty = true;
                 }
             }
         }
@@ -62,13 +61,45 @@ namespace VLSGame.Rendering
             get => _animationRotationY;
             set
             {
-                if (Set(ref _animationRotationY, value))
+                if (Math.Abs(_animationRotationY - value) > 1e-9)
                 {
-                    OnPropertyChanged(nameof(RotationY));
-                    OnPropertyChanged(nameof(LookDirection));
+                    _animationRotationY = value;
+                    _isDirty = true;
                 }
             }
         }
+
+        public Vector3D LookDirection
+        {
+            get => _lookDirection;
+            private set => Set(ref _lookDirection, value);
+        }
+
+        /// <summary>Вызывается ОДИН раз за кадр перед рендером.</summary>
+        public void ApplyPendingChanges()
+        {
+            if (!_isDirty) return;
+
+            _isDirty = false;
+
+            // Извещаем байндинги об изменении итоговых углов и LookDirection
+            OnPropertyChanged(nameof(RotationX));
+            OnPropertyChanged(nameof(RotationY));
+            RecalcLookDirection();        // считает и присваивает LookDirection
+                                          // Можно добавить OnPropertyChanged(nameof(LookDirection)) внутри RecalcLookDirection
+        }
+
+        private void RecalcLookDirection()
+        {
+            double x = Math.Cos(RotationX) * Math.Sin(RotationY);
+            double y = Math.Sin(RotationX);
+            double z = Math.Cos(RotationX) * Math.Cos(RotationY);
+            var v = new Vector3D(x, y, z);
+            v.Normalize();
+            LookDirection = v;    // вызовет PropertyChanged для LookDirection
+        }
+
+
 
         // Текущее поле зрения (отображаемое)
         public double FieldOfView
@@ -98,18 +129,5 @@ namespace VLSGame.Rendering
                 FieldOfView += (TargetFOV - FieldOfView) * Math.Min(1f, zoomSpeed * deltaTime);
         }
 
-        // Направление взгляда, вычисляемое на основе итоговых углов RotationX/RotationY
-        public Vector3D LookDirection
-        {
-            get
-            {
-                double x = Math.Cos(RotationX) * Math.Sin(RotationY);
-                double y = Math.Sin(RotationX);
-                double z = Math.Cos(RotationX) * Math.Cos(RotationY);
-                Vector3D vec = new Vector3D(x, y, z);
-                vec.Normalize();
-                return vec;
-            }
-        }
     }
 }

@@ -122,6 +122,7 @@ namespace VLSGame.ViewModels
 
                 // Now everything is ready – show the game
                 matchWindow.Show();
+
                 CloseRequested?.Invoke(this, EventArgs.Empty);
             }
             catch (OperationCanceledException)

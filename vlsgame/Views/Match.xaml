@@ -37,10 +37,11 @@
         </Viewport3D>
 
         <!-- HUD Panel -->
-        <Grid x:Name="HudPanel" Grid.Row="0" 
-              Background="Transparent"
-              IsHitTestVisible="False">
-        </Grid>
+        <Canvas x:Name="HudPanel" Grid.Row="0" 
+            Background="Transparent"
+            IsHitTestVisible="False"
+            ClipToBounds="True">
+        </Canvas>
 
         <!-- Debug info -->
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,256,0,0">

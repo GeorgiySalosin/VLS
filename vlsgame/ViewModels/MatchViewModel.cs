@@ -1,19 +1,16 @@
-using OpenCvSharp;
+using System.Diagnostics;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using VLSGame.Config;
 using VLSGame.Models;
 using VLSGame.Rendering;
-using VLSGame.Rendering.Content2D.HUD;
-using VLSGame.Rendering.Content3D;
+using VLSGame.Rendering.Content2D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
-using Window = System.Windows.Window;
 
 namespace VLSGame.ViewModels
 {
@@ -72,12 +69,22 @@ namespace VLSGame.ViewModels
         private int lastPixelY = -1;
         private double cachedDistance = 0;
 
+
+        private CustomObject2D? crosshairObject;
+        private CustomObject2D? scopeObject;
+
         private int _frameCounter;
         private readonly string colorMapPath;
         private readonly string depthMapPath;
 
-        internal MatchViewModel(IGameMode gameMode,
-            string colorMapPath, string depthMapPath)
+        private int tickCounter;
+        private DateTime lastFpsTime = DateTime.Now;
+
+        private DateTime lastTickTime = DateTime.Now;
+
+
+
+        public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
             this.gameMode = gameMode;
 
@@ -121,14 +128,14 @@ namespace VLSGame.ViewModels
             IProgress<LoadingProgress> progress,
             CancellationToken token)
         {
-            System.Diagnostics.Debug.WriteLine("LoadTexturesAsync started");
+            Debug.WriteLine("LoadTexturesAsync started");
             await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress, token);
-            System.Diagnostics.Debug.WriteLine("InitializeAsync completed");
+            Debug.WriteLine("InitializeAsync completed");
+
 
             token.ThrowIfCancellationRequested();
             renderManager.CreateEnvironmentObject3D();
             renderManager.SetLight();
-            SetupLayers();
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
             Vector3 cameraLook = V3(cameraLook3D);
@@ -138,25 +145,10 @@ namespace VLSGame.ViewModels
             };
             PlayerManager.AddPlayer(player);
 
-            System.Diagnostics.Debug.WriteLine("LoadTexturesAsync finished");
+            Debug.WriteLine("LoadTexturesAsync finished");
         }
 
-        private void SetupLayers()
-        {
-            // HUD 
-            var hudLayer = RenderManager.Instance.GetLayer<HudLayer>();
-
-            hudLayer?.Initialize(this);
-            var crosshair = new CrosshairTexture();
-            hudLayer?.RegisterTexture(crosshair);
-            hudLayer?.ShowTexture("Crosshair");
-
-            var scope = new TestScopeTexture();
-            hudLayer?.RegisterTexture(scope);
-            //hudLayer?.ShowTexture("Scope");
-
-        }
-
+        internal void Initialize2D() => renderManager.Initialize2D(CameraProperties);
 
         #region GAME EVENTS 
         internal void StartGameLoop()
@@ -169,19 +161,36 @@ namespace VLSGame.ViewModels
             gameTimer.Start();
         }
 
+
+
         private void OnGameTick(object? sender, EventArgs e)
         {
-            // Обновляем FOV (плавное приближение/отдаление)
+            // 1. FOV
             CameraProperties.UpdateFOV(deltaTime, (float)Configuration.Instance.CameraAnimationSettings.ZoomSpeedAuto);
 
+            // 2. Анимации (меняют AnimationRotationX/Y -> устанавливают флаг dirty)
             animationController.Update(deltaTime);
+
+            // 3. Применяем все изменения к ViewModel (пересчёт RotationX/Y, LookDirection, уведомления)
+            CameraProperties.ApplyPendingChanges();
+
+            // 4. Обновление пуль и рендер
             BulletManager.UpdateBullets(deltaTime);
             renderManager.Render();
             GetCenterDistance();
-            _frameCounter++;
-            if (_frameCounter % 60 == 0)
-                System.Diagnostics.Debug.WriteLine($"FOV: {CameraProperties.FieldOfView:F2} / Target: {CameraProperties.TargetFOV:F2}");
+
+            tickCounter++;
+            if ((DateTime.Now - lastFpsTime).TotalSeconds >= 1.0)
+            {
+                int fps = tickCounter;
+                tickCounter = 0;
+                lastFpsTime = DateTime.Now;
+                Debug.WriteLine($"[GameLoop] FPS: {fps}");
+            }
         }
+
+
+
 
         internal void Shoot()
         {

@@ -1,5 +1,7 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 using VLSGame.Input;
+using VLSGame.Rendering;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Views
@@ -22,6 +24,10 @@ namespace VLSGame.Views
             Loaded += (s, e) =>
             {
                 inputHandler.Initialize(viewModel, this);
+
+                // Initialize 2D after showing the window to avoid centering issues
+                viewModel.Initialize2D();
+
                 viewModel.StartGameLoop();
             };
 
