@@ -6,7 +6,6 @@ using VLSGame.Config;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content3D;
-using VLSShared.Models;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
 
@@ -29,20 +28,23 @@ namespace VLSGame.Rendering
 
         private static bool isInitialized = false;
 
-        public void Initialize(Viewport3D viewport, Panel hudPanel, string colorMapPath, string depthMapPath)
+        internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
+            string colorMapPath, string depthMapPath,
+            IProgress<LoadingProgress>? progress, CancellationToken token)
         {
             if (isInitialized) return;
-
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 3D renderer");
             renderer3D.Initialize(viewport);
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 2D renderer");
             renderer2D.Initialize(hudPanel);
 
-            texturePool.UpdateEnvironmentTexture(colorMapPath, depthMapPath);      // Loads new environment textures
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: updating environment textures...");
+            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token); // Loads new environment textures
+            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: textures loaded");
 
             isInitialized = true;
         }
         #endregion
-
-
 
         #region 2D 
 
@@ -137,13 +139,6 @@ namespace VLSGame.Rendering
             CustomObject3D environment = new(sphereVisual, tag: CustomObject3DTags.World);
             Add3D(environment);
         }
-
-        //public void UpdateEnvironment(string path)
-        //{
-        //    var environment = Get3D(CustomObject3DTags.World);
-        //    texturePool.UpdateEnvironmentTexture(path);
-
-        //}
 
         #endregion
 
@@ -270,10 +265,6 @@ namespace VLSGame.Rendering
         #endregion
 
         #endregion
-
-
-
-
 
         /// <summary>
         ///  Adds a new custom 3d object to the scene

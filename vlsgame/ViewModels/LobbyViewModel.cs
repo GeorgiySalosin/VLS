@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using System.Reflection.Metadata.Ecma335;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Commands;
@@ -11,11 +11,17 @@ using VLSShared.Interfaces;
 
 namespace VLSGame.ViewModels
 {
-    internal class LobbyViewModel : ViewModelBase
+    internal sealed class LobbyViewModel : ViewModelBase
     {
         public ObservableCollection<MapButtonDataViewModel> MapViewModels { get; init; }
 
         internal event EventHandler? CloseRequested; // event for View closing
+
+        private IGameMode? CurrentGameMode;
+
+        public LoadingViewModel LoadingVM { get; }
+
+        private CancellationTokenSource? LoadingCTS;
 
         #region View's properties
 
@@ -49,23 +55,6 @@ namespace VLSGame.ViewModels
 
         #endregion
 
-        #region SinglePlayer
-
-        private IGameMode? currentGameMode;
-        public IGameMode? CurrentGameMode => currentGameMode;
-        private async Task StartSinglePlayerAsync(string panoramaPath)
-        {
-            currentGameMode = new SinglePlayerGameMode();
-            await currentGameMode.StartAsync();
-
-            if (currentGameMode is SinglePlayerGameMode singlePlayer)
-            {
-                singlePlayer.SetPanoramaPath(panoramaPath);
-            }
-        }
-
-        #endregion
-
         #region Commands
 
         // Change visibility of element
@@ -75,7 +64,7 @@ namespace VLSGame.ViewModels
         #region ToggleModeGrid
 
         public ICommand ToggleModeGridCommand { get; }
-        private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
+        private bool CanToggleModeGridCommandExecute(object p) => VisibilityGridMode != Visibility.Visible && LoadingVM.Visibility != Visibility.Visible;
         private void OnToggleModeGridCommandExecuted(object p)
         {
             FullReloadFromConfig();
@@ -87,52 +76,64 @@ namespace VLSGame.ViewModels
         #region StartGame
 
         public ICommand StartGameCommand { get; }
-        private bool CanStartGameCommandExecute(object p) => VisibilityGridMode != Visibility.Visible;
+        private bool CanStartGameCommandExecute(object p) => VisibilityGridMode != Visibility.Visible && LoadingVM.Visibility != Visibility.Visible;
         private async void OnStartGameCommandExecuted(object p)
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
-            // We need to know what weather the user has selected
             int mapIndex = ChoiceRandomWeather();
-
             string ColorMapPath;
-            string DepthMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Depth\W001.png");
+            string DepthMapPath = Path.Combine(basePath, @"Content\Maps\Depth\W001.png");
 
-            switch (mapIndex) {
-                case 1:
-                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunny\W001.png");
-                    break;
-                case 2:
-                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Foggy\W001.png");
-                    break;
-                case 3:
-                    ColorMapPath = System.IO.Path.Combine(basePath, @"Content\Maps\Sunset\W001.png");
-                    break;
-                default:
-                    throw new Exception("A non-existent weather was selected");
+            switch (mapIndex)
+            {
+                case 1: ColorMapPath = Path.Combine(basePath, @"Content\Maps\Sunny\W001.png"); break;
+                case 2: ColorMapPath = Path.Combine(basePath, @"Content\Maps\Foggy\W001.png"); break;
+                case 3: ColorMapPath = Path.Combine(basePath, @"Content\Maps\Sunset\W001.png"); break;
+                default: throw new Exception("A non-existent weather was selected");
             }
 
-            if (!System.IO.File.Exists(ColorMapPath))
+            if (!File.Exists(ColorMapPath) || !File.Exists(DepthMapPath))
             {
-                MessageBox.Show($"Color map was not found from {ColorMapPath}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Map files not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (!System.IO.File.Exists(DepthMapPath))
+            LoadingVM.Visibility = Visibility.Visible; // Shows the ProgressBar
+
+            var progress = new Progress<LoadingProgress>(report =>
             {
-                MessageBox.Show($"Depth map was not found from {DepthMapPath}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                LoadingVM.UpdateProgress(report.Percent, report.CurrentFile);
+            });
+
+            LoadingCTS?.Cancel();
+            LoadingCTS = new CancellationTokenSource();
+            var token = LoadingCTS.Token;
+
+            Match? matchWindow = null;
+            try
+            {
+                var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
+                matchWindow = new Match(matchViewModel);
+
+                // Loading textures (the match window is not yet displayed)
+                await matchViewModel.LoadTexturesAsync(progress, token);
+                token.ThrowIfCancellationRequested();
+
+                // Now everything is ready – show the game
+                matchWindow.Show();
+                CloseRequested?.Invoke(this, EventArgs.Empty);
             }
-
-            await StartSinglePlayerAsync(ColorMapPath); // So far, we are launching strictly a singleplayer.
-
-            // Открываем окно Match с обоими путями
-            var matchViewModel = new MatchViewModel(CurrentGameMode!, ColorMapPath, DepthMapPath);
-            var matchWindow = new Match(matchViewModel);
-            matchWindow.Show();
-            CloseRequested?.Invoke(this, EventArgs.Empty);
+            catch (OperationCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("Loading cancelled by user.");
+                matchWindow?.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Diagnostics.Debug.WriteLine($"StartGame failed: {ex}");
+            }
         }
 
         #endregion
@@ -180,7 +181,7 @@ namespace VLSGame.ViewModels
         private bool CanActivateSingleplayerCommandExecute(object p) => true;
         private void OnActivateSingleplayerCommandExecuted(object p)
         {
-            currentGameMode = new SinglePlayerGameMode(); // We update the state and update the UI when the settings are saved
+            CurrentGameMode = new SinglePlayerGameMode(); // We update the state and update the UI when the settings are saved
         }
 
         #endregion
@@ -191,7 +192,7 @@ namespace VLSGame.ViewModels
         private bool CanActivateMultiplayerCommandExecute(object p) => true;
         private void OnActivateMultiplayerCommandExecuted(object p)
         {
-            currentGameMode = new MultiPlayerGameMode(); // We update the state and update the UI when the settings are saved
+            CurrentGameMode = new MultiPlayerGameMode(); // We update the state and update the UI when the settings are saved
         }
 
         #endregion
@@ -229,6 +230,8 @@ namespace VLSGame.ViewModels
 
             FullReloadFromConfig();
 
+            LoadingVM = new LoadingViewModel();
+
             #region Initialize commands
             ToggleModeGridCommand = new RelayCommand(OnToggleModeGridCommandExecuted, CanToggleModeGridCommandExecute);
             StartGameCommand = new RelayCommand(OnStartGameCommandExecuted, CanStartGameCommandExecute);
@@ -252,9 +255,11 @@ namespace VLSGame.ViewModels
 
         private void ToggleGamemode(IGameMode gameMode)
         {
-            currentGameMode = gameMode;
+            CurrentGameMode = gameMode;
             DisplayGamemode = gameMode is SinglePlayerGameMode ? "Singleplayer" : "Multiplayer";
         }
+
+        internal void CancelLoading() => LoadingCTS?.Cancel();
 
         #region Config funcs
         private void ReloadSelectedMapsFromConfig()
@@ -336,10 +341,10 @@ namespace VLSGame.ViewModels
 
             // Compare
             if (config.GameSettings.SelectedGameMode != null &&
-                config.GameSettings.SelectedGameMode == currentGameMode)
+                config.GameSettings.SelectedGameMode == CurrentGameMode)
                 return; // nothing changed
 
-            config.GameSettings.SelectedGameMode = currentGameMode;
+            config.GameSettings.SelectedGameMode = CurrentGameMode;
             config.SaveConfiguration();
         }
 

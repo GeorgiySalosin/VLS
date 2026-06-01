@@ -75,8 +75,6 @@
     <None Remove="Content\Maps\Foggy\W001.png" />
     <None Remove="Content\Maps\Sunny\W001.png" />
     <None Remove="Content\Maps\Sunset\W001.png" />
-    <None Remove="Content\Maps\Test\Test_D.png" />
-    <None Remove="Content\Maps\Test\Test_W.png" />
     <None Remove="Content\ui\T_CrossAIM.png" />
   </ItemGroup>
 
@@ -259,12 +257,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Maps\Sunset\W001.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Maps\Test\Test_D.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Maps\Test\Test_W.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\T_CrossAIM.png">
