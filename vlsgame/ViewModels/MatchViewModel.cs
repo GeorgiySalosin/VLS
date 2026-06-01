@@ -111,8 +111,11 @@ namespace VLSGame.ViewModels
                 renderManager.CreatePlayerFX(V3(bulletLocation), hitZoneInfo.FXScale);
             };
 
-            PlayerManager.OnPlayerDead += (Guid id) => Renderer3D.Instance.RemoveObject(id);
-            PlayerManager.OnPlayerDead += (Guid id) => SpawnTarget();
+            PlayerManager.OnPlayerDead += (Guid id) =>
+            {
+                Renderer3D.Instance.RemoveObject(id);
+                SpawnTarget();
+            };
 
             BulletManager.BulletLanded += (distance, flightTime) =>
                 LastBullet = $"Hit: distance {distance:F1} m, time {flightTime:F2} s";
@@ -128,13 +131,9 @@ namespace VLSGame.ViewModels
             this.depthMapPath = depthMapPath;
 
             // Loading target positions from the config
-            // TODO
             if (!TargetsConfig.Instance.Load())
             {
-                MessageBox.Show("File error: Targets.json", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
-                return;
+                throw new InvalidOperationException("Failed to load targets configuration. Check Targets.json file.");
             }
             _targetPositions = TargetsConfig.Instance.Settings.Targets
                     .Select(tp => tp.ToVector3())
