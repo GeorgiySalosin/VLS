@@ -111,6 +111,9 @@ namespace VLSGame.ViewModels
                 renderManager.CreatePlayerFX(V3(bulletLocation), hitZoneInfo.FXScale);
             };
 
+            PlayerManager.OnPlayerDead += (Guid id) => Renderer3D.Instance.RemoveObject(id);
+            PlayerManager.OnPlayerDead += (Guid id) => SpawnTarget();
+
             BulletManager.BulletLanded += (distance, flightTime) =>
                 LastBullet = $"Hit: distance {distance:F1} m, time {flightTime:F2} s";
 

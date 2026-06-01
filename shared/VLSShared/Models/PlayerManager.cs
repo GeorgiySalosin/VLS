@@ -16,7 +16,7 @@ namespace VLSShared.Models
         /// params: last bullet location (world), hitzone (to determine an amount of blood)
         /// </summary>
         public static event Action<Vector3, HitZoneInfo>? OnPlayerHit;      
-        public static event Action<Guid, Vector3>? OnPlayerDead;
+        public static event Action<Guid> OnPlayerDead;
 
         public static void AddPlayer(Player player)
         {
@@ -107,12 +107,13 @@ namespace VLSShared.Models
                     Vector3 hitPointWorld = planePoint + right * localX + realUp * localY;
                     player.ApplyDamage(zone);
 
-                    
-                    
-
                     OnPlayerHit?.Invoke(bullet.Position, zone);
 
-                    //if (player.Hp <= 0) players.RemoveAt(i);
+                    if (player.Hp <= 0) 
+                    {
+                        players.RemoveAt(i);
+                        OnPlayerDead?.Invoke(player.Id);
+                    }
                     return true;
                 }
                 return false;
