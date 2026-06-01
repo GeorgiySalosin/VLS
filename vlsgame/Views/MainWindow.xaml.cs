@@ -113,11 +113,11 @@ namespace VLSGame.Views
 
             await _viewModel.StartSinglePlayerAsync(ColorMapPath);
 
-            // Открываем окно Match с обоими путями
-            var matchViewModel = new MatchViewModel(_viewModel.CurrentGameMode!, ColorMapPath, DepthMapPath);
-            var matchWindow = new Match(matchViewModel);
-            matchWindow.Show();
-            this.Close();
+            //// Открываем окно Match с обоими путями
+            //var matchViewModel = new MatchViewModel(_viewModel.CurrentGameMode!, ColorMapPath, DepthMapPath);
+            //var matchWindow = new Match(matchViewModel);
+            //matchWindow.Show();
+            //this.Close();
         }
 
         private void AddMessage(string message)

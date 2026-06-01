@@ -15,6 +15,7 @@ namespace VLSGame.Views
 
             viewModel = new LobbyViewModel();
             viewModel.CloseRequested += (s, e) => Close(); // closing subscription
+            Closed += (s, e) => viewModel.CancelLoading();
             DataContext = viewModel;
         }
     }

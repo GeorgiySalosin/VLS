@@ -21,16 +21,14 @@ namespace VLSGame.Views
             viewModel.Viewport = MainViewport;
             viewModel.Hud = HudPanel;
 
-            Loaded += OnLoaded;
+            Loaded += (s, e) =>
+            {
+                inputHandler.Initialize(viewModel, this);
+                viewModel.StartGameLoop();
+            };
+
             Closed += OnClosed;
         }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            inputHandler.Initialize(viewModel, this);
-            viewModel.OnViewLoaded();                       //   Since we gave ViewModel these refs for our viewport & panel,  now we notify it can work with em 
-        }
-
 
         private void OnClosed(object? sender, EventArgs e)
         {

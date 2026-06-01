@@ -1,19 +1,14 @@
-using OpenCvSharp;
-using System.CodeDom;
 using System.Diagnostics;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using VLSGame.Config;
-using VLSGame.Input;
 using VLSGame.Models;
 using VLSGame.Rendering;
 using VLSGame.Rendering.Content2D;
-using VLSGame.Rendering.Content3D;
 using VLSShared.Interfaces;
 using VLSShared.Models;
 
@@ -44,12 +39,13 @@ namespace VLSGame.ViewModels
         }  
         #endregion
 
-
         #region Timer settings
 
         private DispatcherTimer gameTimer;
         private const int tickHz = 60;
         private const float deltaTime = 1f / tickHz;
+
+        private bool isGameLoopStarted = false;
 
         #endregion
 
@@ -92,7 +88,7 @@ namespace VLSGame.ViewModels
         {
             this.gameMode = gameMode;
 
-            var animSettings = Configuration.Instance.CameraAnimationSettings; // добавляете в GameSettings
+            var animSettings = Configuration.Instance.CameraAnimationSettings; // adding it to GameSettings
             animationController = new CameraAnimationController(CameraProperties, animSettings);
 
             BulletManager.LastBulletInfoChanged += info => LastBullet = info;
@@ -127,23 +123,31 @@ namespace VLSGame.ViewModels
             this.depthMapPath = depthMapPath;
         }
 
-        public void OnViewLoaded()
-        {
-            renderManager.Initialize(viewport, hud, colorMapPath, depthMapPath);
-            renderManager.Initialize2D(CameraProperties);   
 
-            renderManager.CreateEnvironmentObject3D();       // Create a world panorama
+        internal async Task LoadTexturesAsync(
+            IProgress<LoadingProgress> progress,
+            CancellationToken token)
+        {
+            Debug.WriteLine("LoadTexturesAsync started");
+            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress, token);
+            Debug.WriteLine("InitializeAsync completed");
+            renderManager.Initialize2D(CameraProperties);
+            Debug.WriteLine("Initialize2D completed");
+
+
+            token.ThrowIfCancellationRequested();
+            renderManager.CreateEnvironmentObject3D();
             renderManager.SetLight();
-            StartGameLoop();
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
             Vector3 cameraLook = V3(cameraLook3D);
-
             Player player = new(new Vector3(.4608f, -.0027f, .8875f))
             {
                 HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
             };
             PlayerManager.AddPlayer(player);
+
+            Debug.WriteLine("LoadTexturesAsync finished");
         }
 
 
@@ -151,15 +155,10 @@ namespace VLSGame.ViewModels
 
 
         #region GAME EVENTS 
-        private void StartGameLoop()
+        internal void StartGameLoop()
         {
-            //gameTimer = new()
-            //{
-            //    Interval = TimeSpan.FromSeconds(deltaTime)
-            //};
-            //gameTimer.Tick += OnGameTick;
-            //gameTimer.Start();
-
+            if (isGameLoopStarted) return;
+            isGameLoopStarted = true;
             gameTimer = new DispatcherTimer(DispatcherPriority.Input, Application.Current.Dispatcher);
             gameTimer.Interval = TimeSpan.FromSeconds(deltaTime);
             gameTimer.Tick += OnGameTick;
