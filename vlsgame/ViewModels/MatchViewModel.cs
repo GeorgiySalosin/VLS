@@ -131,8 +131,6 @@ namespace VLSGame.ViewModels
             Debug.WriteLine("LoadTexturesAsync started");
             await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress, token);
             Debug.WriteLine("InitializeAsync completed");
-            renderManager.Initialize2D(CameraProperties);
-            Debug.WriteLine("Initialize2D completed");
 
 
             token.ThrowIfCancellationRequested();
@@ -150,9 +148,7 @@ namespace VLSGame.ViewModels
             Debug.WriteLine("LoadTexturesAsync finished");
         }
 
-
-
-
+        internal void Initialize2D() => renderManager.Initialize2D(CameraProperties);
 
         #region GAME EVENTS 
         internal void StartGameLoop()

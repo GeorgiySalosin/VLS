@@ -24,6 +24,10 @@ namespace VLSGame.Views
             Loaded += (s, e) =>
             {
                 inputHandler.Initialize(viewModel, this);
+
+                // Initialize 2D after showing the window to avoid centering issues
+                viewModel.Initialize2D();
+
                 viewModel.StartGameLoop();
             };
 
