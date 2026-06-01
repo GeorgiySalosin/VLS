@@ -71,7 +71,7 @@ namespace VLSGame.Rendering
         private void Update2DVisibility()
         {
             if (cameraProperties == null) return;
-            bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.GameSettings.MaxFOV;
+            bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.Settings.MaxFOV;
             crosshair2D?.IsVisible = !isScoped;
             
         }

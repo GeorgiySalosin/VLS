@@ -1,9 +1,11 @@
-﻿using System.Numerics;
-
-namespace VLSGame.Config.SingleplayerSpawn
+﻿namespace VLSGame.Config.SingleplayerSpawn
 {
     internal class TargetsSettings
     {
-        internal List<Vector3> Targets { get; set; } = [new Vector3(0,0,0), new Vector3(0.5f, 1,1)];
+        public List<TargetPosition> Targets { get; set; } = [
+            new TargetPosition(.4608f, -.0027f, .8875f),
+            new TargetPosition(0, -.4f, -.9f),
+            new TargetPosition(.98f, 0, .18f)
+            ];
     }
 }

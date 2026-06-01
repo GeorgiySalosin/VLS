@@ -220,7 +220,7 @@ namespace VLSGame.ViewModels
 
             #region Import config
 
-            if (!Configuration.Instance.LoadConfiguration())
+            if (!Configuration.Instance.Load())
             {
                 MessageBox.Show("File error: GameSettings.json", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
@@ -267,7 +267,7 @@ namespace VLSGame.ViewModels
         private void ReloadSelectedMapsFromConfig()
         {
             // Restoring the selected maps from the configuration
-            var settings = Configuration.Instance.GameSettings;
+            var settings = Configuration.Instance.Settings;
             if (settings != null && settings.SelectedMapIds != null && settings.SelectedMapIds.Any())
             {
                 // Only those whose Id is in the list are selected
@@ -298,7 +298,7 @@ namespace VLSGame.ViewModels
         private void ReloadSelectedGamemodeFromConfig()
         {
             // Restoring the selected gamemode from the configuration
-            var settings = Configuration.Instance.GameSettings;
+            var settings = Configuration.Instance.Settings;
             if (settings != null && settings.SelectedGameMode != null)
             {
                 ToggleGamemode(settings.SelectedGameMode);
@@ -325,29 +325,29 @@ namespace VLSGame.ViewModels
                 .ToList();
 
             var config = Configuration.Instance;
-            if (config.GameSettings == null) return;
+            if (config.Settings == null) return;
 
             // Compare sequences
-            if (config.GameSettings.SelectedMapIds != null &&
-                config.GameSettings.SelectedMapIds.SequenceEqual(selectedIds))
+            if (config.Settings.SelectedMapIds != null &&
+                config.Settings.SelectedMapIds.SequenceEqual(selectedIds))
                 return; // nothing changed
 
-            config.GameSettings.SelectedMapIds = selectedIds;
-            config.SaveConfiguration();
+            config.Settings.SelectedMapIds = selectedIds;
+            config.Save();
         }
 
         private void SaveSelectedGamemodeToConfig()
         {
             var config = Configuration.Instance;
-            if (config.GameSettings == null) return;
+            if (config.Settings == null) return;
 
             // Compare
-            if (config.GameSettings.SelectedGameMode != null &&
-                config.GameSettings.SelectedGameMode == CurrentGameMode)
+            if (config.Settings.SelectedGameMode != null &&
+                config.Settings.SelectedGameMode == CurrentGameMode)
                 return; // nothing changed
 
-            config.GameSettings.SelectedGameMode = CurrentGameMode;
-            config.SaveConfiguration();
+            config.Settings.SelectedGameMode = CurrentGameMode;
+            config.Save();
         }
 
         private void FullSaveToConfig()
@@ -358,7 +358,7 @@ namespace VLSGame.ViewModels
 
         private int ChoiceRandomWeather()
         {
-            var settings = Configuration.Instance.GameSettings;
+            var settings = Configuration.Instance.Settings;
             if (settings != null && settings.SelectedMapIds != null && settings.SelectedMapIds.Any())
             {
                 Random rnd = new Random();
@@ -371,10 +371,10 @@ namespace VLSGame.ViewModels
                 var allIds = MapViewModels.Select(vm => vm.Id).ToList();
 
                 var config = Configuration.Instance;
-                if (config.GameSettings == null) throw new Exception("config.GameSettings is null");
+                if (config.Settings == null) throw new Exception("config.GameSettings is null");
 
-                config.GameSettings.SelectedMapIds = allIds;
-                config.SaveConfiguration();
+                config.Settings.SelectedMapIds = allIds;
+                config.Save();
 
                 return ChoiceRandomWeather();
             }
