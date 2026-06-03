@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
-using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 using VLSGame.Rendering;
 using VLSGame.ViewModels;
 
@@ -125,7 +125,7 @@ namespace VLSGame.Input
             smoothedSpeed += (speed - smoothedSpeed) * SmoothingFactor;
 
             double sensitivityScale = CalculateAdaptiveSensitivity(smoothedSpeed);
-            double baseSens = Configuration.Instance.GameSettings.MouseSensitivity *
+            double baseSens = Configuration.Instance.Settings.MouseSensitivity *
                               (viewModel.CameraProperties.FieldOfView / 90.0);
             double sensitivity = baseSens * sensitivityScale;
 
@@ -134,7 +134,7 @@ namespace VLSGame.Input
 
             // Вертикальный clamp с учётом анимации
             double animX = viewModel.CameraProperties.AnimationRotationX;
-            var cfg = Configuration.Instance.GameSettings;
+            var cfg = Configuration.Instance.Settings;
             double totalMin = -Math.PI / 2 + cfg.ClampVRotationMin;
             double totalMax = Math.PI / 2 - cfg.ClampVRotationMax;
             double userMin = totalMin - animX;
@@ -161,8 +161,8 @@ namespace VLSGame.Input
             if (viewModel == null || !isAiming) return;
             double delta = e.Delta * Configuration.Instance.CameraAnimationSettings.ZoomSpeedManual / 120.0;
             double newTarget = viewModel.CameraProperties.TargetFOV - delta;
-            newTarget = Math.Max(Configuration.Instance.GameSettings.MinFOVScope,
-                                 Math.Min(Configuration.Instance.GameSettings.MaxFOVScope, newTarget));
+            newTarget = Math.Max(Configuration.Instance.Settings.MinFOVScope,
+                                 Math.Min(Configuration.Instance.Settings.MaxFOVScope, newTarget));
             viewModel.CameraProperties.TargetFOV = newTarget;
             Configuration.Instance.CameraAnimationSettings.AimingFOV = newTarget;
         }
@@ -174,7 +174,7 @@ namespace VLSGame.Input
 
         private double CalculateAdaptiveSensitivity(double speed)
         {
-            var cfg = Configuration.Instance.GameSettings;
+            var cfg = Configuration.Instance.Settings;
             if (speed <= cfg.MinSpeedThreshold)
                 return cfg.MinSensitivityScale;
             if (speed >= cfg.MaxSpeedThreshold)

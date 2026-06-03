@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 using VLSShared.Models;
 namespace VLSGame.Models
 {
@@ -392,7 +392,7 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
                 return 0;
 
             return (World_Depth.At<ushort>(y, x) / (double)ushort.MaxValue)
-                   * Configuration.Instance.GameSettings.MaxSnipingDistance;
+                   * Configuration.Instance.Settings.MaxSnipingDistance;
         }
 
         /// <summary>

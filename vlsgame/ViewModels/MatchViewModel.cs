@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 using VLSGame.Models;
 using VLSGame.Rendering;
 using VLSGame.Rendering.Content2D;
@@ -79,10 +80,11 @@ namespace VLSGame.ViewModels
 
         private int tickCounter;
         private DateTime lastFpsTime = DateTime.Now;
-
         private DateTime lastTickTime = DateTime.Now;
 
-
+        private readonly List<Vector3> _targetPositions;   // list of all items from TargetsConfig
+        private readonly List<int> _availableIndices;      // indexes that haven't been used yet
+        private readonly Random _random = new();
 
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
@@ -109,6 +111,12 @@ namespace VLSGame.ViewModels
                 renderManager.CreatePlayerFX(V3(bulletLocation), hitZoneInfo.FXScale);
             };
 
+            PlayerManager.OnPlayerDead += (Guid id) =>
+            {
+                Renderer3D.Instance.RemoveObject(id);
+                SpawnTarget();
+            };
+
             BulletManager.BulletLanded += (distance, flightTime) =>
                 LastBullet = $"Hit: distance {distance:F1} m, time {flightTime:F2} s";
 
@@ -121,6 +129,16 @@ namespace VLSGame.ViewModels
 
             this.colorMapPath = colorMapPath;
             this.depthMapPath = depthMapPath;
+
+            // Loading target positions from the config
+            if (!TargetsConfig.Instance.Load())
+            {
+                throw new InvalidOperationException("Failed to load targets configuration. Check Targets.json file.");
+            }
+            _targetPositions = TargetsConfig.Instance.Settings.Targets
+                    .Select(tp => tp.ToVector3())
+                    .ToList();
+            _availableIndices = Enumerable.Range(0, _targetPositions.Count).ToList();
         }
 
 
@@ -137,13 +155,7 @@ namespace VLSGame.ViewModels
             renderManager.CreateEnvironmentObject3D();
             renderManager.SetLight();
 
-            Vector3D cameraLook3D = CameraProperties.LookDirection;
-            Vector3 cameraLook = V3(cameraLook3D);
-            Player player = new(new Vector3(.4608f, -.0027f, .8875f))
-            {
-                HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
-            };
-            PlayerManager.AddPlayer(player);
+            SpawnTarget();
 
             Debug.WriteLine("LoadTexturesAsync finished");
         }
@@ -216,7 +228,6 @@ namespace VLSGame.ViewModels
         }
         #endregion
 
-
         #region Debug line (distance, texture coords, etc)
 
         public string DistanceText { get => distanceText; set => Set(ref distanceText, value); }
@@ -229,8 +240,6 @@ namespace VLSGame.ViewModels
 
         #endregion
 
-
-
         public void GetCenterDistance()
         {
             var (pixelX, pixelY) = renderManager.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
@@ -242,9 +251,9 @@ namespace VLSGame.ViewModels
 
                 cachedDistance = renderManager.GetDistanceAtPixel(pixelX, pixelY);
 
-                if (cachedDistance > Configuration.Instance.GameSettings.MaxSnipingDistance - Configuration.Instance.GameSettings.MaxSnipingDistanceThresold)
+                if (cachedDistance > Configuration.Instance.Settings.MaxSnipingDistance - Configuration.Instance.Settings.MaxSnipingDistanceThresold)
                 {
-                    cachedDistance = Configuration.Instance.GameSettings.MaxSnipingDistance;
+                    cachedDistance = Configuration.Instance.Settings.MaxSnipingDistance;
                     DistanceText = $"Distance: > {cachedDistance:F0} м";
                 }
                 else
@@ -254,6 +263,40 @@ namespace VLSGame.ViewModels
             }
         }
 
+        #region Singleplayer Spawn
+
+        /// <summary>
+        /// Returns the next random target position, without repeating the already used ones.
+        /// When all positions are used, the list is reset and a new round begins.
+        /// </summary>
+        /// 
+        private Vector3 GetNextTargetPosition()
+        {
+            if (_availableIndices.Count == 0)
+            {
+                // Reset: re-populate with all indexes
+                _availableIndices.AddRange(Enumerable.Range(0, _targetPositions.Count));
+            }
+
+            // Choose a random index from the available ones
+            int randomIndex = _random.Next(_availableIndices.Count);
+            int selectedIndex = _availableIndices[randomIndex];
+            _availableIndices.RemoveAt(randomIndex);
+
+            return _targetPositions[selectedIndex];
+        }
+
+        private void SpawnTarget()
+        {
+            Vector3 targetPos = GetNextTargetPosition();
+            Player player = new(targetPos)
+            {
+                HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
+            };
+            PlayerManager.AddPlayer(player);
+        }
+
+        #endregion
 
         /// <summary>
         /// UTILITIES for converting between System.Numerics.Vector3 and System.Windows.Media.Media3D.Vector3D
