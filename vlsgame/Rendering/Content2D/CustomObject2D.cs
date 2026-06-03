@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Media;
-using VLSGame.Rendering.Content3D;
 
 namespace VLSGame.Rendering.Content2D
 {

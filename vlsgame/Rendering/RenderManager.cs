@@ -150,7 +150,7 @@ namespace VLSGame.Rendering
         // Изменить метод CreateBulletObject3D
         public void CreateBulletObject3D(Guid bulletId)
         {
-            var mesh = PlaneMesh(1, 1); // базовый размер
+            var mesh = PlaneMesh(1); // базовый размер
             var texture = texturePool.GetBulletTexture();
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
@@ -194,7 +194,7 @@ namespace VLSGame.Rendering
         public (double, double) CreatePlayerObject3D(Guid playerId, Vector3D initialDirection)
         {
             double scale = 3.5;                     // Assuming we have a man with standart height 1m 75cm, but we have to multiply by 2 cause texture uses only a half-space of the height.
-            var mesh = PlaneMesh(scale, scale);     
+            var mesh = PlaneMesh(scale);     
 
             var texture = texturePool.GetEnemyTexture();
             var material = TextureMaterial(texture);
@@ -234,16 +234,10 @@ namespace VLSGame.Rendering
                                            tag: CustomObject3DTags.FXAnimationSingle);
 
 
-            bloodFX.SetWorldPosition(worldPosition * 0.95);                           // place an effect a bit closer than the character is to avoid mesh overlapping
+            bloodFX.SetWorldPosition(worldPosition * 0.8);                           // place an effect a bit closer than the character is to avoid mesh overlapping
             bloodFX.Animation.PlayForward();
             Add3D(bloodFX);
         }
-
-        //public void PlayHitAnimation(Guid playerId, Vector3D worldPosition)
-        //{
-
-        //    Get3D(playerId).Children
-        //}
 
 
         #endregion

@@ -25,14 +25,15 @@
         </Grid.RowDefinitions>
 
         <!-- Viewport3D -->
-        <Viewport3D x:Name="MainViewport" Grid.Row="0" >
+        <Viewport3D x:Name="MainViewport" Grid.Row="0" ClipToBounds="False">
             <Viewport3D.Camera>
                 <PerspectiveCamera x:Name="MainCamera"
                   Position="0,0,0"
                   LookDirection="{Binding CameraProperties.LookDirection}"
                   UpDirection="0,1,0"
                   FieldOfView="{Binding CameraProperties.FieldOfView}"
-                  NearPlaneDistance = "0.01"/>
+                  NearPlaneDistance = "0.01"
+                  FarPlaneDistance="2100"/>
             </Viewport3D.Camera>
         </Viewport3D>
 

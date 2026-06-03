@@ -4,17 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VLSGame.Rendering.Content3D
+namespace VLSGame.Rendering
 {
     /// <summary>
     /// additional class for animation management. Belongs to customobject3d (single instance per object)
     /// </summary>
     public class Animation
     {
+        /// <summary>determines if animation is playing or not</summary>
         public bool IsPlaying { get; private set; } = false;
+
+
+        /// <summary>determines if animation should be played backwards or not</summary>
         public bool IsReversed { get; private set; } = false;
 
+
         private int currentFrame = 0;
+        /// <summary>the current index of animation frames</summary>
         public int? CurrentFrame
         {
             get => currentFrame;
@@ -32,9 +38,17 @@ namespace VLSGame.Rendering.Content3D
             }
         }
 
+
+        /// <summary>starts playing the animation from first to last frame</summary>
         public void PlayForward() { IsReversed = false; IsPlaying = true; }
+
+
+        /// <summary>starts playing the animation from last to first frame</summary>
         public void PlayBackward() { IsReversed = true; IsPlaying = true; }
+
+
+        /// <summary>stops the animation play</summary>
         public void Stop() { IsPlaying = false; }
-        public void Reset() { currentFrame = 0; IsPlaying = false; IsReversed = false; }
+
     }
 }
