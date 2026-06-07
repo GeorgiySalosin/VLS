@@ -8,8 +8,9 @@ namespace VLSGame.Rendering.Content2D
         /// <summary> An indentifier </summary>
         public Guid Id { get; } = id == default ? Guid.NewGuid() : id;
 
-        /// <summary> A tag according to which we consider how to render/what to do with the object </summary>
+
         public string Tag { get; set; } = tag;
+
 
         /// <summary> A texture that will be rendered onto wpf window panel </summary>
         public ImageSource Texture { get; set; } = texture;
@@ -31,6 +32,8 @@ namespace VLSGame.Rendering.Content2D
         /// <summary>
         /// An additional property for easy texture switch per frame
         /// </summary>
-        public Animation Animation { get; } = new();
+        public Animation Animation { get; set; } = new();
+
+        public Action? OnAnimationComplete { get; set; }
     }
 }

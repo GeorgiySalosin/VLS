@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using VLSGame.Config.GameConfig;
+using VLSGame.Rendering;
 using VLSShared.Models;
 namespace VLSGame.Models
 {
@@ -20,154 +21,172 @@ namespace VLSGame.Models
 
         #region 3D-rendered textures (ImageBrushes)
 
-        private readonly ImageBrush emptyBrush = new();
-        public ImageBrush GetEmptyTexture3D() => emptyBrush;
+            private readonly ImageBrush emptyBrush = new();
+            public ImageBrush GetEmptyTexture3D() => emptyBrush;
 
 
 
-        #region Bullet 
+            #region Bullet 
 
-        private readonly List<ImageBrush> T_Tracer_Common = LoadTexture3DSequence(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common{0:D2}.png", count: 4);
+                private readonly List<ImageBrush> T_Tracer_Common = LoadTexture3DSequence(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common{0:D2}.png", count: 4);
 
 
-        public ImageBrush GetBulletTexture()
-        {
-            return T_Tracer_Common[rnd.Next(4)];
-        }
-        #endregion
-
-        #region Enemy 
-        private readonly ImageBrush Test_Enemy = LoadTexture3D(@"Content\Enemy\Test_Enemy.png");
-
-        public ImageBrush GetEnemyTexture() => Test_Enemy;
-
-        private readonly Mat Test_Enemy_Coll = LoadCV(@"Content\Enemy\Test_Enemy_Coll.png");
-        #endregion
-
-        #region Blood FX 
-        private readonly List<ImageBrush> Animation_Blood = LoadTexture3DSequence(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud{0:D2}.png", count: 20, opacity: 0.7);
-
-        public ImageBrush? GetBloodFXTexture(int? frame)
-        {
-            if (frame >= Animation_Blood.Count || frame == null) return GetEmptyTexture3D();
-            return Animation_Blood[(int)frame];
-        }
-        #endregion
-
-        // bobr: add comments
-        #region World
-        private ImageBrush worldColor;
-        private Mat worldDepth;
-
-        private int worldDepthWidth;
-        private int worldDepthHeight;
-
-        public ImageBrush GetEnvironmentTexture()
-        {
-            return worldColor;
-        }
-
-        /// <summary>
-        /// Asynchronously loads a color map and a depth map with a combined progress report.
-        /// </summary>
-        internal async Task UpdateEnvironmentTextureAsync(
-            string colorMapPath, string depthMapPath,
-            IProgress<LoadingProgress>? progress, CancellationToken token)
-        {
-            // Calculate total size of both files
-            var colorFileInfo = new FileInfo(colorMapPath);
-            var depthFileInfo = new FileInfo(depthMapPath);
-            long totalBytes = colorFileInfo.Length + depthFileInfo.Length;
-            long totalBytesRead = 0;
-            int lastReportedPercent = -1;
-
-            // Local function to load a single file and update the combined progress
-            async Task<byte[]> LoadFileWithCombinedProgress(string filePath, string description)
-            {
-                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
-                var buffer = new byte[8192];
-                var result = new MemoryStream();
-                int bytesRead;
-                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
+                public ImageBrush GetBulletTexture()
                 {
-                    token.ThrowIfCancellationRequested();
-                    await result.WriteAsync(buffer, 0, bytesRead);
-                    totalBytesRead += bytesRead;
-                    int percent = (int)((double)totalBytesRead / totalBytes * 100);
-                    if (percent != lastReportedPercent)
+                    return T_Tracer_Common[rnd.Next(4)];
+                }
+
+            #endregion
+
+
+            #region Enemy 
+
+                private readonly ImageBrush Test_Enemy = LoadTexture3D(@"Content\Enemy\Test_Enemy.png");
+
+                public ImageBrush GetEnemyTexture() => Test_Enemy;
+
+                private readonly Mat Test_Enemy_Coll = LoadCV(@"Content\Enemy\Test_Enemy_Coll.png");
+
+            #endregion
+
+
+            #region Blood FX 
+
+                private readonly List<ImageBrush> Animation_Blood = LoadTexture3DSequence(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud{0:D2}.png", count: 20, opacity: 0.7);
+
+                public ImageBrush? GetBloodFXTexture(int? frame)
+                {
+                    if (frame >= Animation_Blood.Count || frame == null) return GetEmptyTexture3D();
+                    return Animation_Blood[(int)frame];
+                }
+
+            #endregion
+
+
+            // bobr: add comments
+            #region World
+
+                private ImageBrush worldColor;
+                private Mat worldDepth;
+
+                private int worldDepthWidth;
+                private int worldDepthHeight;
+
+                public ImageBrush GetEnvironmentTexture()
+                {
+                    return worldColor;
+                }
+
+                /// <summary>
+                /// Asynchronously loads a color map and a depth map with a combined progress report.
+                /// </summary>
+                internal async Task UpdateEnvironmentTextureAsync(
+                    string colorMapPath, string depthMapPath,
+                    IProgress<LoadingProgress>? progress, CancellationToken token)
+                {
+                    // Calculate total size of both files
+                    var colorFileInfo = new FileInfo(colorMapPath);
+                    var depthFileInfo = new FileInfo(depthMapPath);
+                    long totalBytes = colorFileInfo.Length + depthFileInfo.Length;
+                    long totalBytesRead = 0;
+                    int lastReportedPercent = -1;
+
+                    // Local function to load a single file and update the combined progress
+                    async Task<byte[]> LoadFileWithCombinedProgress(string filePath, string description)
                     {
-                        lastReportedPercent = percent;
-                        progress?.Report(new LoadingProgress(percent, totalBytesRead, totalBytes, description));
+                        using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
+                        var buffer = new byte[8192];
+                        var result = new MemoryStream();
+                        int bytesRead;
+                        while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            await result.WriteAsync(buffer, 0, bytesRead);
+                            totalBytesRead += bytesRead;
+                            int percent = (int)((double)totalBytesRead / totalBytes * 100);
+                            if (percent != lastReportedPercent)
+                            {
+                                lastReportedPercent = percent;
+                                progress?.Report(new LoadingProgress(percent, totalBytesRead, totalBytes, description));
+                            }
+                        }
+                        return result.ToArray();
                     }
-                }
-                return result.ToArray();
-            }
 
-            byte[] colorData = await LoadFileWithCombinedProgress(colorMapPath, "Color map");
-            byte[] depthData = await LoadFileWithCombinedProgress(depthMapPath, "Depth map");
+                    byte[] colorData = await LoadFileWithCombinedProgress(colorMapPath, "Color map");
+                    byte[] depthData = await LoadFileWithCombinedProgress(depthMapPath, "Depth map");
 
-            // Needed to update the ProgressBar
-            await Task.Delay(50);
+                    // Needed to update the ProgressBar
+                    await Task.Delay(50);
 
-            // Create UI objects on the dispatcher thread
-            await Application.Current.Dispatcher.InvokeAsync(() =>
-            {
-                token.ThrowIfCancellationRequested();
+                    // Create UI objects on the dispatcher thread
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        token.ThrowIfCancellationRequested();
 
-                var bitmap = new BitmapImage();
-                using (var stream = new MemoryStream(colorData))
-                {
-                    bitmap.BeginInit();
-                    bitmap.StreamSource = stream;
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    bitmap.Freeze();
-                }
-                worldColor = new ImageBrush(bitmap) { ViewportUnits = BrushMappingMode.Absolute, TileMode = TileMode.None, Stretch = Stretch.Fill };
+                        var bitmap = new BitmapImage();
+                        using (var stream = new MemoryStream(colorData))
+                        {
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = stream;
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                            bitmap.Freeze();
+                        }
+                        worldColor = new ImageBrush(bitmap) { ViewportUnits = BrushMappingMode.Absolute, TileMode = TileMode.None, Stretch = Stretch.Fill };
 
                 
-                worldDepth = Cv2.ImDecode(depthData, ImreadModes.Unchanged);
-                worldDepthWidth = worldDepth.Width;
-                worldDepthHeight = worldDepth.Height;
-            });
-        }
-        #endregion
-
-        #region Utils 
-
-        private static ImageBrush LoadTexture3D(string path, double opacity = 1.0)
-        {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.Relative);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-            bitmap.Freeze();        // remove if changing transparency dynamically
-
-            var brush = new ImageBrush(bitmap)
-            {
-                ViewportUnits = BrushMappingMode.Absolute,
-                TileMode = TileMode.None,
-                Stretch = Stretch.Fill,
-                Opacity = opacity   // дополнительное ослабление прозрачности
-            };
-            return brush;
-        }
+                        worldDepth = Cv2.ImDecode(depthData, ImreadModes.Unchanged);
+                        worldDepthWidth = worldDepth.Width;
+                        worldDepthHeight = worldDepth.Height;
+                    });
+                }
+            #endregion
 
 
-        private static List<ImageBrush> LoadTexture3DSequence(string pathFormat, int count, double opacity = 1.0)
-        {
-            var result = new List<ImageBrush>(count);
-            for (int i = 0; i < count; i++)
-            {
-                string path = string.Format(pathFormat, i);
-                result.Add(LoadTexture3D(path, opacity));
-            }
-            return result;
-        }
+            #region Utils 
 
 
-        private static Mat LoadCV(string path) => Cv2.ImRead(path, ImreadModes.Unchanged);  
+                /// <summary>
+                /// Loads texture with an ability to set additional overall opacity (0-1)
+                /// </summary>
+                private static ImageBrush LoadTexture3D(string path, double opacity = 1.0)
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(path, UriKind.Relative);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();        // remove if changing transparency dynamically
+
+                    var brush = new ImageBrush(bitmap)
+                    {
+                        ViewportUnits = BrushMappingMode.Absolute,
+                        TileMode = TileMode.None,
+                        Stretch = Stretch.Fill,
+                        Opacity = opacity   // дополнительное ослабление прозрачности
+                    };
+                    return brush;
+                }
+
+                /// <summary>
+                /// Loads texture sequence with an ability to set additional overall opacity (0-1)
+                /// </summary>
+                private static List<ImageBrush> LoadTexture3DSequence(string pathFormat, int count, double opacity = 1.0)
+                {
+                    var result = new List<ImageBrush>(count);
+                    for (int i = 0; i < count; i++)
+                    {
+                        string path = string.Format(pathFormat, i);
+                        result.Add(LoadTexture3D(path, opacity));
+                    }
+                    return result;
+                }
+
+                /// <summary>
+                /// Loads texture that's used in workflow whereas you need quick access to data of a certain pixel
+                /// </summary>
+                private static Mat LoadCV(string path) => Cv2.ImRead(path, ImreadModes.Unchanged);
         #endregion
 
         #endregion
@@ -176,21 +195,62 @@ namespace VLSGame.Models
 
         #region 2D-rendered textures (ImageSource)
 
+        private readonly ImageSource emptySource = CreateEmptyTexture();
+        public ImageSource GetEmptyTexture2D() => emptySource;
 
+        private static ImageSource CreateEmptyTexture()
+        {
+            var visual = new DrawingVisual();
+            var renderBitmap = new RenderTargetBitmap(1, 1, 96, 96, PixelFormats.Pbgra32);
+            renderBitmap.Render(visual);
+            renderBitmap.Freeze();
+            return renderBitmap;
+        }
 
 
         #region HUD stuff 
+
+
         private ImageSource crosshairTexture = LoadTexture2DFixedDpi(@"Content/ui/T_CrossAIM.png");
-        #endregion
 
-        #region RifleAnimations 
-
-        private readonly List<ImageSource> Animation_SVLK14S_Zooming = LoadTexture2DSequenceAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zoom/A_Zooming_{0:D3}.png", count: 26);
-
-        public IReadOnlyList<ImageSource> GetSVLK14SZoomingFrames() => Animation_SVLK14S_Zooming;
+                public ImageSource GetCrosshairTexture() => crosshairTexture;
 
 
-        public ImageSource GetCrosshairTexture() => crosshairTexture;
+            #endregion
+
+
+            #region RifleAnimations 
+
+                private readonly List<ImageSource> Animation_SVLK14S_Zoom = LoadTexture2DSequenceAdaptive(@"Content/Animation/Rifle/SVLK14S/Zoom/A_Zooming_{0:D3}.png", count: 26);
+
+                public ImageSource? GetSVLK14SZoomTexture(int? frame)
+                {
+                    if (frame >= Animation_SVLK14S_Zoom.Count || frame == null) return GetEmptyTexture2D();
+                    return Animation_SVLK14S_Zoom[(int)frame];
+                }
+
+
+                private readonly List<ImageSource> Animation_SVLK14S_Reload = LoadTexture2DSequenceAdaptive(@"Content/Animation/Rifle/SVLK14S/Reload/A_Reload_{0:D3}.png", count: 360);
+
+                public ImageSource GetSVLK14SReloadTexture(int frame)
+                {
+                    if (frame < 0 || frame >= Animation_SVLK14S_Reload.Count)
+                        return GetEmptyTexture2D();
+                    return Animation_SVLK14S_Reload[frame];
+                }
+
+
+                private readonly ImageSource Animation_SVLK14S_ZoomIdle = LoadTexture2DAdaptive(@"Content/Animation/Rifle/SVLK14S/Zoom/A_Zooming_025.png");
+                public ImageSource GetSVLK14SZoomIdleTexture() => Animation_SVLK14S_ZoomIdle;
+
+
+                private readonly ImageSource Animation_SVLK14S_Idle = LoadTexture2DAdaptive(@"Content/Animation/Rifle/SVLK14S/Zoom/A_Zooming_000.png");
+                public ImageSource GetSVLK14SIdleTexture() => Animation_SVLK14S_Idle;
+
+
+
+
+
         #endregion
 
 
@@ -202,90 +262,91 @@ namespace VLSGame.Models
         /// This Will make a texture stay same pixel size through different screen resolutions
         /// </summary>
         private static ImageSource LoadTexture2DFixedDpi(string path, double targetDpi = 96.0)
-        {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.Relative);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-            bitmap.Freeze();
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(path, UriKind.Relative);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
 
-            // Matching dpi - no conversion
-            if (Math.Abs(bitmap.DpiX - targetDpi) < 0.01 && Math.Abs(bitmap.DpiY - targetDpi) < 0.01)
-                return bitmap;
+                    // Matching dpi - no conversion
+                    if (Math.Abs(bitmap.DpiX - targetDpi) < 0.01 && Math.Abs(bitmap.DpiY - targetDpi) < 0.01)
+                        return bitmap;
 
-            // re-render otherwise using correct dpi
-            var visual = new DrawingVisual();
-            using (var context = visual.RenderOpen())
-            {
-                context.DrawImage(bitmap, new System.Windows.Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight));
-            }
+                    // re-render otherwise using correct dpi
+                    var visual = new DrawingVisual();
+                    using (var context = visual.RenderOpen())
+                    {
+                        context.DrawImage(bitmap, new System.Windows.Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight));
+                    }
 
-            var renderBitmap = new RenderTargetBitmap(
-                bitmap.PixelWidth, bitmap.PixelHeight,
-                targetDpi, targetDpi,
-                PixelFormats.Pbgra32);
+                    var renderBitmap = new RenderTargetBitmap(
+                        bitmap.PixelWidth, bitmap.PixelHeight,
+                        targetDpi, targetDpi,
+                        PixelFormats.Pbgra32);
 
-            renderBitmap.Render(visual);
-            renderBitmap.Freeze();
-            return renderBitmap;
-        }
-
-
+                    renderBitmap.Render(visual);
+                    renderBitmap.Freeze();
+                    return renderBitmap;
+                }
 
 
 
-        /// <summary>
-        /// Loads texture with an adaprive size: Width = screenWidth * 16/15 by default, Fixed aspect ratio; <br></br>
-        /// Suitable for square textures like rifle animation
-        /// </summary>
-        private static ImageSource LoadTexture2DAdaptive(string path, double scaleMultiplier = 16/15)
-        {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.Relative);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-            bitmap.Freeze();
 
-            double screenWidth = SystemParameters.PrimaryScreenWidth;
-            int targetWidth = (int)(screenWidth * scaleMultiplier);
-            int targetHeight = (int)(bitmap.PixelHeight * ((double)targetWidth / bitmap.PixelWidth));
+                /// <summary>
+                /// Loads texture with an adaprive size: Width = screenWidth * 16/15 by default, Fixed aspect ratio; <br></br>
+                /// Suitable for square textures like rifle animation
+                /// </summary>
+                private static ImageSource LoadTexture2DAdaptive(string path, double scaleMultiplier = 16.0/15.0)
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(path, UriKind.Relative);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
 
-
-
-            var drawingVisual = new DrawingVisual();
-            using (var context = drawingVisual.RenderOpen())
-            {
-                context.DrawImage(bitmap, new System.Windows.Rect(0, 0, targetWidth, targetHeight));
-            }
-
-            var renderBitmap = new RenderTargetBitmap(targetWidth, targetHeight, 96, 96, PixelFormats.Pbgra32);
-            renderBitmap.Render(drawingVisual);
-            renderBitmap.Freeze();
-            return renderBitmap;
-        } 
+                    double screenWidth = SystemParameters.PrimaryScreenWidth;
+                    int targetWidth = (int)(screenWidth * scaleMultiplier);
+                    int targetHeight = (int)(bitmap.PixelHeight * ((double)targetWidth / bitmap.PixelWidth));
 
 
 
-        /// <summary>
-        /// Loads a sequence of textures with an adaptive size: Width = screenWidth * 16/15 by default, Fixed aspect ratio; <br></br>
-        /// Suitable for square textures like rifle animation
-        /// </summary>
-        private static List<ImageSource> LoadTexture2DSequenceAdaptive(string pathFormat, int count, double scaleMultiplier = 16.0 / 15.0)
-        {
-            var result = new List<ImageSource>(count);
-            for (int i = 0; i < count; i++)
-            {
-                string path = string.Format(pathFormat, i);
-                result.Add(LoadTexture2DAdaptive(path, scaleMultiplier));
-            }
-            return result;
-        }
-        #endregion
+                    var drawingVisual = new DrawingVisual();
+                    using (var context = drawingVisual.RenderOpen())
+                    {
+                        context.DrawImage(bitmap, new System.Windows.Rect(0, 0, targetWidth, targetHeight));
+                    }
+
+                    var renderBitmap = new RenderTargetBitmap(targetWidth, targetHeight, 96, 96, PixelFormats.Pbgra32);
+                    renderBitmap.Render(drawingVisual);
+                    renderBitmap.Freeze();
+                    return renderBitmap;
+                } 
 
 
-        #endregion
+
+                /// <summary>
+                /// Loads a sequence of textures with an adaptive size: Width = screenWidth * 16/15 by default, Fixed aspect ratio; <br></br>
+                /// Suitable for square textures like rifle animation
+                /// </summary>
+                private static List<ImageSource> LoadTexture2DSequenceAdaptive(string pathFormat, int count, double scaleMultiplier = 16.0 / 15.0)
+                {
+                    var result = new List<ImageSource>(count);
+                    for (int i = 0; i < count; i++)
+                    {
+                        string path = string.Format(pathFormat, i);
+                        result.Add(LoadTexture2DAdaptive(path, scaleMultiplier));
+                    }
+                    return result;
+                }
+
+
+            #endregion
+
+
+            #endregion
 
 
 

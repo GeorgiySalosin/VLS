@@ -4,8 +4,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
-using VLSGame.Rendering.Content3D;
+using VLSGame.ViewModels;
 
 namespace VLSGame.Rendering
 {
@@ -15,28 +16,24 @@ namespace VLSGame.Rendering
         private Panel? panel;
         private readonly List<CustomObject2D> objects = new();
         private readonly Dictionary<CustomObject2D, Image> uiMap = new();
-        private readonly Dictionary<CustomObject2D, List<ImageSource>> animationFrames = new();
-        private readonly Dictionary<CustomObject2D, Action> animationCallbacks = new();
         private bool isInitialized = false;
+        private readonly MatchTexturePool texturePool = MatchTexturePool.Instance;
+        private RifleState? rifleState; // добавляем ссылку на состояние винтовки
 
         private Renderer2D() { }
 
-        public void Initialize(Panel panel)
+        public void Initialize(Panel panel, RifleState rifleState)
         {
             if (isInitialized) return;
             this.panel = panel;
+            this.rifleState = rifleState;
             isInitialized = true;
         }
 
-        public void AddObject(CustomObject2D obj, List<ImageSource>? frames = null, Action? onComplete = null)
+        public void AddObject(CustomObject2D obj)
         {
             if (obj == null || panel == null) return;
             if (objects.Contains(obj)) return;
-
-            if (frames != null)
-                animationFrames[obj] = frames;
-            if (onComplete != null)
-                animationCallbacks[obj] = onComplete;
 
             var img = new Image
             {
@@ -76,48 +73,78 @@ namespace VLSGame.Rendering
                 panel?.Children.Remove(img);
                 uiMap.Remove(obj);
                 objects.Remove(obj);
-                animationFrames.Remove(obj);
-                animationCallbacks.Remove(obj);
             }
         }
 
         public CustomObject2D? GetObject(Guid id) => objects.FirstOrDefault(o => o.Id == id);
-        public CustomObject2D? GetObject(string tag) => objects.FirstOrDefault(o => o.Tag == tag);
 
         public void Render()
         {
-            if (panel == null) return;
+            if (panel == null || rifleState == null) return;
 
-            foreach (var kvp in uiMap)
+            // Создаём копию, чтобы избежать модификации коллекции во время итерации
+            var uiMapCopy = uiMap.ToArray();
+
+            foreach (var kvp in uiMapCopy)
             {
                 var obj = kvp.Key;
+                // Проверяем, не был ли объект удалён за время итерации
+                if (!uiMap.ContainsKey(obj)) continue;
                 var img = kvp.Value;
 
-                // Анимация (как в 3D)
-                if (obj.Animation.IsPlaying && animationFrames.TryGetValue(obj, out var frames))
+                // Обновляем текстуру для Scope в зависимости от состояния винтовки
+                if (obj.Tag == "Scope")
+                {
+                    switch (rifleState.State)
+                    {
+                        case ERifleState.Idle:
+                            obj.Texture = texturePool.GetSVLK14SIdleTexture();
+                            break;
+                        case ERifleState.ZoomingIn:
+                            // анимация уже управляется через Animation
+                            break;
+                        case ERifleState.ZoomingOut:
+                            break;
+                        case ERifleState.IdleZoom:
+                            obj.Texture = texturePool.GetSVLK14SZoomIdleTexture();
+                            break;
+                        case ERifleState.Reloading:
+                            // Scope может быть скрыт или оставлен последним кадром
+                            break;
+                    }
+                }
+
+                // Обработка активной анимации (для Scope и Reload)
+                if (obj.Animation.IsPlaying)
                 {
                     int step = obj.Animation.IsReversed ? -1 : 1;
                     int newFrame = (obj.Animation.CurrentFrame ?? 0) + step;
-                    if (newFrame < 0 || newFrame >= frames.Count)
+                    if (newFrame < 0 || newFrame >= obj.Animation.FramesCount)
                     {
                         obj.Animation.Stop();
-                        obj.Animation.CurrentFrame = obj.Animation.IsReversed ? 0 : frames.Count - 1;
-                        if (animationCallbacks.TryGetValue(obj, out var callback))
-                            callback?.Invoke();
+                        obj.Animation.CurrentFrame = obj.Animation.IsReversed ? 0 : obj.Animation.FramesCount - 1;
+                        obj.OnAnimationComplete?.Invoke();
                     }
                     else
                     {
                         obj.Animation.CurrentFrame = newFrame;
-                        obj.Texture = frames[newFrame];
-                        img.Source = obj.Texture;
-                        // Если панель Canvas – перецентрируем (размер мог измениться)
-                        if (panel is Canvas canvas)
-                            CenterImage(img, obj, canvas);
+                        // Получаем текстуру из пула по типу анимации
+                        if (obj.Tag == "Scope")
+                            obj.Texture = texturePool.GetSVLK14SZoomTexture(newFrame);
+                        else if (obj.Tag == "Reload")
+                            obj.Texture = texturePool.GetSVLK14SReloadTexture(newFrame);
                     }
                 }
 
+                // Применяем текстуру, если изменилась
+                if (img.Source != obj.Texture)
+                    img.Source = obj.Texture;
+
                 img.Visibility = obj.IsVisible ? Visibility.Visible : Visibility.Collapsed;
                 UpdateImageTransform(img, obj);
+
+                if (panel is Canvas canvas && obj.Texture != null && obj.Texture.Width > 0)
+                    CenterImage(img, obj, canvas);
             }
         }
 
@@ -140,8 +167,6 @@ namespace VLSGame.Rendering
                 panel?.Children.Remove(img);
             uiMap.Clear();
             objects.Clear();
-            animationFrames.Clear();
-            animationCallbacks.Clear();
         }
     }
 }

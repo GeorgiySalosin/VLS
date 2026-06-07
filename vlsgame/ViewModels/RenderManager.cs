@@ -5,12 +5,13 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using VLSGame.Config.GameConfig;
 using VLSGame.Models;
+using VLSGame.Rendering;
 using VLSGame.Rendering.Content2D;
 using VLSGame.Rendering.Content3D;
 using static VLSGame.Rendering.Content3D.Material;
 using static VLSGame.Rendering.Content3D.Mesh;
 
-namespace VLSGame.Rendering
+namespace VLSGame.ViewModels
 {
     /// <summary>
     /// Contains all rendering logics using Renderer3D, REnderer2D
@@ -30,16 +31,14 @@ namespace VLSGame.Rendering
 
         private static bool isInitialized = false;
 
-        internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel,
+        internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel, RifleState rifleState,
             string colorMapPath, string depthMapPath,
             IProgress<LoadingProgress>? progress, CancellationToken token)
         {
             if (isInitialized) return;
             renderer3D.Initialize(viewport);
-            renderer2D.Initialize(hudPanel);
-
-            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token); // Loads new environment textures
-
+            renderer2D.Initialize(hudPanel, rifleState);   // передаём rifleState
+            await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token);
             isInitialized = true;
         }
         #endregion
@@ -47,76 +46,162 @@ namespace VLSGame.Rendering
         #region 2D 
 
         private CustomObject2D? crosshair2D;
-        private CustomObject2D? scope2D;
         private CameraProperties? cameraProperties;
 
-        public void Initialize2D(CameraProperties cameraProperties)
+        private CustomObject2D? scope2D;
+        private Action? _currentZoomOutComplete; // callback для завершения отдаления
+
+        private RifleState? rifleState;
+
+        public void Initialize2D(CameraProperties cameraProperties, RifleState rifleState)
         {
             this.cameraProperties = cameraProperties;
+            this.rifleState = rifleState;
             cameraProperties.PropertyChanged += OnCameraPropertyChanged;
             CreateCrosshair2D();
             CreateScope2D();
             Update2DVisibility();
         }
 
-        private void OnCameraPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(CameraProperties.FieldOfView))
-                Update2DVisibility();
-        }
 
-        private void Update2DVisibility()
-        {
-            if (cameraProperties == null) return;
-            bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.Settings.DefaultFOV;
-            crosshair2D?.IsVisible = !isScoped;
-            
-        }
+        #region MODELS CREATION
+
+        #region HUD
+
+        #region Crosshair
 
         private void CreateCrosshair2D()
-        {
-            var tex = MatchTexturePool.Instance.GetCrosshairTexture();
-            crosshair2D = new CustomObject2D(tex, tag: "Crosshair") { IsVisible = true };
-            Add2D(crosshair2D);
-        }
+                {
+                    var tex = MatchTexturePool.Instance.GetCrosshairTexture();
+                    crosshair2D = new CustomObject2D(tex) { IsVisible = true };
+                    Add2D(crosshair2D);
+                }
+
+
+
+        #endregion
+
+
+        #endregion
+
+        #region Zoom Animation 
 
         private void CreateScope2D()
         {
-            var frames = MatchTexturePool.Instance.GetSVLK14SZoomingFrames();
-            if (frames == null || frames.Count == 0) return;
-            var firstFrame = frames[0];
-            scope2D = new CustomObject2D(firstFrame, tag: "Scope");
-            // Добавляем с кадрами и коллбэком
-            renderer2D.AddObject(scope2D, frames.ToList(), OnScopeAnimationComplete);
+            scope2D = new CustomObject2D(texturePool.GetSVLK14SIdleTexture(), tag: "Scope");
+            scope2D.IsVisible = true;
+            scope2D.Animation = new Animation(1); // один кадр по умолчанию
+            Add2D(scope2D);
         }
 
-        private void OnScopeAnimationComplete()
+        public void StartZoomInAnimation(Action? onComplete = null)
         {
-            Update2DVisibility();
-        }
-
-        public void StartScopeAnimationForward()
-        {
-            if (scope2D == null) return;
+            if (scope2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.ZoomingIn;   // важно!
+            scope2D.Animation = new Animation(26);
+            scope2D.Animation.CurrentFrame = 0;
+            scope2D.Animation.IsReversed = false;
+            scope2D.OnAnimationComplete = () =>
+            {
+                if (rifleState != null && rifleState.State == ERifleState.ZoomingIn)
+                    rifleState.State = ERifleState.IdleZoom;
+                Update2DVisibility();
+                onComplete?.Invoke();
+            };
             scope2D.Animation.PlayForward();
-            Update2DVisibility();
         }
 
-
-        public void StartScopeAnimationBackward()
+        public void StartZoomOutAnimation(Action? onComplete = null)
         {
-            if (scope2D == null) return;
+            if (scope2D == null || rifleState == null) return;
+
+            // Определяем текущий кадр анимации (если анимация уже идёт)
+            int currentFrame = 25; // по умолчанию последний
+            if (scope2D.Animation.IsPlaying && scope2D.Animation.FramesCount == 26)
+            {
+                currentFrame = scope2D.Animation.CurrentFrame ?? 25;
+            }
+
+            rifleState.State = ERifleState.ZoomingOut;
+            scope2D.Animation = new Animation(26);
+            scope2D.Animation.CurrentFrame = currentFrame; // начинаем с текущего кадра
+            scope2D.Animation.IsReversed = true;
+            scope2D.OnAnimationComplete = () =>
+            {
+                if (rifleState != null && rifleState.State == ERifleState.ZoomingOut)
+                    rifleState.State = ERifleState.Idle;
+                Update2DVisibility();
+                onComplete?.Invoke();
+            };
             scope2D.Animation.PlayBackward();
-            Update2DVisibility();
+        }
+
+        public void SetOnZoomOutComplete(Action callback)
+        {
+            if (scope2D != null && scope2D.Animation.IsPlaying && scope2D.Animation.IsReversed)
+            {
+                var oldCallback = scope2D.OnAnimationComplete;
+                scope2D.OnAnimationComplete = () =>
+                {
+                    oldCallback?.Invoke();
+                    callback();
+                };
+            }
+            else
+            {
+                callback?.Invoke();
+            }
+        }
+
+        public void StartReloadAnimation(Action? onComplete = null)
+        {
+            var reloadObj = new CustomObject2D(texturePool.GetEmptyTexture2D(), tag: "Reload");
+            reloadObj.Animation = new Animation(360);
+            reloadObj.Animation.CurrentFrame = 0;
+            reloadObj.IsVisible = true;
+            reloadObj.OnAnimationComplete = () =>
+            {
+                Remove2D(reloadObj.Id);
+                onComplete?.Invoke();
+            };
+            Add2D(reloadObj);
+            reloadObj.Animation.PlayForward();
         }
 
 
+        #endregion
+
+
+        #endregion
 
         public void Add2D(CustomObject2D obj) => renderer2D.AddObject(obj);
-        public void Remove2D(Guid id) => renderer2D.RemoveObject(id);
-        public CustomObject2D? Get2D(Guid id) => renderer2D.GetObject(id);
-        public CustomObject2D? Get2D(string tag) => renderer2D.GetObject(tag);
+            public void Remove2D(Guid id) => renderer2D.RemoveObject(id);
+            public CustomObject2D? Get2D(Guid id) => renderer2D.GetObject(id);
+
+            private void Update2DVisibility()
+            {
+                if (cameraProperties == null) return;
+                bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.Settings.DefaultFOV;
+                crosshair2D?.IsVisible = !isScoped;
+
+            }
+
+            private void OnCameraPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == nameof(CameraProperties.FieldOfView))
+                    Update2DVisibility();
+            }
+
         #endregion
+
+
+
+
+
+
+
+
+
 
 
         #region 3D 

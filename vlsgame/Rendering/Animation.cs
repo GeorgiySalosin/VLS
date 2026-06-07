@@ -16,7 +16,7 @@ namespace VLSGame.Rendering
 
 
         /// <summary>determines if animation should be played backwards or not</summary>
-        public bool IsReversed { get; private set; } = false;
+        public bool IsReversed { get; set; } = false;
 
 
         /// <summary> the amount of animation frames </summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using VLSGame.Config;
 using VLSGame.Config.GameConfig;
+using VLSGame.ViewModels;
 
 namespace VLSGame.Rendering
 {

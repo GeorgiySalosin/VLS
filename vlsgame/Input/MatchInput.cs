@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using VLSGame.Config.GameConfig;
-using VLSGame.Rendering;
+using VLSGame.Models;
 using VLSGame.ViewModels;
 
 namespace VLSGame.Input
@@ -76,12 +76,19 @@ namespace VLSGame.Input
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (viewModel == null) return;
-            if (e.ChangedButton == MouseButton.Left) viewModel.Shoot();
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                viewModel.Shoot();
+            }
             else if (e.ChangedButton == MouseButton.Right)
             {
-                isAiming = true;
+                // Блокировка при перезарядке
+                if (viewModel.RifleState.State == ERifleState.Reloading) return;
+
+                // Устанавливаем TargetFOV сразу, как было раньше
                 viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.AimingFOV;
-                RenderManager.Instance.StartScopeAnimationForward();
+                // Запускаем анимацию приближения
+                RenderManager.Instance.StartZoomInAnimation();
             }
         }
 
@@ -90,11 +97,17 @@ namespace VLSGame.Input
             if (viewModel == null) return;
             if (e.ChangedButton == MouseButton.Right)
             {
-                isAiming = false;
+                // Блокировка при перезарядке
+                if (viewModel.RifleState.State == ERifleState.Reloading) return;
+
+                // Возвращаем FOV по умолчанию
                 viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
-                RenderManager.Instance.StartScopeAnimationBackward();
+                // Запускаем анимацию отдаления
+                RenderManager.Instance.StartZoomOutAnimation();
             }
         }
+
+
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
@@ -158,7 +171,8 @@ namespace VLSGame.Input
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (viewModel == null || !isAiming) return;
+            if (viewModel == null) return;
+            if (viewModel.RifleState.State != ERifleState.IdleZoom) return; // зум только когда прицел уже приближён
             double delta = e.Delta * Configuration.Instance.Settings.ZoomSpeedManual / 120.0;
             double newTarget = viewModel.CameraProperties.TargetFOV - delta;
             newTarget = Math.Max(Configuration.Instance.Settings.MinFOVScope,
@@ -169,7 +183,13 @@ namespace VLSGame.Input
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape) window?.Close();
+            if (viewModel == null) return;
+            if (e.Key == Key.Escape)
+                window?.Close();
+            else if (e.Key == Key.R)
+            {
+                viewModel.StartReload();
+            }
         }
 
         private double CalculateAdaptiveSensitivity(double speed)

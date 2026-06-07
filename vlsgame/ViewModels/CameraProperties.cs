@@ -1,10 +1,9 @@
 ﻿
 using System.Windows.Media.Media3D;
-using VLSGame.ViewModels;
 using VLSGame.Config;
 using VLSGame.Config.GameConfig;
 
-namespace VLSGame.Rendering
+namespace VLSGame.ViewModels
 {
     public class CameraProperties : ViewModelBase
     {

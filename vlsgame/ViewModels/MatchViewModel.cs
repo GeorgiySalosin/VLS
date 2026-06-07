@@ -86,6 +86,12 @@ namespace VLSGame.ViewModels
         private readonly List<int> _availableIndices;      // indexes that haven't been used yet
         private readonly Random _random = new();
 
+
+        private RifleState rifleState = new();
+        public RifleState RifleState => rifleState;
+
+
+
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
             this.gameMode = gameMode;
@@ -146,7 +152,7 @@ namespace VLSGame.ViewModels
             CancellationToken token)
         {
             Debug.WriteLine("LoadTexturesAsync started");
-            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress, token);
+            await renderManager.InitializeAsync(viewport, hud, rifleState, colorMapPath, depthMapPath, progress, token);
             Debug.WriteLine("InitializeAsync completed");
 
 
@@ -159,7 +165,7 @@ namespace VLSGame.ViewModels
             Debug.WriteLine("LoadTexturesAsync finished");
         }
 
-        internal void Initialize2D() => renderManager.Initialize2D(CameraProperties);
+        internal void Initialize2D() => renderManager.Initialize2D(CameraProperties, rifleState);
 
         #region GAME EVENTS 
         internal void StartGameLoop()
@@ -205,7 +211,10 @@ namespace VLSGame.ViewModels
 
         internal void Shoot()
         {
-            
+            if (rifleState.State == ERifleState.Reloading) return;
+            if (!rifleState.HasAmmo) return;
+
+
             Vector3 startPos = new(0, 0, 0);    // ??? Do we really need it here
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
@@ -224,6 +233,8 @@ namespace VLSGame.ViewModels
             Bullet bullet = new (startPos, cameraLook, renderManager.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
             animationController.TriggerRecoil();
+
+            rifleState.HasAmmo = false;
         }
         #endregion
 
@@ -296,6 +307,56 @@ namespace VLSGame.ViewModels
         }
 
         #endregion
+
+
+        public void StartReload()
+        {
+            if (rifleState.State == ERifleState.Reloading) return;
+            if (rifleState.HasAmmo) return;
+
+            switch (rifleState.State)
+            {
+                case ERifleState.IdleZoom:
+                    rifleState.State = ERifleState.ZoomingOut;
+                    RenderManager.Instance.StartZoomOutAnimation(() =>
+                    {
+                        rifleState.State = ERifleState.Reloading;
+                        RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    });
+                    break;
+
+                case ERifleState.ZoomingIn:
+                    rifleState.State = ERifleState.ZoomingOut;
+                    RenderManager.Instance.StartZoomOutAnimation(() =>
+                    {
+                        rifleState.State = ERifleState.Reloading;
+                        RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    });
+                    break;
+
+                case ERifleState.ZoomingOut:
+                    rifleState.State = ERifleState.Reloading;
+                    RenderManager.Instance.SetOnZoomOutComplete(() =>
+                    {
+                        rifleState.State = ERifleState.Reloading;
+                        RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    });
+                    break;
+
+                default: // Idle
+                    rifleState.State = ERifleState.Reloading;
+                    RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    break;
+            }
+        }
+
+        private void OnReloadComplete()
+        {
+            rifleState.HasAmmo = true;
+            rifleState.State = ERifleState.Idle;
+        }
+
+
 
         /// <summary>
         /// UTILITIES for converting between System.Numerics.Vector3 and System.Windows.Media.Media3D.Vector3D
