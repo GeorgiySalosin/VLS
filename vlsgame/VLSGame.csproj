@@ -20,62 +20,398 @@
 
   <ItemGroup>
     <None Remove="Content\Animation\BallisticsFX\BulletDebug.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud03.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud04.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud05.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud06.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud07.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud08.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud09.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud10.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud11.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud12.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud13.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud14.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud15.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud16.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud17.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud18.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png" />
-    <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_000.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_001.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_002.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_003.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_004.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_005.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_006.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_007.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_008.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_009.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_010.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_011.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_012.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_013.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_014.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_015.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_016.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_017.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_018.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_019.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_020.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_021.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_022.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_023.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_024.png" />
-    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_025.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_000.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_001.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_002.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_003.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_004.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_005.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_006.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_007.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_008.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_009.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_010.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_011.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_012.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_013.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_014.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_015.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_016.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_017.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_018.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_019.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_020.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_021.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_022.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_023.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_024.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_025.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_000.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_001.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_002.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_003.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_004.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_005.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_006.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_007.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_008.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_009.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_010.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_011.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_012.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_013.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_014.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_015.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_016.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_017.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_018.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_019.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_020.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_021.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_022.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_023.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_024.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_025.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_026.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_027.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_028.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_029.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_030.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_031.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_032.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_033.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_034.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_035.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_036.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_037.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_038.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_039.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_040.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_041.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_042.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_043.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_044.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_045.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_046.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_047.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_048.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_049.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_050.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_051.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_052.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_053.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_054.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_055.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_056.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_057.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_058.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_059.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_060.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_061.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_062.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_063.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_064.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_065.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_066.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_067.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_068.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_069.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_070.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_071.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_072.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_073.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_074.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_075.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_076.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_077.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_078.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_079.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_080.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_081.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_082.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_083.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_084.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_085.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_086.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_087.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_088.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_089.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_090.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_091.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_092.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_093.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_094.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_095.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_096.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_097.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_098.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_099.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_100.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_101.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_102.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_103.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_104.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_105.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_106.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_107.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_108.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_109.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_110.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_111.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_112.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_113.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_114.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_115.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_116.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_117.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_118.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_119.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_120.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_121.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_122.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_123.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_124.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_125.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_126.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_127.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_128.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_129.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_130.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_131.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_132.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_133.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_134.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_135.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_136.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_137.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_138.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_139.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_140.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_141.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_142.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_143.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_144.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_145.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_146.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_147.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_148.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_149.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_150.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_151.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_152.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_153.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_154.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_155.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_156.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_157.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_158.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_159.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_160.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_161.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_162.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_163.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_164.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_165.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_166.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_167.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_168.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_169.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_170.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_171.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_172.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_173.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_174.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_175.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_176.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_177.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_178.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_179.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_180.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_181.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_182.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_183.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_184.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_185.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_186.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_187.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_188.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_189.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_190.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_191.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_192.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_193.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_194.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_195.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_196.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_197.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_198.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_199.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_200.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_201.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_202.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_203.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_204.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_205.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_206.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_207.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_208.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_209.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_210.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_211.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_212.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_213.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_214.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_215.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_216.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_217.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_218.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_219.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_220.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_221.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_222.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_223.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_224.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_225.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_226.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_227.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_228.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_229.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_230.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_231.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_232.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_233.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_234.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_235.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_236.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_237.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_238.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_239.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_240.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_241.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_242.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_243.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_244.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_245.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_246.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_247.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_248.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_249.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_250.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_251.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_252.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_253.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_254.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_255.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_256.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_257.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_258.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_259.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_260.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_261.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_262.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_263.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_264.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_265.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_266.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_267.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_268.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_269.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_270.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_271.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_272.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_273.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_274.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_275.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_276.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_277.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_278.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_279.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_280.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_281.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_282.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_283.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_284.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_285.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_286.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_287.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_288.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_289.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_290.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_291.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_292.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_293.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_294.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_295.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_296.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_297.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_298.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_299.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_300.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_301.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_302.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_303.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_304.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_305.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_306.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_307.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_308.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_309.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_310.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_311.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_312.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_313.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_314.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_315.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_316.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_317.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_318.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_319.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_320.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_321.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_322.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_323.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_324.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_325.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_326.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_327.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_328.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_329.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_330.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_331.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_332.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_333.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_334.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_335.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_336.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_337.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_338.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_339.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_340.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_341.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_342.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_343.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_344.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_345.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_346.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_347.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_348.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_349.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_350.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_351.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_352.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_353.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_354.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_355.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_356.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_357.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_358.png" />
+    <None Remove="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_359.png" />
     <None Remove="Content\Animation\Rifle\SVLK14S\T_Scope_Lens.png" />
     <None Remove="Content\checkmark.png" />
     <None Remove="Content\Lobby\T_MapPreview_Combined.png" />
     <None Remove="Content\Lobby\T_MapPreview_Fog.png" />
     <None Remove="Content\Lobby\T_MapPreview_Sun.png" />
     <None Remove="Content\Lobby\T_MapPreview_Sunset.png" />
-    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common01.png" />
-    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common02.png" />
-    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png" />
-    <None Remove="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png" />
     <None Remove="Content\Enemy\Test_Enemy.png" />
     <None Remove="Content\Enemy\Test_Enemy_Coll.png" />
     <None Remove="Content\Maps\Depth\W001.png" />
@@ -86,6 +422,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud00.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -143,85 +482,1162 @@
     <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_000.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_000.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_001.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_001.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_002.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_002.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_003.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_003.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_004.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_004.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_005.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_005.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_006.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_006.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_007.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_007.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_008.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_008.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_009.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_009.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_010.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_010.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_011.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_011.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_012.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_012.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_013.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_013.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_014.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_014.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_015.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_015.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_016.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_016.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_017.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_017.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_018.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_018.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_019.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_019.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_020.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_020.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_021.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_021.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_022.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_022.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_023.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_023.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_024.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_024.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zoom\A_Zooming_025.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Animation\Rifle\SVLK14S\A_Zooming\A_Zooming_025.png">
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_000.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_002.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_003.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_004.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_005.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_006.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_007.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_008.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_009.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_010.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_011.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_012.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_013.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_014.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_015.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_016.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_017.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_018.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_019.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_020.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_021.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_022.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_023.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_024.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_025.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_026.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_027.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_028.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_029.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_030.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_031.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_032.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_033.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_034.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_035.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_036.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_037.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_038.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_039.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_040.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_041.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_042.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_043.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_044.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_045.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_046.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_047.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_048.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_049.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_050.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_051.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_052.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_053.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_054.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_055.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_056.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_057.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_058.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_059.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_060.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_061.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_062.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_063.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_064.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_065.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_066.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_067.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_068.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_069.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_070.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_071.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_072.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_073.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_074.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_075.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_076.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_077.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_078.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_079.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_080.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_081.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_082.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_083.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_084.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_085.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_086.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_087.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_088.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_089.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_090.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_091.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_092.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_093.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_094.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_095.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_096.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_097.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_098.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_099.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_100.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_101.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_102.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_103.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_104.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_105.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_106.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_107.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_108.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_109.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_110.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_111.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_112.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_113.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_114.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_115.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_116.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_117.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_118.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_119.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_120.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_121.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_122.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_123.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_124.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_125.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_126.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_127.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_129.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_130.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_131.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_132.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_133.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_134.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_135.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_136.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_137.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_138.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_139.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_140.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_141.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_142.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_143.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_144.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_145.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_146.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_147.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_148.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_149.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_150.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_151.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_152.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_153.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_154.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_155.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_156.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_157.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_158.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_159.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_160.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_161.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_162.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_163.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_164.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_165.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_166.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_167.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_168.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_169.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_170.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_171.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_172.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_173.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_174.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_175.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_176.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_177.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_178.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_179.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_180.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_181.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_182.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_183.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_184.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_185.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_186.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_187.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_188.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_189.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_190.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_191.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_192.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_193.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_194.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_195.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_196.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_197.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_198.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_199.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_200.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_201.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_202.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_203.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_204.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_205.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_206.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_207.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_208.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_209.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_210.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_211.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_212.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_213.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_214.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_215.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_216.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_217.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_218.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_219.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_220.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_221.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_222.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_223.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_224.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_225.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_226.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_227.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_228.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_229.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_230.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_231.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_232.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_233.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_234.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_235.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_236.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_237.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_238.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_239.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_240.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_241.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_242.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_243.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_244.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_245.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_246.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_247.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_248.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_249.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_250.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_251.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_252.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_253.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_254.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_255.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_257.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_258.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_259.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_260.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_261.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_262.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_263.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_264.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_265.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_266.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_267.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_268.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_269.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_270.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_271.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_272.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_273.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_274.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_275.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_276.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_277.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_278.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_279.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_280.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_281.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_282.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_283.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_284.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_285.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_286.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_287.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_288.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_289.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_290.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_291.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_292.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_293.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_294.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_295.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_296.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_297.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_298.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_299.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_300.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_301.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_302.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_303.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_304.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_305.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_306.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_307.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_308.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_309.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_310.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_311.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_312.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_313.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_314.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_315.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_316.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_317.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_318.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_319.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_320.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_321.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_322.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_323.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_324.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_325.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_326.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_327.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_328.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_329.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_330.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_331.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_332.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_333.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_334.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_335.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_336.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_337.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_338.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_339.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_340.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_341.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_342.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_343.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_344.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_345.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_346.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_347.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_348.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_349.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_350.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_351.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_352.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_353.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_354.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_355.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_356.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_357.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_358.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Animation\Rifle\SVLK14S\Reload\A_Reload_359.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Animation\Rifle\SVLK14S\T_Scope_Lens.png">
@@ -236,6 +1652,9 @@
     <Content Include="Content\Animation\BallisticsFX\BulletDebug.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common00.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common01.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -243,9 +1662,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Enemy\Test_Enemy.png">
@@ -302,10 +1718,6 @@
     <None Update="Config\GameConfig\GameSettings.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Content\Animation\BallisticsFX\" />
   </ItemGroup>
 
 </Project>

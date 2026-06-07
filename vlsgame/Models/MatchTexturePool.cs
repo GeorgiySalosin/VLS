@@ -26,27 +26,18 @@ namespace VLSGame.Models
 
 
         #region Bullet 
-        private readonly ImageBrush T_Tracer_Common01 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common01.png");
-        private readonly ImageBrush T_Tracer_Common02 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common02.png");
-        private readonly ImageBrush T_Tracer_Common03 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common03.png");
-        private readonly ImageBrush T_Tracer_Common04 = LoadTexture(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common04.png");
 
+        private readonly List<ImageBrush> T_Tracer_Common = LoadTexture3DSequence(@"Content\Animation\BallisticsFX\CommonTracer\T_Tracer_Common{0:D2}.png", count: 4);
 
 
         public ImageBrush GetBulletTexture()
         {
-            return rnd.Next(4) switch
-            {
-                0 => T_Tracer_Common01,
-                1 => T_Tracer_Common02,
-                2 => T_Tracer_Common03,
-                3 => T_Tracer_Common04
-            };
+            return T_Tracer_Common[rnd.Next(4)];
         }
         #endregion
 
         #region Enemy 
-        private readonly ImageBrush Test_Enemy = LoadTextureTransparent(@"Content\Enemy\Test_Enemy.png");
+        private readonly ImageBrush Test_Enemy = LoadTexture3D(@"Content\Enemy\Test_Enemy.png");
 
         public ImageBrush GetEnemyTexture() => Test_Enemy;
 
@@ -54,29 +45,7 @@ namespace VLSGame.Models
         #endregion
 
         #region Blood FX 
-        private readonly List<ImageBrush> Animation_Blood =
-        [
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud03.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud04.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud05.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud06.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud07.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud08.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud09.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud10.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud11.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud12.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud13.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud14.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud15.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud16.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud17.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud18.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud19.png"),
-        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png")
-];
+        private readonly List<ImageBrush> Animation_Blood = LoadTexture3DSequence(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud{0:D2}.png", count: 20, opacity: 0.7);
 
         public ImageBrush? GetBloodFXTexture(int? frame)
         {
@@ -165,27 +134,8 @@ namespace VLSGame.Models
         #endregion
 
         #region Utils 
-        private static ImageBrush LoadTexture(string path)
-        {
 
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path, UriKind.Relative);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-            bitmap.Freeze();
-
-
-            var brush = new ImageBrush(bitmap)
-            {
-                ViewportUnits = BrushMappingMode.Absolute,
-                TileMode = TileMode.None,
-                Stretch = Stretch.Fill
-            };
-            return brush;
-        }
-
-        private static ImageBrush LoadTextureTransparent(string path, double opacity = 0.5)
+        private static ImageBrush LoadTexture3D(string path, double opacity = 1.0)
         {
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
@@ -204,6 +154,19 @@ namespace VLSGame.Models
             return brush;
         }
 
+
+        private static List<ImageBrush> LoadTexture3DSequence(string pathFormat, int count, double opacity = 1.0)
+        {
+            var result = new List<ImageBrush>(count);
+            for (int i = 0; i < count; i++)
+            {
+                string path = string.Format(pathFormat, i);
+                result.Add(LoadTexture3D(path, opacity));
+            }
+            return result;
+        }
+
+
         private static Mat LoadCV(string path) => Cv2.ImRead(path, ImreadModes.Unchanged);  
         #endregion
 
@@ -213,46 +176,16 @@ namespace VLSGame.Models
 
         #region 2D-rendered textures (ImageSource)
 
-        private readonly ImageSource emptySource = new BitmapImage();
-        public ImageSource GetEmptyTexture2D() => emptySource;
 
 
 
         #region HUD stuff 
-        private ImageSource crosshairTexture = LoadTextureFixedDpi(@"Content/ui/T_CrossAIM.png");
+        private ImageSource crosshairTexture = LoadTexture2DFixedDpi(@"Content/ui/T_CrossAIM.png");
         #endregion
 
         #region RifleAnimations 
 
-        private readonly List<ImageSource> Animation_SVLK14S_Zooming =
-            [
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_000.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_001.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_002.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_003.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_004.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_005.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_006.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_007.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_008.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_009.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_010.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_011.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_012.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_013.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_014.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_015.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_016.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_017.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_018.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_019.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_020.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_021.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_022.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_023.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_024.png"),
-            LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_025.png")
-            ];
+        private readonly List<ImageSource> Animation_SVLK14S_Zooming = LoadTexture2DSequenceAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zoom/A_Zooming_{0:D3}.png", count: 26);
 
         public IReadOnlyList<ImageSource> GetSVLK14SZoomingFrames() => Animation_SVLK14S_Zooming;
 
@@ -262,11 +195,13 @@ namespace VLSGame.Models
 
 
         #region Utils 
+
+
         /// <summary>
         /// Load texture w/ forced DPI (idk but fucking wpf requires strictly 96 dpi otherwise it will smear a texture at its own wish)
         /// This Will make a texture stay same pixel size through different screen resolutions
         /// </summary>
-        private static ImageSource LoadTextureFixedDpi(string path, double targetDpi = 96.0)
+        private static ImageSource LoadTexture2DFixedDpi(string path, double targetDpi = 96.0)
         {
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
@@ -297,11 +232,14 @@ namespace VLSGame.Models
         }
 
 
+
+
+
         /// <summary>
-        /// Загружает текстуру с адаптивным размером: ширина = screenWidth * 16 / 15,
-        /// высота пропорциональна исходному соотношению сторон.
+        /// Loads texture with an adaprive size: Width = screenWidth * 16/15 by default, Fixed aspect ratio; <br></br>
+        /// Suitable for square textures like rifle animation
         /// </summary>
-        private static ImageSource LoadTextureAdaptive(string path)
+        private static ImageSource LoadTexture2DAdaptive(string path, double scaleMultiplier = 16/15)
         {
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
@@ -311,7 +249,7 @@ namespace VLSGame.Models
             bitmap.Freeze();
 
             double screenWidth = SystemParameters.PrimaryScreenWidth;
-            int targetWidth = (int)(screenWidth * 16.0 / 15.0);
+            int targetWidth = (int)(screenWidth * scaleMultiplier);
             int targetHeight = (int)(bitmap.PixelHeight * ((double)targetWidth / bitmap.PixelWidth));
 
 
@@ -327,6 +265,23 @@ namespace VLSGame.Models
             renderBitmap.Freeze();
             return renderBitmap;
         } 
+
+
+
+        /// <summary>
+        /// Loads a sequence of textures with an adaptive size: Width = screenWidth * 16/15 by default, Fixed aspect ratio; <br></br>
+        /// Suitable for square textures like rifle animation
+        /// </summary>
+        private static List<ImageSource> LoadTexture2DSequenceAdaptive(string pathFormat, int count, double scaleMultiplier = 16.0 / 15.0)
+        {
+            var result = new List<ImageSource>(count);
+            for (int i = 0; i < count; i++)
+            {
+                string path = string.Format(pathFormat, i);
+                result.Add(LoadTexture2DAdaptive(path, scaleMultiplier));
+            }
+            return result;
+        }
         #endregion
 
 
