@@ -1,16 +1,20 @@
 ﻿using System;
+using VLSGame.Config;
 using VLSGame.Config.GameConfig;
 
 namespace VLSGame.Rendering
 {
-    public class CameraAnimationController(CameraProperties camera, CameraAnimationSettings settings)
+
+    /// <summary>
+    /// Adds calculated sway, recoil offsets to camera rotation values in real time
+    /// </summary>
+    public class CameraAnimationController(CameraProperties camera)
     {
         // Trying to win back a little performance
         private static readonly double DEG_TO_RAD = Math.PI / 180.0;
         private static readonly double TWO_PI = 2 * Math.PI;
 
         private readonly CameraProperties camera = camera;
-        private readonly CameraAnimationSettings settings = settings;
 
         // Sway animation local coordinates
         private double swayPhaseX, swayPhaseY;
@@ -25,7 +29,7 @@ namespace VLSGame.Rendering
         private double horizontalTarget;
         private double horizontalCurrent;
 
-
+        
         /// <summary>
         /// The core of Camera Movement animation
         /// </summary>
@@ -33,22 +37,22 @@ namespace VLSGame.Rendering
         {
             if (deltaTime <= 0) return;
 
-            // ===== Sway =====
-            double incX = settings.SwayFrequencyX * TWO_PI * deltaTime;
-            double incY = settings.SwayFrequencyY * TWO_PI * deltaTime;
+            // ===== Sway additive =====
+            double incX = Configuration.Instance.Settings.SwayFrequencyX * TWO_PI * deltaTime;
+            double incY = Configuration.Instance.Settings.SwayFrequencyY * TWO_PI * deltaTime;
             swayPhaseX += incX;
             swayPhaseY += incY;
             if (swayPhaseX > TWO_PI) swayPhaseX -= TWO_PI;
             if (swayPhaseY > TWO_PI) swayPhaseY -= TWO_PI;
 
-            double ampRad = settings.SwayAmplitude * DEG_TO_RAD;
+            double ampRad = Configuration.Instance.Settings.SwayAmplitude * DEG_TO_RAD;
             double swayX = Math.Sin(swayPhaseX) * ampRad;
             double swayY = Math.Cos(swayPhaseY) * ampRad * 0.7;
 
-            // ===== Rising stage (right after the shot) =====
+            // ===== Rising stage (right after the shot) additive =====
             if (isRising)
             {
-                double riseRadPerSec = settings.RecoilVerticalRiseSpeed * DEG_TO_RAD;
+                double riseRadPerSec = Configuration.Instance.Settings.RecoilVerticalRiseSpeed * DEG_TO_RAD;
                 double step = riseRadPerSec * deltaTime;
                 if (verticalCurrent < verticalRiseTarget)
                 {
@@ -62,18 +66,18 @@ namespace VLSGame.Rendering
                 }
             }
 
-            // ===== Pulling back stage =====
+            // ===== Pulling back stage additive =====
             if (!isRising && Math.Abs(verticalCurrent - verticalTarget) > 1e-6)
             {
-                double t = Math.Min(1.0, settings.RecoilVerticalRecoverySpeed * deltaTime);
+                double t = Math.Min(1.0, Configuration.Instance.Settings.RecoilVerticalRecoverySpeed * deltaTime);
                 verticalCurrent += (verticalTarget - verticalCurrent) * t;
             }
 
-            // ===== Horizontal offset =====
+            // ===== Horizontal offset additive =====
             double diffH = horizontalTarget - horizontalCurrent;
             if (Math.Abs(diffH) > 1e-6)
             {
-                double step = diffH * Math.Min(1.0, settings.RecoilHorizontalInterpSpeed * deltaTime);
+                double step = diffH * Math.Min(1.0, Configuration.Instance.Settings.RecoilHorizontalInterpSpeed * deltaTime);
                 horizontalCurrent += step;
                 if (Math.Abs(horizontalTarget - horizontalCurrent) < 0.0001)
                     horizontalCurrent = horizontalTarget;
@@ -92,18 +96,18 @@ namespace VLSGame.Rendering
             double baseRad = verticalCurrent;
 
             // VerticalRecoilComponent
-            double vertDeg = settings.RecoilVerticalBase + Random.Shared.NextDouble() * settings.RecoilVerticalRandom;
+            double vertDeg = Configuration.Instance.Settings.RecoilVerticalBase + Random.Shared.NextDouble() * Configuration.Instance.Settings.RecoilVerticalRandom;
             double vertRad = vertDeg * DEG_TO_RAD;
             verticalRiseTarget = baseRad + vertRad;
             isRising = true;
-            double recoverShiftRad = settings.RecoilVerticalRecoverShift * DEG_TO_RAD;
+            double recoverShiftRad = Configuration.Instance.Settings.RecoilVerticalRecoverShift * DEG_TO_RAD;
             verticalTarget = baseRad + recoverShiftRad;
 
             // HorizontalRecoilComponent
-            double horizDeg = (Random.Shared.NextDouble() - 0.5) * settings.RecoilHorizontalRange;
+            double horizDeg = (Random.Shared.NextDouble() - 0.5) * Configuration.Instance.Settings.RecoilHorizontalRange;
             double horizRad = horizDeg * DEG_TO_RAD;
             horizontalTarget += horizRad;
-            double maxHorizRad = settings.RecoilHorizontalMaxDeg * DEG_TO_RAD;
+            double maxHorizRad = Configuration.Instance.Settings.RecoilHorizontalMaxDeg * DEG_TO_RAD;
             horizontalTarget = Math.Clamp(horizontalTarget, -maxHorizRad, maxHorizRad);
         }
     }

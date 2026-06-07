@@ -28,7 +28,5 @@ namespace VLSGame.Config.GameConfig
                 return instance;
             }
         }
-
-        internal CameraAnimationSettings CameraAnimationSettings { get; private set; } = new CameraAnimationSettings();
     }
 }

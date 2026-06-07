@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace VLSGame.Rendering
 {
     /// <summary>
-    /// additional class for animation management. Belongs to customobject3d (single instance per object)
+    /// additional class for animation management. Belongs to custom object 3d/2d (single instance per object)
     /// </summary>
-    public class Animation
+    public class Animation (int framesCount = 0) 
     {
         /// <summary>determines if animation is playing or not</summary>
         public bool IsPlaying { get; private set; } = false;
@@ -17,6 +17,10 @@ namespace VLSGame.Rendering
 
         /// <summary>determines if animation should be played backwards or not</summary>
         public bool IsReversed { get; private set; } = false;
+
+
+        /// <summary> the amount of animation frames </summary>
+        public int FramesCount { get; private set; } = framesCount;
 
 
         private int currentFrame = 0;

@@ -18,6 +18,7 @@ namespace VLSGame.Rendering
     public sealed class RenderManager
     {
 
+        // bobr: add comments
         #region Initialization  
 
         public static RenderManager Instance { get; } = new();
@@ -34,14 +35,10 @@ namespace VLSGame.Rendering
             IProgress<LoadingProgress>? progress, CancellationToken token)
         {
             if (isInitialized) return;
-            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 3D renderer");
             renderer3D.Initialize(viewport);
-            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: initializing 2D renderer");
             renderer2D.Initialize(hudPanel);
 
-            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: updating environment textures...");
             await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token); // Loads new environment textures
-            System.Diagnostics.Debug.WriteLine("RenderManager.InitializeAsync: textures loaded");
 
             isInitialized = true;
         }
@@ -71,7 +68,7 @@ namespace VLSGame.Rendering
         private void Update2DVisibility()
         {
             if (cameraProperties == null) return;
-            bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.Settings.MaxFOV;
+            bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.Settings.DefaultFOV;
             crosshair2D?.IsVisible = !isScoped;
             
         }
@@ -104,6 +101,7 @@ namespace VLSGame.Rendering
             scope2D.Animation.PlayForward();
             Update2DVisibility();
         }
+
 
         public void StartScopeAnimationBackward()
         {
@@ -150,15 +148,16 @@ namespace VLSGame.Rendering
         // Изменить метод CreateBulletObject3D
         public void CreateBulletObject3D(Guid bulletId)
         {
-            var mesh = PlaneMesh(1); // базовый размер
-            var texture = texturePool.GetBulletTexture();
+            var mesh = PlaneMesh(1); // Base size
+
+            var texture = texturePool.GetEmptyTexture3D();
             var material = TextureMaterial(texture);
             var geometryModel = new GeometryModel3D(mesh, material);
             var bulletVisual = new ModelVisual3D { Content = geometryModel };
 
             var bullet = new CustomObject3D(bulletVisual, id: bulletId,
                                             tag: CustomObject3DTags.Projectile);
-
+            bullet.Animation.PlayForward();
             // Ставим на небольшую начальную дистанцию, чтобы сразу увидеть
             //bullet.SetWorldPosition(initialDirection * 0.5);
             Add3D(bullet);
@@ -181,7 +180,7 @@ namespace VLSGame.Rendering
                 double scale = Math.Max(0.1, distance * 0.0015 + 0.2);      // found hardcoded params with which bullet doesn't visually scale down too fast
                 bullet.SetScale(scale);
 
-                bullet.SetTexture(texturePool.GetBulletTexture());          // update a tracer texture w/ random one from pool
+                
             }
         }
 
@@ -231,7 +230,7 @@ namespace VLSGame.Rendering
 
 
             var bloodFX = new CustomObject3D(bloodFXVisual,
-                                           tag: CustomObject3DTags.FXAnimationSingle);
+                tag: CustomObject3DTags.FXNoRepeat, animationFramesCount: 20);
 
 
             bloodFX.SetWorldPosition(worldPosition * 0.8);                           // place an effect a bit closer than the character is to avoid mesh overlapping
@@ -280,13 +279,23 @@ namespace VLSGame.Rendering
         public CustomObject3D Get3D(CustomObject3DTags tag) => renderer3D.GetObject(tag);
 
 
+        /// <summary>
+        /// Takes a direction vector and converts it to pixel coordinates of a sphere mesh clamped by a depthmap resolution (used for getting a specified pixel of depth map)
+        /// </summary>
         public (int X, int Y) GetTextureCoordinatesFromDirection(Vector3D direction) => texturePool.GetTextureCoordinatesFromDirection(direction);
 
+
+        /// <summary>
+        /// Enter texture coordinates of pixel to recieve its depth from the depth map
+        /// </summary>
         public double GetDistanceAtPixel(int x, int y) => texturePool.GetDistanceAtPixel(x, y);
 
         #endregion
 
 
+        /// <summary>
+        /// What happens each frame
+        /// </summary>
         public void Render()
         {
             renderer2D.Render();

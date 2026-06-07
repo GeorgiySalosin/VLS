@@ -55,8 +55,8 @@ namespace VLSGame.Models
 
         #region Blood FX 
         private readonly List<ImageBrush> Animation_Blood =
-[
-LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png"),
+        [
+        LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud03.png"),
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud04.png"),
@@ -78,30 +78,24 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
         LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud20.png")
 ];
 
-        public ImageBrush? GetBloodFXTexture(ref int frame)
+        public ImageBrush? GetBloodFXTexture(int? frame)
         {
-            if (frame >= Animation_Blood.Count)
-            {
-                frame = -1;
-                return GetEmptyTexture3D();
-            }
-            return Animation_Blood[frame];
+            if (frame >= Animation_Blood.Count || frame == null) return GetEmptyTexture3D();
+            return Animation_Blood[(int)frame];
         }
         #endregion
 
+        // bobr: add comments
         #region World
-        private ImageBrush World_Color;
-        private Mat World_Depth;
+        private ImageBrush worldColor;
+        private Mat worldDepth;
 
-        private int World_Color_Width;
-        private int World_Color_Height;
-
-        private int World_Depth_Width;
-        private int World_Depth_Height;
+        private int worldDepthWidth;
+        private int worldDepthHeight;
 
         public ImageBrush GetEnvironmentTexture()
         {
-            return World_Color;
+            return worldColor;
         }
 
         /// <summary>
@@ -140,13 +134,8 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
                 return result.ToArray();
             }
 
-            System.Diagnostics.Debug.WriteLine($"Loading color map: {colorMapPath}");
             byte[] colorData = await LoadFileWithCombinedProgress(colorMapPath, "Color map");
-            System.Diagnostics.Debug.WriteLine($"Color map loaded, size: {colorData.Length} bytes");
-
-            System.Diagnostics.Debug.WriteLine($"Loading depth map: {depthMapPath}");
             byte[] depthData = await LoadFileWithCombinedProgress(depthMapPath, "Depth map");
-            System.Diagnostics.Debug.WriteLine($"Depth map loaded, size: {depthData.Length} bytes");
 
             // Needed to update the ProgressBar
             await Task.Delay(50);
@@ -155,7 +144,7 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 token.ThrowIfCancellationRequested();
-                System.Diagnostics.Debug.WriteLine("Creating BitmapImage from color data...");
+
                 var bitmap = new BitmapImage();
                 using (var stream = new MemoryStream(colorData))
                 {
@@ -165,15 +154,12 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
                     bitmap.EndInit();
                     bitmap.Freeze();
                 }
-                World_Color = new ImageBrush(bitmap) { ViewportUnits = BrushMappingMode.Absolute, TileMode = TileMode.None, Stretch = Stretch.Fill };
-                World_Color_Width = bitmap.PixelWidth;
-                World_Color_Height = bitmap.PixelHeight;
+                worldColor = new ImageBrush(bitmap) { ViewportUnits = BrushMappingMode.Absolute, TileMode = TileMode.None, Stretch = Stretch.Fill };
 
-                System.Diagnostics.Debug.WriteLine("Decoding depth map...");
-                World_Depth = Cv2.ImDecode(depthData, ImreadModes.Unchanged);
-                World_Depth_Width = World_Depth.Width;
-                World_Depth_Height = World_Depth.Height;
-                System.Diagnostics.Debug.WriteLine("Textures ready");
+                
+                worldDepth = Cv2.ImDecode(depthData, ImreadModes.Unchanged);
+                worldDepthWidth = worldDepth.Width;
+                worldDepthHeight = worldDepth.Height;
             });
         }
         #endregion
@@ -267,15 +253,7 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
             LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_024.png"),
             LoadTextureAdaptive(@"Content/Animation/Rifle/SVLK14S/A_Zooming/A_Zooming_025.png")
             ];
-        public ImageSource? GetSVLK14SZoomingTexture(ref int frame)
-        {
-            if (frame >= Animation_SVLK14S_Zooming.Count)
-            {
-                frame = -1;
-                return GetEmptyTexture2D();
-            }
-            return Animation_SVLK14S_Zooming[frame];
-        }
+
         public IReadOnlyList<ImageSource> GetSVLK14SZoomingFrames() => Animation_SVLK14S_Zooming;
 
 
@@ -386,12 +364,13 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
 
         /// <summary>
         /// Enter texture coordinates of pixel to recieve its depth from the depth map
+        /// </summary>
         public double GetDistanceAtPixel(int x, int y)
         {
-            if (World_Depth == null || x < 0 || x >= World_Depth_Width || y >= World_Depth_Height)
+            if (worldDepth == null || x < 0 || x >= worldDepthWidth || y >= worldDepthHeight)
                 return 0;
 
-            return (World_Depth.At<ushort>(y, x) / (double)ushort.MaxValue)
+            return (worldDepth.At<ushort>(y, x) / (double)ushort.MaxValue)
                    * Configuration.Instance.Settings.MaxSnipingDistance;
         }
 
@@ -410,11 +389,11 @@ LoadTextureTransparent(@"Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png")
             double u = theta / (2 * Math.PI);
             double v = phi / Math.PI;
 
-            int pixelX = (int)(u * World_Depth_Width);
-            int pixelY = (int)(v * World_Depth_Height);
+            int pixelX = (int)(u * worldDepthWidth);
+            int pixelY = (int)(v * worldDepthHeight);
 
-            pixelX = Math.Max(0, Math.Min(World_Depth_Width - 1, pixelX));
-            pixelY = Math.Max(0, Math.Min(World_Depth_Height - 1, pixelY));
+            pixelX = Math.Max(0, Math.Min(worldDepthWidth - 1, pixelX));
+            pixelY = Math.Max(0, Math.Min(worldDepthHeight - 1, pixelY));
 
             return (pixelX, pixelY);
         }

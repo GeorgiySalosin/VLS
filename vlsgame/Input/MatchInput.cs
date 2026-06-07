@@ -80,7 +80,7 @@ namespace VLSGame.Input
             else if (e.ChangedButton == MouseButton.Right)
             {
                 isAiming = true;
-                viewModel.CameraProperties.TargetFOV = Configuration.Instance.CameraAnimationSettings.AimingFOV;
+                viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.AimingFOV;
                 RenderManager.Instance.StartScopeAnimationForward();
             }
         }
@@ -91,7 +91,7 @@ namespace VLSGame.Input
             if (e.ChangedButton == MouseButton.Right)
             {
                 isAiming = false;
-                viewModel.CameraProperties.TargetFOV = Configuration.Instance.CameraAnimationSettings.DefaultFOV;
+                viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
                 RenderManager.Instance.StartScopeAnimationBackward();
             }
         }
@@ -121,7 +121,7 @@ namespace VLSGame.Input
             double distance = Math.Sqrt(dx * dx + dy * dy);
             double speed = distance / timeDeltaMs;
 
-            const double SmoothingFactor = 0.2;
+            const double SmoothingFactor = 0.01;
             smoothedSpeed += (speed - smoothedSpeed) * SmoothingFactor;
 
             double sensitivityScale = CalculateAdaptiveSensitivity(smoothedSpeed);
@@ -159,12 +159,12 @@ namespace VLSGame.Input
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (viewModel == null || !isAiming) return;
-            double delta = e.Delta * Configuration.Instance.CameraAnimationSettings.ZoomSpeedManual / 120.0;
+            double delta = e.Delta * Configuration.Instance.Settings.ZoomSpeedManual / 120.0;
             double newTarget = viewModel.CameraProperties.TargetFOV - delta;
             newTarget = Math.Max(Configuration.Instance.Settings.MinFOVScope,
                                  Math.Min(Configuration.Instance.Settings.MaxFOVScope, newTarget));
             viewModel.CameraProperties.TargetFOV = newTarget;
-            Configuration.Instance.CameraAnimationSettings.AimingFOV = newTarget;
+            Configuration.Instance.Settings.AimingFOV = newTarget;
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

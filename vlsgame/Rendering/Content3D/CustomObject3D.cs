@@ -26,7 +26,7 @@ namespace VLSGame.Rendering.Content3D
         /// <summary>
         /// An additional property for easy texture switch per frame
         /// </summary>
-        public Animation Animation { get; init; } = new();
+        public Animation Animation { get; init; }
 
         private bool isVisible = true;
         /// <summary>
@@ -58,11 +58,14 @@ namespace VLSGame.Rendering.Content3D
         private ScaleTransform3D? scaleTransform = null;
 
 
-        public CustomObject3D(ModelVisual3D model, Guid id = default, CustomObject3DTags tag = 0)
+        public CustomObject3D(ModelVisual3D model, Guid id = default, CustomObject3DTags tag = 0, int animationFramesCount = 0)
         {
             this.model = model;
             Id = id == default ? Guid.NewGuid() : id;
             Tag = tag;
+
+            Animation = new(animationFramesCount);
+
 
             // append initial scale transform
             scaleTransform = new ScaleTransform3D(1.0, 1.0, 1.0);

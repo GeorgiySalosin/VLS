@@ -90,8 +90,7 @@ namespace VLSGame.ViewModels
         {
             this.gameMode = gameMode;
 
-            var animSettings = Configuration.Instance.CameraAnimationSettings; // adding it to GameSettings
-            animationController = new CameraAnimationController(CameraProperties, animSettings);
+            animationController = new CameraAnimationController(CameraProperties);
 
             BulletManager.LastBulletInfoChanged += info => LastBullet = info;
 
@@ -178,13 +177,13 @@ namespace VLSGame.ViewModels
         private void OnGameTick(object? sender, EventArgs e)
         {
             // 1. FOV
-            CameraProperties.UpdateFOV(deltaTime, (float)Configuration.Instance.CameraAnimationSettings.ZoomSpeedAuto);
+            CameraProperties.UpdateCameraFOV(deltaTime, (float)Configuration.Instance.Settings.ZoomSpeedAuto);
 
             // 2. Анимации (меняют AnimationRotationX/Y -> устанавливают флаг dirty)
             animationController.Update(deltaTime);
 
             // 3. Применяем все изменения к ViewModel (пересчёт RotationX/Y, LookDirection, уведомления)
-            CameraProperties.ApplyPendingChanges();
+            CameraProperties.UpdateCameraRotation();
 
             // 4. Обновление пуль и рендер
             BulletManager.UpdateBullets(deltaTime);

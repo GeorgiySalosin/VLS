@@ -1,92 +1,96 @@
-﻿using System.Windows.Media.Media3D;
+﻿
+using System.Windows.Media.Media3D;
 using VLSGame.ViewModels;
+using VLSGame.Config;
+using VLSGame.Config.GameConfig;
 
 namespace VLSGame.Rendering
 {
     public class CameraProperties : ViewModelBase
     {
-        private double _userRotationX;
-        private double _userRotationY;
-        private double _animationRotationX;
-        private double _animationRotationY;
-        private double _fieldOfView = 90;
-        private double _targetFOV = 90;
-        private Vector3D _lookDirection = new Vector3D(0, 0, 1);
-        private bool _isDirty = false;
+        private double userRotationX;
+        private double userRotationY;
+        private double animationRotationX;
+        private double animationRotationY;
+        private double fieldOfView = Configuration.Instance.Settings.DefaultFOV;
+        private double targetFOV = Configuration.Instance.Settings.DefaultFOV;
+        private Vector3D lookDirection = new (0, 0, 1);
+        private bool isDirty = false;
 
-        public double RotationX => _userRotationX + _animationRotationX;
-        public double RotationY => _userRotationY + _animationRotationY;
+        public double RotationX => userRotationX + animationRotationX;
+        public double RotationY => userRotationY + animationRotationY;
 
+        /// <summary> Total rotation accumulated by user mouse move  </summary>
         public double UserRotationX
         {
-            get => _userRotationX;
+            get => userRotationX;
             set
             {
-                if (Math.Abs(_userRotationX - value) > 1e-9)
+                if (Math.Abs(userRotationX - value) > 1e-9)
                 {
-                    _userRotationX = value;
-                    _isDirty = true;            // не вызываем уведомления сразу
+                    userRotationX = value;
+                    isDirty = true;
                 }
             }
         }
 
+        /// <summary> Total rotation accumulated by user mouse move  </summary>
         public double UserRotationY
         {
-            get => _userRotationY;
+            get => userRotationY;
             set
             {
-                if (Math.Abs(_userRotationY - value) > 1e-9)
+                if (Math.Abs(userRotationY - value) > 1e-9)
                 {
-                    _userRotationY = value;
-                    _isDirty = true;
+                    userRotationY = value;
+                    isDirty = true;
                 }
             }
         }
 
+
+        /// <summary> Total rotation accumulated by animation  </summary>
         public double AnimationRotationX
         {
-            get => _animationRotationX;
+            get => animationRotationX;
             set
             {
-                if (Math.Abs(_animationRotationX - value) > 1e-9)
+                if (Math.Abs(animationRotationX - value) > 1e-9)
                 {
-                    _animationRotationX = value;
-                    _isDirty = true;
+                    animationRotationX = value;
+                    isDirty = true;
                 }
             }
         }
 
+        /// <summary> Total rotation accumulated by animation  </summary>
         public double AnimationRotationY
         {
-            get => _animationRotationY;
+            get => animationRotationY;
             set
             {
-                if (Math.Abs(_animationRotationY - value) > 1e-9)
+                if (Math.Abs(animationRotationY - value) > 1e-9)
                 {
-                    _animationRotationY = value;
-                    _isDirty = true;
+                    animationRotationY = value;
+                    isDirty = true;
                 }
             }
         }
 
+        /// <summary> Current (realtime) lookdirection vector </summary>
         public Vector3D LookDirection
         {
-            get => _lookDirection;
-            private set => Set(ref _lookDirection, value);
+            get => lookDirection;
+            private set => Set(ref lookDirection, value);
         }
 
-        /// <summary>Вызывается ОДИН раз за кадр перед рендером.</summary>
-        public void ApplyPendingChanges()
+        /// <summary> Updates accumulated camera rotations. Called once per frame.</summary>
+        public void UpdateCameraRotation()
         {
-            if (!_isDirty) return;
+            if (!isDirty) return;
 
-            _isDirty = false;
-
-            // Извещаем байндинги об изменении итоговых углов и LookDirection
-            OnPropertyChanged(nameof(RotationX));
-            OnPropertyChanged(nameof(RotationY));
-            RecalcLookDirection();        // считает и присваивает LookDirection
-                                          // Можно добавить OnPropertyChanged(nameof(LookDirection)) внутри RecalcLookDirection
+            isDirty = false;
+            RecalcLookDirection();
         }
 
         private void RecalcLookDirection()
@@ -96,32 +100,27 @@ namespace VLSGame.Rendering
             double z = Math.Cos(RotationX) * Math.Cos(RotationY);
             var v = new Vector3D(x, y, z);
             v.Normalize();
-            LookDirection = v;    // вызовет PropertyChanged для LookDirection
+            LookDirection = v;    // auto-call PropertyChanged for LookDirection
         }
 
 
 
-        // Текущее поле зрения (отображаемое)
+        /// <summary> Current (realtime) fov value </summary>
         public double FieldOfView
         {
-            get => _fieldOfView;
-            set => Set(ref _fieldOfView, value);
+            get => fieldOfView;
+            set => Set(ref fieldOfView, value);
         }
 
-        // Целевое поле зрения (для плавного приближения)
+        /// <summary> Target for changing current fov value </summary>
         public double TargetFOV
         {
-            get => _targetFOV;
-            set => Set(ref _targetFOV, value);  // Set вызывает PropertyChanged
+            get => targetFOV;
+            set => Set(ref targetFOV, value);  
         }
 
-        /// <summary>
-        /// Плавно изменяет текущий FOV в сторону целевого.
-        /// Вызывается каждый кадр из игрового цикла.
-        /// </summary>
-        /// <param name="deltaTime">Время, прошедшее с предыдущего кадра (в секундах)</param>
-        /// <param name="zoomSpeed">Скорость интерполяции (чем выше, тем быстрее)</param>
-        public void UpdateFOV(float deltaTime, float zoomSpeed)
+        /// <summary> Smooth fov blend calculated each frame </summary>
+        public void UpdateCameraFOV(float deltaTime, float zoomSpeed)
         {
             if (Math.Abs(FieldOfView - TargetFOV) < 0.01f)
                 FieldOfView = TargetFOV;

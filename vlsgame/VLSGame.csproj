@@ -12,6 +12,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Rendering\Content2D\HUD\**" />
+    <EmbeddedResource Remove="Rendering\Content2D\HUD\**" />
+    <None Remove="Rendering\Content2D\HUD\**" />
+    <Page Remove="Rendering\Content2D\HUD\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Content\Animation\BallisticsFX\BulletDebug.png" />
     <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud01.png" />
     <None Remove="Content\Animation\PlayerFX\BloodHit\T_Hit_Cloud02.png" />
@@ -299,7 +306,6 @@
 
   <ItemGroup>
     <Folder Include="Content\Animation\BallisticsFX\" />
-    <Folder Include="Rendering\Content2D\HUD\" />
   </ItemGroup>
 
 </Project>

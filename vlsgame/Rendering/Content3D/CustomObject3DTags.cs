@@ -19,6 +19,6 @@ namespace VLSGame.Rendering.Content3D
         /// <summary> An object that represents bullet</summary>
         Projectile,
         /// <summary> An object that represents special effect that is played once (e.x. blood split on player hit)</summary>
-        FXAnimationSingle
+        FXNoRepeat
     }
 }
