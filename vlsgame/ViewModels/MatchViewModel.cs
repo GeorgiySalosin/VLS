@@ -314,11 +314,14 @@ namespace VLSGame.ViewModels
             if (rifleState.State == ERifleState.Reloading) return;
             if (rifleState.HasAmmo) return;
 
+            // Принудительно сбрасываем TargetFOV до обычного, чтобы FOV плавно возвращался
+            CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
+
             switch (rifleState.State)
             {
                 case ERifleState.IdleZoom:
                     rifleState.State = ERifleState.ZoomingOut;
-                    RenderManager.Instance.StartZoomOutAnimation(() =>
+                    RenderManager.Instance.StartZoomOutAnimation(25, () =>
                     {
                         rifleState.State = ERifleState.Reloading;
                         RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
@@ -326,8 +329,9 @@ namespace VLSGame.ViewModels
                     break;
 
                 case ERifleState.ZoomingIn:
+                    int currentFrame = RenderManager.Instance.GetScopeCurrentFrame();
                     rifleState.State = ERifleState.ZoomingOut;
-                    RenderManager.Instance.StartZoomOutAnimation(() =>
+                    RenderManager.Instance.StartZoomOutAnimation(currentFrame, () =>
                     {
                         rifleState.State = ERifleState.Reloading;
                         RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
@@ -338,7 +342,6 @@ namespace VLSGame.ViewModels
                     rifleState.State = ERifleState.Reloading;
                     RenderManager.Instance.SetOnZoomOutComplete(() =>
                     {
-                        rifleState.State = ERifleState.Reloading;
                         RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
                     });
                     break;

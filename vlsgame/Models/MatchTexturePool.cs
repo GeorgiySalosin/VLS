@@ -230,7 +230,7 @@ namespace VLSGame.Models
                 }
 
 
-                private readonly List<ImageSource> Animation_SVLK14S_Reload = LoadTexture2DSequenceAdaptive(@"Content/Animation/Rifle/SVLK14S/Reload/A_Reload_{0:D3}.png", count: 360);
+                private readonly List<ImageSource> Animation_SVLK14S_Reload = LoadTexture2DSequenceAdaptive(@"Content/Animation/Rifle/SVLK14S/Reload/A_Reload_{0:D3}.png", count: 181);
 
                 public ImageSource GetSVLK14SReloadTexture(int frame)
                 {

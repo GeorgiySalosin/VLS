@@ -18,7 +18,7 @@ namespace VLSGame.Rendering
         private readonly Dictionary<CustomObject2D, Image> uiMap = new();
         private bool isInitialized = false;
         private readonly MatchTexturePool texturePool = MatchTexturePool.Instance;
-        private RifleState? rifleState; // добавляем ссылку на состояние винтовки
+        private RifleState? rifleState;
 
         private Renderer2D() { }
 
@@ -82,69 +82,64 @@ namespace VLSGame.Rendering
         {
             if (panel == null || rifleState == null) return;
 
-            // Создаём копию, чтобы избежать модификации коллекции во время итерации
-            var uiMapCopy = uiMap.ToArray();
-
+            // Создаём копию, чтобы избежать модификации во время итерации
+            var uiMapCopy = uiMap.ToList();
             foreach (var kvp in uiMapCopy)
             {
                 var obj = kvp.Key;
-                // Проверяем, не был ли объект удалён за время итерации
-                if (!uiMap.ContainsKey(obj)) continue;
                 var img = kvp.Value;
 
-                // Обновляем текстуру для Scope в зависимости от состояния винтовки
-                if (obj.Tag == "Scope")
-                {
-                    switch (rifleState.State)
-                    {
-                        case ERifleState.Idle:
-                            obj.Texture = texturePool.GetSVLK14SIdleTexture();
-                            break;
-                        case ERifleState.ZoomingIn:
-                            // анимация уже управляется через Animation
-                            break;
-                        case ERifleState.ZoomingOut:
-                            break;
-                        case ERifleState.IdleZoom:
-                            obj.Texture = texturePool.GetSVLK14SZoomIdleTexture();
-                            break;
-                        case ERifleState.Reloading:
-                            // Scope может быть скрыт или оставлен последним кадром
-                            break;
-                    }
-                }
-
-                // Обработка активной анимации (для Scope и Reload)
-                if (obj.Animation.IsPlaying)
+                // Обработка анимации ТОЛЬКО для объекта оружия (Tag == "Weapon")
+                if (obj.Tag == "Weapon" && obj.Animation.IsPlaying)
                 {
                     int step = obj.Animation.IsReversed ? -1 : 1;
                     int newFrame = (obj.Animation.CurrentFrame ?? 0) + step;
                     if (newFrame < 0 || newFrame >= obj.Animation.FramesCount)
                     {
+                        // Анимация завершена
                         obj.Animation.Stop();
                         obj.Animation.CurrentFrame = obj.Animation.IsReversed ? 0 : obj.Animation.FramesCount - 1;
+                        obj.Texture = GetTextureForCurrentState(obj, obj.Animation.CurrentFrame ?? 0);
                         obj.OnAnimationComplete?.Invoke();
                     }
                     else
                     {
                         obj.Animation.CurrentFrame = newFrame;
-                        // Получаем текстуру из пула по типу анимации
-                        if (obj.Tag == "Scope")
-                            obj.Texture = texturePool.GetSVLK14SZoomTexture(newFrame);
-                        else if (obj.Tag == "Reload")
-                            obj.Texture = texturePool.GetSVLK14SReloadTexture(newFrame);
+                        obj.Texture = GetTextureForCurrentState(obj, newFrame);
                     }
                 }
+                else if (obj.Tag == "Weapon")
+                {
+                    // Если анимация не играет, но состояние изменилось – обновляем текстуру
+                    obj.Texture = GetTextureForCurrentState(obj, null);
+                }
 
-                // Применяем текстуру, если изменилась
+                // Обновление видимости и трансформаций для всех объектов
                 if (img.Source != obj.Texture)
                     img.Source = obj.Texture;
-
                 img.Visibility = obj.IsVisible ? Visibility.Visible : Visibility.Collapsed;
                 UpdateImageTransform(img, obj);
 
                 if (panel is Canvas canvas && obj.Texture != null && obj.Texture.Width > 0)
                     CenterImage(img, obj, canvas);
+            }
+        }
+
+        private ImageSource GetTextureForCurrentState(CustomObject2D obj, int? frame)
+        {
+            if (obj.Tag != "Weapon") return obj.Texture;
+
+            switch (rifleState.State)
+            {
+                case ERifleState.ZoomingIn:
+                case ERifleState.ZoomingOut:
+                    return texturePool.GetSVLK14SZoomTexture(frame ?? (obj.Animation.CurrentFrame ?? 0));
+                case ERifleState.Reloading:
+                    return texturePool.GetSVLK14SReloadTexture(frame ?? (obj.Animation.CurrentFrame ?? 0));
+                case ERifleState.IdleZoom:
+                    return texturePool.GetSVLK14SZoomIdleTexture();
+                default: // Idle
+                    return texturePool.GetSVLK14SIdleTexture();
             }
         }
 

@@ -48,10 +48,12 @@ namespace VLSGame.ViewModels
         private CustomObject2D? crosshair2D;
         private CameraProperties? cameraProperties;
 
-        private CustomObject2D? scope2D;
+   
         private Action? _currentZoomOutComplete; // callback для завершения отдаления
 
         private RifleState? rifleState;
+
+        private CustomObject2D? weapon2D;
 
         public void Initialize2D(CameraProperties cameraProperties, RifleState rifleState)
         {
@@ -59,7 +61,7 @@ namespace VLSGame.ViewModels
             this.rifleState = rifleState;
             cameraProperties.PropertyChanged += OnCameraPropertyChanged;
             CreateCrosshair2D();
-            CreateScope2D();
+            CreateWeapon2D();   // создаём объект оружия (прицел/анимации)
             Update2DVisibility();
         }
 
@@ -86,65 +88,79 @@ namespace VLSGame.ViewModels
 
         #region Zoom Animation 
 
-        private void CreateScope2D()
+        private void CreateWeapon2D()
         {
-            scope2D = new CustomObject2D(texturePool.GetSVLK14SIdleTexture(), tag: "Scope");
-            scope2D.IsVisible = true;
-            scope2D.Animation = new Animation(1); // один кадр по умолчанию
-            Add2D(scope2D);
+            weapon2D = new CustomObject2D(texturePool.GetSVLK14SIdleTexture(), tag: "Weapon");
+            weapon2D.IsVisible = true;
+            Add2D(weapon2D);
+        }
+
+        public int GetScopeCurrentFrame()
+        {
+            return weapon2D?.Animation.CurrentFrame ?? 0;
         }
 
         public void StartZoomInAnimation(Action? onComplete = null)
         {
-            if (scope2D == null || rifleState == null) return;
-            rifleState.State = ERifleState.ZoomingIn;   // важно!
-            scope2D.Animation = new Animation(26);
-            scope2D.Animation.CurrentFrame = 0;
-            scope2D.Animation.IsReversed = false;
-            scope2D.OnAnimationComplete = () =>
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.ZoomingIn;
+            weapon2D.Animation = new Animation(26);
+            weapon2D.Animation.CurrentFrame = 0;
+            weapon2D.Animation.IsReversed = false;
+            weapon2D.OnAnimationComplete = () =>
             {
-                if (rifleState != null && rifleState.State == ERifleState.ZoomingIn)
+                if (rifleState.State == ERifleState.ZoomingIn)
                     rifleState.State = ERifleState.IdleZoom;
                 Update2DVisibility();
                 onComplete?.Invoke();
             };
-            scope2D.Animation.PlayForward();
+            weapon2D.Animation.PlayForward();
         }
 
-        public void StartZoomOutAnimation(Action? onComplete = null)
+        public void StartZoomOutAnimation(int startFrame = 25, Action? onComplete = null)
         {
-            if (scope2D == null || rifleState == null) return;
-
-            // Определяем текущий кадр анимации (если анимация уже идёт)
-            int currentFrame = 25; // по умолчанию последний
-            if (scope2D.Animation.IsPlaying && scope2D.Animation.FramesCount == 26)
-            {
-                currentFrame = scope2D.Animation.CurrentFrame ?? 25;
-            }
-
+            if (weapon2D == null || rifleState == null) return;
             rifleState.State = ERifleState.ZoomingOut;
-            scope2D.Animation = new Animation(26);
-            scope2D.Animation.CurrentFrame = currentFrame; // начинаем с текущего кадра
-            scope2D.Animation.IsReversed = true;
-            scope2D.OnAnimationComplete = () =>
+            weapon2D.Animation = new Animation(26);
+            weapon2D.Animation.CurrentFrame = startFrame;
+            weapon2D.Animation.IsReversed = true;
+            weapon2D.OnAnimationComplete = () =>
             {
-                if (rifleState != null && rifleState.State == ERifleState.ZoomingOut)
+                if (rifleState.State == ERifleState.ZoomingOut)
                     rifleState.State = ERifleState.Idle;
                 Update2DVisibility();
                 onComplete?.Invoke();
             };
-            scope2D.Animation.PlayBackward();
+            weapon2D.Animation.PlayBackward();
+        }
+
+        public void StartReloadAnimation(Action? onComplete = null)
+        {
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.Reloading;
+            
+            weapon2D.Animation = new Animation(181);
+            weapon2D.Animation.CurrentFrame = 0;
+            weapon2D.OnAnimationComplete = () =>
+            {
+                
+                rifleState.State = ERifleState.Idle;
+                Update2DVisibility();
+                onComplete?.Invoke();
+            };
+            weapon2D.Animation.PlayForward();
         }
 
         public void SetOnZoomOutComplete(Action callback)
         {
-            if (scope2D != null && scope2D.Animation.IsPlaying && scope2D.Animation.IsReversed)
+            if (weapon2D == null) { callback?.Invoke(); return; }
+            if (weapon2D.Animation.IsPlaying && weapon2D.Animation.IsReversed && weapon2D.Animation.FramesCount == 26)
             {
-                var oldCallback = scope2D.OnAnimationComplete;
-                scope2D.OnAnimationComplete = () =>
+                var oldCallback = weapon2D.OnAnimationComplete;
+                weapon2D.OnAnimationComplete = () =>
                 {
                     oldCallback?.Invoke();
-                    callback();
+                    callback?.Invoke();
                 };
             }
             else
@@ -152,22 +168,6 @@ namespace VLSGame.ViewModels
                 callback?.Invoke();
             }
         }
-
-        public void StartReloadAnimation(Action? onComplete = null)
-        {
-            var reloadObj = new CustomObject2D(texturePool.GetEmptyTexture2D(), tag: "Reload");
-            reloadObj.Animation = new Animation(360);
-            reloadObj.Animation.CurrentFrame = 0;
-            reloadObj.IsVisible = true;
-            reloadObj.OnAnimationComplete = () =>
-            {
-                Remove2D(reloadObj.Id);
-                onComplete?.Invoke();
-            };
-            Add2D(reloadObj);
-            reloadObj.Animation.PlayForward();
-        }
-
 
         #endregion
 

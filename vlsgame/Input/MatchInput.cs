@@ -77,18 +77,16 @@ namespace VLSGame.Input
         {
             if (viewModel == null) return;
             if (e.ChangedButton == MouseButton.Left)
-            {
                 viewModel.Shoot();
-            }
             else if (e.ChangedButton == MouseButton.Right)
             {
-                // Блокировка при перезарядке
                 if (viewModel.RifleState.State == ERifleState.Reloading) return;
 
-                // Устанавливаем TargetFOV сразу, как было раньше
-                viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.AimingFOV;
-                // Запускаем анимацию приближения
-                RenderManager.Instance.StartZoomInAnimation();
+                if (viewModel.RifleState.State == ERifleState.Idle)
+                {
+                    viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.AimingFOV;
+                    RenderManager.Instance.StartZoomInAnimation();
+                }
             }
         }
 
@@ -97,13 +95,18 @@ namespace VLSGame.Input
             if (viewModel == null) return;
             if (e.ChangedButton == MouseButton.Right)
             {
-                // Блокировка при перезарядке
-                if (viewModel.RifleState.State == ERifleState.Reloading) return;
-
-                // Возвращаем FOV по умолчанию
-                viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
-                // Запускаем анимацию отдаления
-                RenderManager.Instance.StartZoomOutAnimation();
+                var state = viewModel.RifleState.State;
+                if (state == ERifleState.IdleZoom)
+                {
+                    viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
+                    RenderManager.Instance.StartZoomOutAnimation(); // использует startFrame=25
+                }
+                else if (state == ERifleState.ZoomingIn)
+                {
+                    int currentFrame = RenderManager.Instance.GetScopeCurrentFrame();
+                    viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
+                    RenderManager.Instance.StartZoomOutAnimation(currentFrame);
+                }
             }
         }
 
