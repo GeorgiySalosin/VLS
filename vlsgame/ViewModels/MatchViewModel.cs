@@ -61,9 +61,6 @@ namespace VLSGame.ViewModels
         private BitmapSource? mapTexture;
         //public BitmapSource? MapTexture { get => mapTexture; private set => Set(ref mapTexture, value); }
 
-        private string distanceText = "";
-        private string pixelCoordinates = "";
-        private string lastBullet = ""; // info about last bullet
 
         // Cached texture data
         private int lastPixelX = -1;
@@ -86,14 +83,18 @@ namespace VLSGame.ViewModels
         private readonly List<int> _availableIndices;      // indexes that haven't been used yet
         private readonly Random _random = new();
 
+
+        private RifleState rifleState = new();
+        public RifleState RifleState => rifleState;
+
+
+
         public MatchViewModel(IGameMode gameMode, string colorMapPath, string depthMapPath)
         {
             this.gameMode = gameMode;
 
-            var animSettings = Configuration.Instance.CameraAnimationSettings; // adding it to GameSettings
-            animationController = new CameraAnimationController(CameraProperties, animSettings);
+            animationController = new CameraAnimationController(CameraProperties);
 
-            BulletManager.LastBulletInfoChanged += info => LastBullet = info;
 
             BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id);
             BulletManager.BulletUpdated += (id, pos) => renderManager.UpdateBulletObject3D(id, pos);
@@ -117,15 +118,6 @@ namespace VLSGame.ViewModels
                 SpawnTarget();
             };
 
-            BulletManager.BulletLanded += (distance, flightTime) =>
-                LastBullet = $"Hit: distance {distance:F1} m, time {flightTime:F2} s";
-
-            // It's necessary for updating FormattedLookDirection
-            CameraProperties.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(CameraProperties.LookDirection))
-                    OnPropertyChanged(nameof(FormattedLookDirection));
-            };
 
             this.colorMapPath = colorMapPath;
             this.depthMapPath = depthMapPath;
@@ -147,7 +139,7 @@ namespace VLSGame.ViewModels
             CancellationToken token)
         {
             Debug.WriteLine("LoadTexturesAsync started");
-            await renderManager.InitializeAsync(viewport, hud, colorMapPath, depthMapPath, progress, token);
+            await renderManager.InitializeAsync(viewport, hud, rifleState, CameraProperties, colorMapPath, depthMapPath, progress, token);
             Debug.WriteLine("InitializeAsync completed");
 
 
@@ -160,9 +152,10 @@ namespace VLSGame.ViewModels
             Debug.WriteLine("LoadTexturesAsync finished");
         }
 
-        internal void Initialize2D() => renderManager.Initialize2D(CameraProperties);
+        internal void Initialize2D() => renderManager.Initialize2D(CameraProperties, rifleState);
 
         #region GAME EVENTS 
+
         internal void StartGameLoop()
         {
             if (isGameLoopStarted) return;
@@ -174,22 +167,20 @@ namespace VLSGame.ViewModels
         }
 
 
-
         private void OnGameTick(object? sender, EventArgs e)
         {
             // 1. FOV
-            CameraProperties.UpdateFOV(deltaTime, (float)Configuration.Instance.CameraAnimationSettings.ZoomSpeedAuto);
+            CameraProperties.UpdateCameraFOV(deltaTime, (float)Configuration.Instance.Settings.ZoomSpeedAuto);
 
             // 2. Анимации (меняют AnimationRotationX/Y -> устанавливают флаг dirty)
             animationController.Update(deltaTime);
 
             // 3. Применяем все изменения к ViewModel (пересчёт RotationX/Y, LookDirection, уведомления)
-            CameraProperties.ApplyPendingChanges();
+            CameraProperties.UpdateCameraRotation();
 
             // 4. Обновление пуль и рендер
             BulletManager.UpdateBullets(deltaTime);
             renderManager.Render();
-            GetCenterDistance();
 
             tickCounter++;
             if ((DateTime.Now - lastFpsTime).TotalSeconds >= 1.0)
@@ -202,11 +193,12 @@ namespace VLSGame.ViewModels
         }
 
 
-
-
         internal void Shoot()
         {
-            
+            if (rifleState.State == ERifleState.Reloading) return;
+            if (!rifleState.HasAmmo) return;
+
+
             Vector3 startPos = new(0, 0, 0);    // ??? Do we really need it here
 
             Vector3D cameraLook3D = CameraProperties.LookDirection;
@@ -225,43 +217,66 @@ namespace VLSGame.ViewModels
             Bullet bullet = new (startPos, cameraLook, renderManager.GetDistanceAtPixel, getPixelFromDirection);
             BulletManager.AddBullet(bullet);
             animationController.TriggerRecoil();
+
+            rifleState.HasAmmo = false;
         }
-        #endregion
 
-        #region Debug line (distance, texture coords, etc)
 
-        public string DistanceText { get => distanceText; set => Set(ref distanceText, value); }
-
-        public string PixelCoordinates { get => pixelCoordinates; set => Set(ref pixelCoordinates, value); }
-
-        public string LastBullet { get => lastBullet; set => Set(ref lastBullet, value); }
-
-        public string FormattedLookDirection => $"LookDirection: {CameraProperties.LookDirection.X:F4}, {CameraProperties.LookDirection.Y:F4}, {CameraProperties.LookDirection.Z:F4}";
-
-        #endregion
-
-        public void GetCenterDistance()
+        public void StartReload()
         {
-            var (pixelX, pixelY) = renderManager.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
+            if (rifleState.State == ERifleState.Reloading) return;
+            if (rifleState.HasAmmo) return;
 
-            if (pixelX != lastPixelX || pixelY != lastPixelY)
+            
+            CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
+
+            switch (rifleState.State)
             {
-                lastPixelX = pixelX;
-                lastPixelY = pixelY;
+                case ERifleState.IdleZoom:
+                    rifleState.State = ERifleState.ZoomingOut;
+                    RenderManager.Instance.StartZoomOutAnimation(25, () =>
+                    {
+                        rifleState.State = ERifleState.Reloading;
+                        RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    });
+                    break;
 
-                cachedDistance = renderManager.GetDistanceAtPixel(pixelX, pixelY);
+                case ERifleState.ZoomingIn:
+                    int currentFrame = RenderManager.Instance.GetScopeCurrentFrame();
+                    rifleState.State = ERifleState.ZoomingOut;
+                    RenderManager.Instance.StartZoomOutAnimation(currentFrame, () =>
+                    {
+                        rifleState.State = ERifleState.Reloading;
+                        RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    });
+                    break;
 
-                if (cachedDistance > Configuration.Instance.Settings.MaxSnipingDistance - Configuration.Instance.Settings.MaxSnipingDistanceThresold)
-                {
-                    cachedDistance = Configuration.Instance.Settings.MaxSnipingDistance;
-                    DistanceText = $"Distance: > {cachedDistance:F0} м";
-                }
-                else
-                    DistanceText = $"Distance: {cachedDistance:F1} m";
+                case ERifleState.ZoomingOut:
+                    rifleState.State = ERifleState.Reloading;
+                    RenderManager.Instance.SetOnZoomOutComplete(() =>
+                    {
+                        RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    });
+                    break;
 
-                PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
+                default: // Idle
+                    rifleState.State = ERifleState.Reloading;
+                    RenderManager.Instance.StartReloadAnimation(OnReloadComplete);
+                    break;
             }
         }
+
+
+        private void OnReloadComplete()
+        {
+            rifleState.HasAmmo = true;
+            rifleState.State = ERifleState.Idle;
+        }
+
+
+        #endregion
+
+
 
         #region Singleplayer Spawn
 
@@ -297,6 +312,8 @@ namespace VLSGame.ViewModels
         }
 
         #endregion
+
+
 
         /// <summary>
         /// UTILITIES for converting between System.Numerics.Vector3 and System.Windows.Media.Media3D.Vector3D

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using VLSGame.Config.GameConfig;
+using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
-using VLSGame.Rendering.Content3D;
+using VLSGame.ViewModels;
 
 namespace VLSGame.Rendering
 {
@@ -15,28 +17,27 @@ namespace VLSGame.Rendering
         private Panel? panel;
         private readonly List<CustomObject2D> objects = new();
         private readonly Dictionary<CustomObject2D, Image> uiMap = new();
-        private readonly Dictionary<CustomObject2D, List<ImageSource>> animationFrames = new();
-        private readonly Dictionary<CustomObject2D, Action> animationCallbacks = new();
         private bool isInitialized = false;
+        private readonly MatchTexturePool texturePool = MatchTexturePool.Instance;
+        private RifleState? rifleState;
+        private CameraProperties? cameraProperties;
+
 
         private Renderer2D() { }
 
-        public void Initialize(Panel panel)
+        public void Initialize(Panel panel, RifleState rifleState, CameraProperties cameraProperties)
         {
             if (isInitialized) return;
             this.panel = panel;
+            this.rifleState = rifleState;
+            this.cameraProperties = cameraProperties;
             isInitialized = true;
         }
 
-        public void AddObject(CustomObject2D obj, List<ImageSource>? frames = null, Action? onComplete = null)
+        public void AddObject(CustomObject2D obj)
         {
             if (obj == null || panel == null) return;
             if (objects.Contains(obj)) return;
-
-            if (frames != null)
-                animationFrames[obj] = frames;
-            if (onComplete != null)
-                animationCallbacks[obj] = onComplete;
 
             var img = new Image
             {
@@ -76,50 +77,168 @@ namespace VLSGame.Rendering
                 panel?.Children.Remove(img);
                 uiMap.Remove(obj);
                 objects.Remove(obj);
-                animationFrames.Remove(obj);
-                animationCallbacks.Remove(obj);
             }
         }
 
-        public CustomObject2D? GetObject(Guid id) => objects.FirstOrDefault(o => o.Id == id);
-        public CustomObject2D? GetObject(string tag) => objects.FirstOrDefault(o => o.Tag == tag);
+        public CustomObject2D? GetObject(String tag) => objects.FirstOrDefault(o => o.Tag == tag);
 
         public void Render()
         {
-            if (panel == null) return;
+            if (panel == null || rifleState == null || cameraProperties == null) return;
 
-            foreach (var kvp in uiMap)
+            var uiMapCopy = uiMap.ToList();
+            foreach (var kvp in uiMapCopy)
             {
                 var obj = kvp.Key;
                 var img = kvp.Value;
 
-                // Анимация (как в 3D)
-                if (obj.Animation.IsPlaying && animationFrames.TryGetValue(obj, out var frames))
+                // Обработка анимации для оружия
+                if (obj.Tag == "Weapon" && obj.Animation.IsPlaying)
                 {
                     int step = obj.Animation.IsReversed ? -1 : 1;
                     int newFrame = (obj.Animation.CurrentFrame ?? 0) + step;
-                    if (newFrame < 0 || newFrame >= frames.Count)
+                    if (newFrame < 0 || newFrame >= obj.Animation.FramesCount)
                     {
                         obj.Animation.Stop();
-                        obj.Animation.CurrentFrame = obj.Animation.IsReversed ? 0 : frames.Count - 1;
-                        if (animationCallbacks.TryGetValue(obj, out var callback))
-                            callback?.Invoke();
+                        obj.Animation.CurrentFrame = obj.Animation.IsReversed ? 0 : obj.Animation.FramesCount - 1;
+                        obj.Texture = GetTextureForCurrentState(obj, obj.Animation.CurrentFrame ?? 0);
+                        obj.OnAnimationComplete?.Invoke();
                     }
                     else
                     {
                         obj.Animation.CurrentFrame = newFrame;
-                        obj.Texture = frames[newFrame];
-                        img.Source = obj.Texture;
-                        // Если панель Canvas – перецентрируем (размер мог измениться)
-                        if (panel is Canvas canvas)
-                            CenterImage(img, obj, canvas);
+                        obj.Texture = GetTextureForCurrentState(obj, newFrame);
                     }
                 }
+                else if (obj.Tag == "Weapon")
+                {
+                    obj.Texture = GetTextureForCurrentState(obj, null);
+                }
 
+                if (img.Source != obj.Texture)
+                    img.Source = obj.Texture;
                 img.Visibility = obj.IsVisible ? Visibility.Visible : Visibility.Collapsed;
+
+                // === Вертикальное смещение оружия (на основе ширины экрана) ===
+                if (obj.Tag == "Weapon")
+                {
+                    var cfg = Configuration.Instance.Settings;
+                    double minAngle = -Math.PI / 2 + cfg.ClampVRotationMin;
+                    double maxAngle = Math.PI / 2 - cfg.ClampVRotationMax;
+                    double pitch = cameraProperties.RotationX;
+                    double t = (pitch - minAngle) / (maxAngle - minAngle);
+                    t = Math.Clamp(t, 0.0, 1.0);
+                    double normalized = t * 2.0 - 1.0;
+
+                    double fov = cameraProperties.FieldOfView;
+                    double defaultFOV = cfg.DefaultFOV;
+                    double minFOV = cfg.MinFOVScope;
+                    double fovFactor = 1.0;
+                    if (fov <= minFOV)
+                        fovFactor = 0.0;
+                    else if (fov >= defaultFOV)
+                        fovFactor = 1.0;
+                    else
+                        fovFactor = (fov - minFOV) / (defaultFOV - minFOV);
+
+                    double maxOffset = MatchTexturePool.ScreenWidth / 30.0;
+                    obj.Y = normalized * maxOffset * fovFactor;
+                }
+
                 UpdateImageTransform(img, obj);
             }
         }
+
+
+
+        private ImageSource GetTextureForCurrentState(CustomObject2D obj, int? frame)
+        {
+            if (obj.Tag != "Weapon") return obj.Texture;
+
+            switch (rifleState.State)
+            {
+                case ERifleState.ZoomingIn:
+                case ERifleState.ZoomingOut:
+                    return texturePool.GetSVLK14SZoomTexture(frame ?? (obj.Animation.CurrentFrame ?? 0));
+                case ERifleState.Reloading:
+                    return texturePool.GetSVLK14SReloadTexture(frame ?? (obj.Animation.CurrentFrame ?? 0));
+                case ERifleState.IdleZoom:
+                    return texturePool.GetSVLK14SZoomIdleTexture();
+                default: // Idle
+                    return texturePool.GetSVLK14SIdleTexture();
+            }
+        }
+
+        public void StartZoomInAnimation(int startFrame, Action? onComplete = null)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.ZoomingIn;
+            weapon2D.Animation = new Animation(26);
+            weapon2D.Animation.CurrentFrame = startFrame;
+            weapon2D.Animation.IsReversed = false;
+            weapon2D.OnAnimationComplete = () =>
+            {
+                if (rifleState.State == ERifleState.ZoomingIn)
+                    rifleState.State = ERifleState.IdleZoom;
+                onComplete?.Invoke();
+            };
+            weapon2D.Animation.PlayForward();
+        }
+
+        public void StartZoomOutAnimation(int startFrame = 25, Action? onComplete = null)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.ZoomingOut;
+            weapon2D.Animation = new Animation(26);
+            weapon2D.Animation.CurrentFrame = startFrame;
+            weapon2D.Animation.IsReversed = true;
+            weapon2D.OnAnimationComplete = () =>
+            {
+                if (rifleState.State == ERifleState.ZoomingOut)
+                    rifleState.State = ERifleState.Idle;
+                onComplete?.Invoke();
+            };
+            weapon2D.Animation.PlayBackward();
+        }
+
+        public void StartReloadAnimation(Action? onComplete = null)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.Reloading;
+
+            weapon2D.Animation = new Animation(181);
+            weapon2D.Animation.CurrentFrame = 0;
+            weapon2D.OnAnimationComplete = () =>
+            {
+
+                rifleState.State = ERifleState.Idle;
+                onComplete?.Invoke();
+            };
+            weapon2D.Animation.PlayForward();
+        }
+
+        public void SetOnZoomOutComplete(Action callback)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null) { callback?.Invoke(); return; }
+            if (weapon2D.Animation.IsPlaying && weapon2D.Animation.IsReversed && weapon2D.Animation.FramesCount == 26)
+            {
+                var oldCallback = weapon2D.OnAnimationComplete;
+                weapon2D.OnAnimationComplete = () =>
+                {
+                    oldCallback?.Invoke();
+                    callback?.Invoke();
+                };
+            }
+            else
+            {
+                callback?.Invoke();
+            }
+        }
+
 
         private static void UpdateImageTransform(Image img, CustomObject2D obj)
         {
@@ -140,8 +259,6 @@ namespace VLSGame.Rendering
                 panel?.Children.Remove(img);
             uiMap.Clear();
             objects.Clear();
-            animationFrames.Clear();
-            animationCallbacks.Clear();
         }
     }
 }

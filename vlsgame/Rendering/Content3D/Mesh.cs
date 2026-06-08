@@ -14,6 +14,7 @@ namespace VLSGame.Rendering.Content3D
     /// </summary>
     static class Mesh
     {
+
         /// <summary>
         /// Generates a Sphere mesh w/ given radius and segment count
         /// </summary>
@@ -63,38 +64,9 @@ namespace VLSGame.Rendering.Content3D
             return mesh;
         }
 
-
-
-        public static MeshGeometry3D PlaneMesh(double width = 1, double length = 1)
-        {
-            var mesh = new MeshGeometry3D();
-
-            
-            double z = 0.0;
-
-            mesh.Positions.Add(new Point3D(-width / 2, -length / 2, z));
-            mesh.Positions.Add(new Point3D(width / 2, -length / 2, z));
-            mesh.Positions.Add(new Point3D(-width / 2, length / 2, z));
-            mesh.Positions.Add(new Point3D(width / 2, length / 2, z));
-
-            mesh.TextureCoordinates.Add(new System.Windows.Point(1, 1)); // lower left 
-            mesh.TextureCoordinates.Add(new System.Windows.Point(0, 1)); // lower right
-            mesh.TextureCoordinates.Add(new System.Windows.Point(1, 0)); // upper left
-            mesh.TextureCoordinates.Add(new System.Windows.Point(0, 0)); // upper right
-
-            mesh.TriangleIndices.Add(0);
-            mesh.TriangleIndices.Add(2);
-            mesh.TriangleIndices.Add(1);
-
-            mesh.TriangleIndices.Add(1);
-            mesh.TriangleIndices.Add(2);
-            mesh.TriangleIndices.Add(3);
-
-
-
-            return mesh;
-        }
-
+        /// <summary>
+        /// Generates a square plane mesh w/ given side length
+        /// </summary>
         public static MeshGeometry3D PlaneMesh(double scale = 1)
         {
             var mesh = new MeshGeometry3D();

@@ -11,6 +11,7 @@ using System.Windows.Media.Media3D;
 using VLSGame.Models;
 using VLSGame.Rendering.Content3D;
 using VLSGame.ViewModels;
+using VLSShared.Models;
 
 namespace VLSGame.Rendering
 {
@@ -129,25 +130,39 @@ namespace VLSGame.Rendering
                 }
 
 
-                if (item.Animation.IsPlaying && item.Tag == CustomObject3DTags.FXAnimationSingle)
+                // Animation handle block
+
+                if (item.Animation.IsPlaying)
                 {
-                    int currentFrame = item.Animation.CurrentFrame ?? 0;
 
-                    
-                    if (currentFrame >= 20) 
+                    //=====     Blood animation    =====//
+
+                    if (item.Tag == CustomObject3DTags.FXNoRepeat)
                     {
-                        RemoveObject(item);
-                        break;
+
+                        if (item.Animation.CurrentFrame >= item.Animation.FramesCount)
+                        {
+                            RemoveObject(item);
+                            break;
+                        }
+                        else
+                        {
+                            // Получаем текстуру для текущего кадра
+                            var texture = texturePool.GetBloodFXTexture(item.Animation.CurrentFrame);
+
+                            if (texture != null) item.SetTexture(texture);
+
+                            // Переходим к следующему кадру
+                            item.Animation.CurrentFrame++;
+                        }
                     }
-                    else
-                    {
-                        // Получаем текстуру для текущего кадра
-                        var texture = texturePool.GetBloodFXTexture(ref currentFrame);
-                        if (texture != null)
-                            item.SetTexture(texture);
 
-                        // Переходим к следующему кадру
-                        item.Animation.CurrentFrame = currentFrame + 1;
+
+                    //=====     Bullet animation    =====//
+
+                    if (item.Tag == CustomObject3DTags.Projectile)
+                    {
+                        item.SetTexture(texturePool.GetBulletTexture());          // update a tracer texture w/ random one from pool
                     }
                 }
             }

@@ -5,7 +5,6 @@ namespace VLSShared.Models
     public static class BulletManager
     {
         private static Bullet? LastBullet; // The last bullet added
-        public static event Action<string>? LastBulletInfoChanged;
         public static string LastBulletInfo => LastBullet?.ToString() ?? "No active bullets";
 
         public static event Action<double, double>? BulletLanded; // (x, y, distance, flightTime)
@@ -48,8 +47,6 @@ namespace VLSShared.Models
                     {
                         BulletUpdated?.Invoke(bullet.Id, bullet.Position);
                     }
-
-                    if (bullet == LastBullet) LastBulletInfoChanged?.Invoke(LastBulletInfo);
                 }
             }
         }
@@ -60,7 +57,6 @@ namespace VLSShared.Models
             {
                 Bullets.Add(bullet);
                 LastBullet = bullet;
-                LastBulletInfoChanged?.Invoke(LastBulletInfo);
                 BulletCreated?.Invoke(bullet.Id, bullet.Direction);
             }
         }

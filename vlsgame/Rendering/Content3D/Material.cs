@@ -14,8 +14,6 @@ namespace VLSGame.Rendering.Content3D
     /// </summary>
     static class Material
     {
-
-
         /// <summary>
         /// Create a Simple Diffuse Material by an ImageBrush
         /// </summary>
@@ -23,19 +21,6 @@ namespace VLSGame.Rendering.Content3D
         {
             return new DiffuseMaterial(brush);
         }
-
-        public static DiffuseMaterial TextureMaterial(ImageSource? texture)
-        {
-            var brush = new ImageBrush(texture)
-            {
-                ViewportUnits = BrushMappingMode.Absolute,
-                TileMode = TileMode.None,
-                Stretch = Stretch.Fill
-            };
-
-            return new DiffuseMaterial(brush);
-        }
-
 
         /// <summary>
         ///     Creates solid color material from separate per-pixel values. 
