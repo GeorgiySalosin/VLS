@@ -1,5 +1,6 @@
 # **VLS**
-WPF shooter VLS source code.
+Semi-3D shooter based on WPF. Uses pre-rendered panoramic environment that consists of color maps of different weather conditions and a corresponding depth maps rendered in range 0-2048 meters. Rendered in UE4.25
+All animations including bullet tracers, weapon, character, blood effects are pre-rendered in blender or created manually with photoshop.
 
 ===============================================================
 
