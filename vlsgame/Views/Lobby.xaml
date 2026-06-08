@@ -18,7 +18,34 @@
         </Style>
         <Style x:Key="ModeButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Width" Value="128"/>
-            <Setter Property="Height" Value="48"/>
+            <Setter Property="Height" Value="64"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <!-- Иконка сверху -->
+                                <Image Grid.Row="0" 
+                                   Source="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Tag}"
+                                   Width="48" Height="32"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                                <!-- Текст снизу -->
+                                <TextBlock Grid.Row="1" 
+                                   Text="{TemplateBinding Content}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="20"
+                                   Margin="0,0,0,5"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="0"/>
@@ -142,10 +169,20 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
-                                Content="Singleplayer" Command="{Binding ActivateSingleplayerCommand}"/>
-                        <Button Grid.Column="1" Style="{StaticResource ModeButton}" Margin="0,0,32,32"
-                                Content="Multiplayer" Command="{Binding ActivateMultiplayerCommand}"/>
+                        <Button
+                            Grid.Column="0"
+                            Style="{StaticResource ModeButton}"
+                            Tag="{Binding SingleplayerImagePath}"
+                            Margin="0,0,32,32"
+                            Content="Singleplayer"
+                            Command="{Binding ActivateSingleplayerCommand}"/>
+                        <Button 
+                            Grid.Column="1"
+                            Style="{StaticResource ModeButton}"
+                            Tag="{Binding MultiplayerImagePath}"
+                            Margin="0,0,32,32"
+                            Content="Multiplayer"
+                            Command="{Binding ActivateMultiplayerCommand}"/>
                     </Grid>
                 </Grid>
                 <Button Grid.Row="2" Content="Ok" Width="268" Height="92"
