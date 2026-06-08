@@ -85,7 +85,13 @@ namespace VLSGame.Input
                 if (viewModel.RifleState.State == ERifleState.Idle)
                 {
                     viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.AimingFOV;
-                    RenderManager.Instance.StartZoomInAnimation();
+                    RenderManager.Instance.StartZoomInAnimation(0);
+                }
+                else if (viewModel.RifleState.State == ERifleState.ZoomingOut)
+                {
+                    int currentFrame = RenderManager.Instance.GetScopeCurrentFrame();
+                    viewModel.CameraProperties.TargetFOV = Configuration.Instance.Settings.AimingFOV;
+                    RenderManager.Instance.StartZoomInAnimation(currentFrame);
                 }
             }
         }

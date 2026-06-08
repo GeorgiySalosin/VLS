@@ -26,6 +26,11 @@ namespace VLSGame.Config.GameConfig
         public double MinSensitivityScale { get; set; } = .1f;
 
 
+        #endregion
+
+
+        #region Utliltary parameters
+
         /// <summary>  The value that clamps camera lower rotation (radians). <br></br><br></br>
         /// NOT SET BY USER CONFIG.  </summary>
         public double ClampVRotationMin { get; set; } = .8f;
@@ -33,12 +38,7 @@ namespace VLSGame.Config.GameConfig
 
         /// <summary>  The value that clamps camera upper rotation (radians). <br></br><br></br>
         /// NOT SET BY USER CONFIG.  </summary>
-        public double ClampVRotationMax { get; set; } = .7f;  
-
-        #endregion
-
-
-
+        public double ClampVRotationMax { get; set; } = .7f;
 
         /// <summary>  The total range (meters) that was written into the depth map. After this distance we gonna abandon the bullet and not count the hit. <br></br><br></br>
         /// NOT SET BY USER CONFIG.  </summary>
@@ -49,7 +49,7 @@ namespace VLSGame.Config.GameConfig
         /// NOT SET BY USER CONFIG.  </summary>
         public double MaxSnipingDistanceThresold { get; set; } = 48f;     // the distance we subtract from MaxSniping distance due to depth map incorrect behavior
                                                                           // (for example, the sky pixel might be not 100% white -> w/out thresold the distance could unexpectedly become ~ 19xx meters)
-
+        #endregion
 
 
         // ----- Camera & camera animation settings  -----
@@ -120,7 +120,8 @@ namespace VLSGame.Config.GameConfig
 
         #region Camera fov settings 
 
-        public double DefaultFOV { get; set; } = 90f;       // The base fov (no zoom)
+        /// <summary> The base fov (no zoom) </summary>
+        public double DefaultFOV { get; set; } = 90f;       
 
 
         /// <summary>  The minimal FOV that can be set in scope <br></br><br></br>

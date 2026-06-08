@@ -45,15 +45,20 @@ namespace VLSGame.ViewModels
 
         #region 2D 
 
+
+
         private CustomObject2D? crosshair2D;
+        private CustomObject2D? weapon2D;
+
+
         private CameraProperties? cameraProperties;
 
    
-        private Action? _currentZoomOutComplete; // callback для завершения отдаления
+
 
         private RifleState? rifleState;
 
-        private CustomObject2D? weapon2D;
+        
 
         public void Initialize2D(CameraProperties cameraProperties, RifleState rifleState)
         {
@@ -100,12 +105,12 @@ namespace VLSGame.ViewModels
             return weapon2D?.Animation.CurrentFrame ?? 0;
         }
 
-        public void StartZoomInAnimation(Action? onComplete = null)
+        public void StartZoomInAnimation(int startFrame, Action? onComplete = null)
         {
             if (weapon2D == null || rifleState == null) return;
             rifleState.State = ERifleState.ZoomingIn;
             weapon2D.Animation = new Animation(26);
-            weapon2D.Animation.CurrentFrame = 0;
+            weapon2D.Animation.CurrentFrame = startFrame;
             weapon2D.Animation.IsReversed = false;
             weapon2D.OnAnimationComplete = () =>
             {
@@ -174,8 +179,7 @@ namespace VLSGame.ViewModels
 
         #endregion
 
-        public void Add2D(CustomObject2D obj) => renderer2D.AddObject(obj);
-            public void Remove2D(Guid id) => renderer2D.RemoveObject(id);
+            public void Add2D(CustomObject2D obj) => renderer2D.AddObject(obj);
             public CustomObject2D? Get2D(Guid id) => renderer2D.GetObject(id);
 
             private void Update2DVisibility()

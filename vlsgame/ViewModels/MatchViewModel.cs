@@ -61,9 +61,6 @@ namespace VLSGame.ViewModels
         private BitmapSource? mapTexture;
         //public BitmapSource? MapTexture { get => mapTexture; private set => Set(ref mapTexture, value); }
 
-        private string distanceText = "";
-        private string pixelCoordinates = "";
-        private string lastBullet = ""; // info about last bullet
 
         // Cached texture data
         private int lastPixelX = -1;
@@ -98,7 +95,6 @@ namespace VLSGame.ViewModels
 
             animationController = new CameraAnimationController(CameraProperties);
 
-            BulletManager.LastBulletInfoChanged += info => LastBullet = info;
 
             BulletManager.BulletCreated += (id, direction) => renderManager.CreateBulletObject3D(id);
             BulletManager.BulletUpdated += (id, pos) => renderManager.UpdateBulletObject3D(id, pos);
@@ -122,15 +118,6 @@ namespace VLSGame.ViewModels
                 SpawnTarget();
             };
 
-            BulletManager.BulletLanded += (distance, flightTime) =>
-                LastBullet = $"Hit: distance {distance:F1} m, time {flightTime:F2} s";
-
-            // It's necessary for updating FormattedLookDirection
-            CameraProperties.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(CameraProperties.LookDirection))
-                    OnPropertyChanged(nameof(FormattedLookDirection));
-            };
 
             this.colorMapPath = colorMapPath;
             this.depthMapPath = depthMapPath;
@@ -168,6 +155,7 @@ namespace VLSGame.ViewModels
         internal void Initialize2D() => renderManager.Initialize2D(CameraProperties, rifleState);
 
         #region GAME EVENTS 
+
         internal void StartGameLoop()
         {
             if (isGameLoopStarted) return;
@@ -177,7 +165,6 @@ namespace VLSGame.ViewModels
             gameTimer.Tick += OnGameTick;
             gameTimer.Start();
         }
-
 
 
         private void OnGameTick(object? sender, EventArgs e)
@@ -194,7 +181,6 @@ namespace VLSGame.ViewModels
             // 4. Обновление пуль и рендер
             BulletManager.UpdateBullets(deltaTime);
             renderManager.Render();
-            GetCenterDistance();
 
             tickCounter++;
             if ((DateTime.Now - lastFpsTime).TotalSeconds >= 1.0)
@@ -205,8 +191,6 @@ namespace VLSGame.ViewModels
                 Debug.WriteLine($"[GameLoop] FPS: {fps}");
             }
         }
-
-
 
 
         internal void Shoot()
@@ -236,77 +220,6 @@ namespace VLSGame.ViewModels
 
             rifleState.HasAmmo = false;
         }
-        #endregion
-
-        #region Debug line (distance, texture coords, etc)
-
-        public string DistanceText { get => distanceText; set => Set(ref distanceText, value); }
-
-        public string PixelCoordinates { get => pixelCoordinates; set => Set(ref pixelCoordinates, value); }
-
-        public string LastBullet { get => lastBullet; set => Set(ref lastBullet, value); }
-
-        public string FormattedLookDirection => $"LookDirection: {CameraProperties.LookDirection.X:F4}, {CameraProperties.LookDirection.Y:F4}, {CameraProperties.LookDirection.Z:F4}";
-
-        #endregion
-
-        public void GetCenterDistance()
-        {
-            var (pixelX, pixelY) = renderManager.GetTextureCoordinatesFromDirection(CameraProperties.LookDirection);
-
-            if (pixelX != lastPixelX || pixelY != lastPixelY)
-            {
-                lastPixelX = pixelX;
-                lastPixelY = pixelY;
-
-                cachedDistance = renderManager.GetDistanceAtPixel(pixelX, pixelY);
-
-                if (cachedDistance > Configuration.Instance.Settings.MaxSnipingDistance - Configuration.Instance.Settings.MaxSnipingDistanceThresold)
-                {
-                    cachedDistance = Configuration.Instance.Settings.MaxSnipingDistance;
-                    DistanceText = $"Distance: > {cachedDistance:F0} м";
-                }
-                else
-                    DistanceText = $"Distance: {cachedDistance:F1} m";
-
-                PixelCoordinates = $"Texture coordinates: ({pixelX}, {pixelY})";
-            }
-        }
-
-        #region Singleplayer Spawn
-
-        /// <summary>
-        /// Returns the next random target position, without repeating the already used ones.
-        /// When all positions are used, the list is reset and a new round begins.
-        /// </summary>
-        /// 
-        private Vector3 GetNextTargetPosition()
-        {
-            if (_availableIndices.Count == 0)
-            {
-                // Reset: re-populate with all indexes
-                _availableIndices.AddRange(Enumerable.Range(0, _targetPositions.Count));
-            }
-
-            // Choose a random index from the available ones
-            int randomIndex = _random.Next(_availableIndices.Count);
-            int selectedIndex = _availableIndices[randomIndex];
-            _availableIndices.RemoveAt(randomIndex);
-
-            return _targetPositions[selectedIndex];
-        }
-
-        private void SpawnTarget()
-        {
-            Vector3 targetPos = GetNextTargetPosition();
-            Player player = new(targetPos)
-            {
-                HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
-            };
-            PlayerManager.AddPlayer(player);
-        }
-
-        #endregion
 
 
         public void StartReload()
@@ -314,7 +227,7 @@ namespace VLSGame.ViewModels
             if (rifleState.State == ERifleState.Reloading) return;
             if (rifleState.HasAmmo) return;
 
-            // Принудительно сбрасываем TargetFOV до обычного, чтобы FOV плавно возвращался
+            
             CameraProperties.TargetFOV = Configuration.Instance.Settings.DefaultFOV;
 
             switch (rifleState.State)
@@ -353,11 +266,52 @@ namespace VLSGame.ViewModels
             }
         }
 
+
         private void OnReloadComplete()
         {
             rifleState.HasAmmo = true;
             rifleState.State = ERifleState.Idle;
         }
+
+
+        #endregion
+
+
+
+        #region Singleplayer Spawn
+
+        /// <summary>
+        /// Returns the next random target position, without repeating the already used ones.
+        /// When all positions are used, the list is reset and a new round begins.
+        /// </summary>
+        /// 
+        private Vector3 GetNextTargetPosition()
+        {
+            if (_availableIndices.Count == 0)
+            {
+                // Reset: re-populate with all indexes
+                _availableIndices.AddRange(Enumerable.Range(0, _targetPositions.Count));
+            }
+
+            // Choose a random index from the available ones
+            int randomIndex = _random.Next(_availableIndices.Count);
+            int selectedIndex = _availableIndices[randomIndex];
+            _availableIndices.RemoveAt(randomIndex);
+
+            return _targetPositions[selectedIndex];
+        }
+
+        private void SpawnTarget()
+        {
+            Vector3 targetPos = GetNextTargetPosition();
+            Player player = new(targetPos)
+            {
+                HitZoneChecker = (u, v) => MatchTexturePool.Instance.GetHitZoneFromUV(u, v)
+            };
+            PlayerManager.AddPlayer(player);
+        }
+
+        #endregion
 
 
 
