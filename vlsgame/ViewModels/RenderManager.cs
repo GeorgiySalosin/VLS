@@ -47,14 +47,7 @@ namespace VLSGame.ViewModels
 
 
 
-        private CustomObject2D? crosshair2D;
-        private CustomObject2D? weapon2D;
-
-
         private CameraProperties? cameraProperties;
-
-   
-
 
         private RifleState? rifleState;
 
@@ -64,10 +57,7 @@ namespace VLSGame.ViewModels
         {
             this.cameraProperties = cameraProperties;
             this.rifleState = rifleState;
-            cameraProperties.PropertyChanged += OnCameraPropertyChanged;
-            CreateCrosshair2D();
-            CreateWeapon2D();   // создаём объект оружия (прицел/анимации)
-            Update2DVisibility();
+            CreateWeapon2D();
         }
 
 
@@ -75,18 +65,7 @@ namespace VLSGame.ViewModels
 
         #region HUD
 
-        #region Crosshair
 
-        private void CreateCrosshair2D()
-        {
-            var tex = MatchTexturePool.Instance.GetCrosshairTexture();
-            crosshair2D = new CustomObject2D(tex) { IsVisible = true };
-            Add2D(crosshair2D);
-        }
-
-
-
-        #endregion
 
 
         #endregion
@@ -95,84 +74,22 @@ namespace VLSGame.ViewModels
 
         private void CreateWeapon2D()
         {
-            weapon2D = new CustomObject2D(texturePool.GetSVLK14SIdleTexture(), tag: "Weapon");
+            CustomObject2D weapon2D = new CustomObject2D(texturePool.GetSVLK14SIdleTexture(), tag: "Weapon");
             weapon2D.IsVisible = true;
             Add2D(weapon2D);
         }
 
         public int GetScopeCurrentFrame()
         {
+            var weapon2D = renderer2D.GetObject("Weapon");
             return weapon2D?.Animation.CurrentFrame ?? 0;
         }
 
-        public void StartZoomInAnimation(int startFrame, Action? onComplete = null)
-        {
-            if (weapon2D == null || rifleState == null) return;
-            rifleState.State = ERifleState.ZoomingIn;
-            weapon2D.Animation = new Animation(26);
-            weapon2D.Animation.CurrentFrame = startFrame;
-            weapon2D.Animation.IsReversed = false;
-            weapon2D.OnAnimationComplete = () =>
-            {
-                if (rifleState.State == ERifleState.ZoomingIn)
-                    rifleState.State = ERifleState.IdleZoom;
-                Update2DVisibility();
-                onComplete?.Invoke();
-            };
-            weapon2D.Animation.PlayForward();
-        }
+        public void StartZoomInAnimation(int startFrame, Action? onComplete = null) => renderer2D.StartZoomInAnimation(startFrame, onComplete);
+        public void StartZoomOutAnimation(int startFrame = 25, Action? onComplete = null) => renderer2D.StartZoomOutAnimation(startFrame, onComplete);
+        public void StartReloadAnimation(Action? onComplete = null) => renderer2D.StartReloadAnimation(onComplete);
+        public void SetOnZoomOutComplete(Action callback) => renderer2D.SetOnZoomOutComplete(callback);
 
-        public void StartZoomOutAnimation(int startFrame = 25, Action? onComplete = null)
-        {
-            if (weapon2D == null || rifleState == null) return;
-            rifleState.State = ERifleState.ZoomingOut;
-            weapon2D.Animation = new Animation(26);
-            weapon2D.Animation.CurrentFrame = startFrame;
-            weapon2D.Animation.IsReversed = true;
-            weapon2D.OnAnimationComplete = () =>
-            {
-                if (rifleState.State == ERifleState.ZoomingOut)
-                    rifleState.State = ERifleState.Idle;
-                Update2DVisibility();
-                onComplete?.Invoke();
-            };
-            weapon2D.Animation.PlayBackward();
-        }
-
-        public void StartReloadAnimation(Action? onComplete = null)
-        {
-            if (weapon2D == null || rifleState == null) return;
-            rifleState.State = ERifleState.Reloading;
-            
-            weapon2D.Animation = new Animation(181);
-            weapon2D.Animation.CurrentFrame = 0;
-            weapon2D.OnAnimationComplete = () =>
-            {
-                
-                rifleState.State = ERifleState.Idle;
-                Update2DVisibility();
-                onComplete?.Invoke();
-            };
-            weapon2D.Animation.PlayForward();
-        }
-
-        public void SetOnZoomOutComplete(Action callback)
-        {
-            if (weapon2D == null) { callback?.Invoke(); return; }
-            if (weapon2D.Animation.IsPlaying && weapon2D.Animation.IsReversed && weapon2D.Animation.FramesCount == 26)
-            {
-                var oldCallback = weapon2D.OnAnimationComplete;
-                weapon2D.OnAnimationComplete = () =>
-                {
-                    oldCallback?.Invoke();
-                    callback?.Invoke();
-                };
-            }
-            else
-            {
-                callback?.Invoke();
-            }
-        }
 
         #endregion
 
@@ -180,21 +97,8 @@ namespace VLSGame.ViewModels
         #endregion
 
             public void Add2D(CustomObject2D obj) => renderer2D.AddObject(obj);
-            public CustomObject2D? Get2D(Guid id) => renderer2D.GetObject(id);
 
-            private void Update2DVisibility()
-            {
-                if (cameraProperties == null) return;
-                bool isScoped = cameraProperties.FieldOfView < Configuration.Instance.Settings.DefaultFOV;
-                crosshair2D?.IsVisible = !isScoped;
 
-            }
-
-            private void OnCameraPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-            {
-                if (e.PropertyName == nameof(CameraProperties.FieldOfView))
-                    Update2DVisibility();
-            }
 
         #endregion
 

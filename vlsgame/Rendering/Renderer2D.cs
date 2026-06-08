@@ -80,7 +80,7 @@ namespace VLSGame.Rendering
             }
         }
 
-        public CustomObject2D? GetObject(Guid id) => objects.FirstOrDefault(o => o.Id == id);
+        public CustomObject2D? GetObject(String tag) => objects.FirstOrDefault(o => o.Tag == tag);
 
         public void Render()
         {
@@ -149,6 +149,8 @@ namespace VLSGame.Rendering
             }
         }
 
+
+
         private ImageSource GetTextureForCurrentState(CustomObject2D obj, int? frame)
         {
             if (obj.Tag != "Weapon") return obj.Texture;
@@ -166,6 +168,77 @@ namespace VLSGame.Rendering
                     return texturePool.GetSVLK14SIdleTexture();
             }
         }
+
+        public void StartZoomInAnimation(int startFrame, Action? onComplete = null)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.ZoomingIn;
+            weapon2D.Animation = new Animation(26);
+            weapon2D.Animation.CurrentFrame = startFrame;
+            weapon2D.Animation.IsReversed = false;
+            weapon2D.OnAnimationComplete = () =>
+            {
+                if (rifleState.State == ERifleState.ZoomingIn)
+                    rifleState.State = ERifleState.IdleZoom;
+                onComplete?.Invoke();
+            };
+            weapon2D.Animation.PlayForward();
+        }
+
+        public void StartZoomOutAnimation(int startFrame = 25, Action? onComplete = null)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.ZoomingOut;
+            weapon2D.Animation = new Animation(26);
+            weapon2D.Animation.CurrentFrame = startFrame;
+            weapon2D.Animation.IsReversed = true;
+            weapon2D.OnAnimationComplete = () =>
+            {
+                if (rifleState.State == ERifleState.ZoomingOut)
+                    rifleState.State = ERifleState.Idle;
+                onComplete?.Invoke();
+            };
+            weapon2D.Animation.PlayBackward();
+        }
+
+        public void StartReloadAnimation(Action? onComplete = null)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null || rifleState == null) return;
+            rifleState.State = ERifleState.Reloading;
+
+            weapon2D.Animation = new Animation(181);
+            weapon2D.Animation.CurrentFrame = 0;
+            weapon2D.OnAnimationComplete = () =>
+            {
+
+                rifleState.State = ERifleState.Idle;
+                onComplete?.Invoke();
+            };
+            weapon2D.Animation.PlayForward();
+        }
+
+        public void SetOnZoomOutComplete(Action callback)
+        {
+            var weapon2D = GetObject("Weapon");
+            if (weapon2D == null) { callback?.Invoke(); return; }
+            if (weapon2D.Animation.IsPlaying && weapon2D.Animation.IsReversed && weapon2D.Animation.FramesCount == 26)
+            {
+                var oldCallback = weapon2D.OnAnimationComplete;
+                weapon2D.OnAnimationComplete = () =>
+                {
+                    oldCallback?.Invoke();
+                    callback?.Invoke();
+                };
+            }
+            else
+            {
+                callback?.Invoke();
+            }
+        }
+
 
         private static void UpdateImageTransform(Image img, CustomObject2D obj)
         {
