@@ -43,13 +43,5 @@
             IsHitTestVisible="False"
             ClipToBounds="True">
         </Canvas>
-
-        <!-- Debug info -->
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,256,0,0">
-            <TextBlock Text="{Binding PixelCoordinates}" Style="{StaticResource DebugInfo}"/>
-            <TextBlock Text="{Binding DistanceText}" Style="{StaticResource DebugInfo}"/>
-            <TextBlock Text="{Binding FormattedLookDirection}" Style="{StaticResource DebugInfo}"/>
-            <TextBlock Text="{Binding LastBullet}" Style="{StaticResource DebugInfo}"/>
-        </StackPanel>
     </Grid>
 </Window>
