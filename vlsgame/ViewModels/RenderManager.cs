@@ -31,13 +31,13 @@ namespace VLSGame.ViewModels
 
         private static bool isInitialized = false;
 
-        internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel, RifleState rifleState,
+        internal async Task InitializeAsync(Viewport3D viewport, Panel hudPanel, RifleState rifleState, CameraProperties cameraProperties,
             string colorMapPath, string depthMapPath,
             IProgress<LoadingProgress>? progress, CancellationToken token)
         {
             if (isInitialized) return;
             renderer3D.Initialize(viewport);
-            renderer2D.Initialize(hudPanel, rifleState);   // передаём rifleState
+            renderer2D.Initialize(hudPanel, rifleState, cameraProperties);
             await texturePool.UpdateEnvironmentTextureAsync(colorMapPath, depthMapPath, progress, token);
             isInitialized = true;
         }
@@ -78,11 +78,11 @@ namespace VLSGame.ViewModels
         #region Crosshair
 
         private void CreateCrosshair2D()
-                {
-                    var tex = MatchTexturePool.Instance.GetCrosshairTexture();
-                    crosshair2D = new CustomObject2D(tex) { IsVisible = true };
-                    Add2D(crosshair2D);
-                }
+        {
+            var tex = MatchTexturePool.Instance.GetCrosshairTexture();
+            crosshair2D = new CustomObject2D(tex) { IsVisible = true };
+            Add2D(crosshair2D);
+        }
 
 
 

@@ -139,7 +139,7 @@ namespace VLSGame.ViewModels
             CancellationToken token)
         {
             Debug.WriteLine("LoadTexturesAsync started");
-            await renderManager.InitializeAsync(viewport, hud, rifleState, colorMapPath, depthMapPath, progress, token);
+            await renderManager.InitializeAsync(viewport, hud, rifleState, CameraProperties, colorMapPath, depthMapPath, progress, token);
             Debug.WriteLine("InitializeAsync completed");
 
 

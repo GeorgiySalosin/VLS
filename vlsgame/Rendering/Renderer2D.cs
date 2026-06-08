@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using VLSGame.Config.GameConfig;
 using VLSGame.Models;
 using VLSGame.Rendering.Content2D;
 using VLSGame.ViewModels;
@@ -19,14 +20,17 @@ namespace VLSGame.Rendering
         private bool isInitialized = false;
         private readonly MatchTexturePool texturePool = MatchTexturePool.Instance;
         private RifleState? rifleState;
+        private CameraProperties? cameraProperties;
+
 
         private Renderer2D() { }
 
-        public void Initialize(Panel panel, RifleState rifleState)
+        public void Initialize(Panel panel, RifleState rifleState, CameraProperties cameraProperties)
         {
             if (isInitialized) return;
             this.panel = panel;
             this.rifleState = rifleState;
+            this.cameraProperties = cameraProperties;
             isInitialized = true;
         }
 
@@ -80,23 +84,21 @@ namespace VLSGame.Rendering
 
         public void Render()
         {
-            if (panel == null || rifleState == null) return;
+            if (panel == null || rifleState == null || cameraProperties == null) return;
 
-            // Создаём копию, чтобы избежать модификации во время итерации
             var uiMapCopy = uiMap.ToList();
             foreach (var kvp in uiMapCopy)
             {
                 var obj = kvp.Key;
                 var img = kvp.Value;
 
-                // Обработка анимации ТОЛЬКО для объекта оружия (Tag == "Weapon")
+                // Обработка анимации для оружия
                 if (obj.Tag == "Weapon" && obj.Animation.IsPlaying)
                 {
                     int step = obj.Animation.IsReversed ? -1 : 1;
                     int newFrame = (obj.Animation.CurrentFrame ?? 0) + step;
                     if (newFrame < 0 || newFrame >= obj.Animation.FramesCount)
                     {
-                        // Анимация завершена
                         obj.Animation.Stop();
                         obj.Animation.CurrentFrame = obj.Animation.IsReversed ? 0 : obj.Animation.FramesCount - 1;
                         obj.Texture = GetTextureForCurrentState(obj, obj.Animation.CurrentFrame ?? 0);
@@ -110,18 +112,40 @@ namespace VLSGame.Rendering
                 }
                 else if (obj.Tag == "Weapon")
                 {
-                    // Если анимация не играет, но состояние изменилось – обновляем текстуру
                     obj.Texture = GetTextureForCurrentState(obj, null);
                 }
 
-                // Обновление видимости и трансформаций для всех объектов
                 if (img.Source != obj.Texture)
                     img.Source = obj.Texture;
                 img.Visibility = obj.IsVisible ? Visibility.Visible : Visibility.Collapsed;
-                UpdateImageTransform(img, obj);
 
-                if (panel is Canvas canvas && obj.Texture != null && obj.Texture.Width > 0)
-                    CenterImage(img, obj, canvas);
+                // === Вертикальное смещение оружия (на основе ширины экрана) ===
+                if (obj.Tag == "Weapon")
+                {
+                    var cfg = Configuration.Instance.Settings;
+                    double minAngle = -Math.PI / 2 + cfg.ClampVRotationMin;
+                    double maxAngle = Math.PI / 2 - cfg.ClampVRotationMax;
+                    double pitch = cameraProperties.RotationX;
+                    double t = (pitch - minAngle) / (maxAngle - minAngle);
+                    t = Math.Clamp(t, 0.0, 1.0);
+                    double normalized = t * 2.0 - 1.0;
+
+                    double fov = cameraProperties.FieldOfView;
+                    double defaultFOV = cfg.DefaultFOV;
+                    double minFOV = cfg.MinFOVScope;
+                    double fovFactor = 1.0;
+                    if (fov <= minFOV)
+                        fovFactor = 0.0;
+                    else if (fov >= defaultFOV)
+                        fovFactor = 1.0;
+                    else
+                        fovFactor = (fov - minFOV) / (defaultFOV - minFOV);
+
+                    double maxOffset = MatchTexturePool.ScreenWidth / 30.0;
+                    obj.Y = normalized * maxOffset * fovFactor;
+                }
+
+                UpdateImageTransform(img, obj);
             }
         }
 

@@ -16,12 +16,12 @@ namespace VLSGame.Models
         private MatchTexturePool() { }
 
         private static readonly Random rnd = new ();
-
+        public static double ScreenWidth => SystemParameters.PrimaryScreenWidth;
 
 
         #region 3D-rendered textures (ImageBrushes)
 
-            private readonly ImageBrush emptyBrush = new();
+        private readonly ImageBrush emptyBrush = new();
             public ImageBrush GetEmptyTexture3D() => emptyBrush;
 
 
