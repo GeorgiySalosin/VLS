@@ -70,7 +70,7 @@ namespace VLSGame.ViewModels
 
         #endregion
 
-        #region Zoom Animation 
+        #region Weapon stuff
 
         private void CreateWeapon2D()
         {
