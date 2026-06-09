@@ -141,7 +141,7 @@ namespace VLSGame.Rendering
                     else
                         fovFactor = (fov - minFOV) / (defaultFOV - minFOV);
 
-                    double maxOffset = MatchTexturePool.ScreenWidth / 30.0;
+                    double maxOffset = MatchTexturePool.ScreenWidth / 15.0;
                     obj.Y = normalized * maxOffset * fovFactor;
                 }
 
