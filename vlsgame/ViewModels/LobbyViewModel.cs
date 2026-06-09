@@ -52,7 +52,11 @@ namespace VLSGame.ViewModels
             get => selectModeImagePath;
             private set => Set(ref selectModeImagePath, value);
         }
+
         private const string combinedSelectModeImagePath = "/Content/Lobby/T_MapPreview_Combined.png";
+
+        public string SingleplayerImagePath => "/Content/singleplayer.png";
+        public string MultiplayerImagePath => "/Content/multiplayer.png";
 
         #endregion
 
