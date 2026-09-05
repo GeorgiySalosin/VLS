@@ -3,7 +3,8 @@ Semi-3D shooter based on WPF. Implements MVVM as much as possible. Uses pre-rend
 All animations including bullet tracers, weapon, character, blood effects are pre-rendered in blender or created manually with photoshop.
 
 ===============================================================
-Проект остался сырым, его дальнейшая подержка не планируется. Текстуры окружения, необходимые для работы приложения, в сборку не включены.
+<br><br>
+Проект остался сырым, его дальнейшая подержка не планируется. Текстуры окружения, необходимые для работы приложения, в сборку не включены.<br><br>
 # TT (Player pov):
 
 -Лобби (шаблон). <br><br>
