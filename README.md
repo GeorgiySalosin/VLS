@@ -1,26 +1,25 @@
 # **VLS**
-Semi-3D shooter based on WPF. Uses pre-rendered panoramic environment that consists of color maps of different weather conditions and a corresponding depth maps rendered in range 0-2048 meters. Rendered in UE4.25
+Semi-3D shooter based on WPF. Implements MVVM as much as possible. Uses pre-rendered panoramic environment that consists of color maps of different weather conditions and a corresponding depth maps rendered in range 0-2048 meters. Rendered in UE4.25
 All animations including bullet tracers, weapon, character, blood effects are pre-rendered in blender or created manually with photoshop.
 
 ===============================================================
-
+Проект остался сырым, его дальнейшая подержка не планируется. Текстуры окружения, необходимые для работы приложения, в сборку не включены.
 # TT (Player pov):
--запуск приложения<br>
--*(Возможно добавление авторизации)* <br>
--Попадает в лобби. <br><br>
+
+-Лобби (шаблон). <br><br>
 
 ![Lobby](https://github.com/user-attachments/assets/3ffd31a0-94d2-4e0b-876e-a51f56594e49)
 
-<br><br>-Выбирает тип матча. <br><br>
+<br><br>-Выбор типа матча (шаблон). <br><br>
 ![MatchSelect](https://github.com/user-attachments/assets/b6e18ea1-3366-492a-b97d-407f2e54b3bc)
 
 <br><br>-Нажимает старт. <br><br>
 # Overview:
-- Server: хранятся данные, связанные с CAMERAVECTOR игроков, данные о выданных пользователям панорамах, положении соперника на панораме. Также информация об оружии, о выпущенных пулях (то есть характер данных как статичный - для характеристик, так и динамичный - для хранения данных о матче).
-- Game: хранятся ассеты и логика взаимодействия с сервером (View+ViewModel), а также логика однопользовательского режима.
-- Shared: ресурсы и модели данных, которые являются общими для клиента и сервера. Будет проще добавлять в сборку.<br><br>
+- Server: не реализовано.
+- Game: ассеты, логика взаимодействия с сервером (не реализовано), логика однопользовательского режима.
+- Shared: ресурсы и модели данных, которые являются общими для клиента и сервера. <br><br>
   1. Сначала будет полная реализация однопользовательского режима без участия сервера.
-  2. После реализации минимального набора функционала, необходимого для возможности играть, начинается разработка ДУО-режима (с аналогичным функционалом и уже с участием сервера)
+  2. После реализации минимального набора функционала, необходимого для возможности играть, начинается разработка PVP-режима (с аналогичным функционалом и уже с участием сервера)
   3. Доработка режимов до корректной работы.
   4. Добавление графических улучшений.
   <br><br>
