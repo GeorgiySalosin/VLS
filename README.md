@@ -5,6 +5,57 @@ All animations including bullet tracers, weapon, character, blood effects are pr
 ===============================================================
 <br><br>
 Проект остался сырым, его дальнейшая подержка не планируется. Текстуры окружения, необходимые для работы приложения, в сборку не включены.<br><br>
+
+<img width="1280" height="720" alt="Comp 1_00099" src="https://github.com/user-attachments/assets/98f01fc5-10c8-4b61-82fd-76ccc0d5fc80" />
+<p align="center">
+  <sup>изображение 1, солнечная погода</sup>
+</p><br><br>
+
+
+<img width="1280" height="720" alt="Comp 1_00005" src="https://github.com/user-attachments/assets/202f7755-9487-48de-aa00-68be9e8ece52" />
+<p align="center">
+  <sup>изображение 2, вечерняя погода</sup>
+</p><br><br>
+
+
+<img width="1280" height="720" alt="Comp 1_00669" src="https://github.com/user-attachments/assets/c26bcabc-f352-4b94-afdf-c0a45dcb5d63" />
+<p align="center">
+  <sup>изображение 3, вечерняя погода</sup>
+</p><br><br>
+
+
+<img width="1280" height="720" alt="Comp 1_00696" src="https://github.com/user-attachments/assets/d45d00cb-a090-4d20-a4e5-aeb663b240ea" />
+<p align="center">
+  <sup>изображение 4, вечерняя погода</sup>
+</p><br><br>
+
+
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/d4f99765-dada-4852-93da-e4b6bafaa507" />
+<p align="center">
+  <sup>изображение 5, пасмурная погода</sup>
+</p><br><br>
+
+
+<img width="1280" height="720" alt="Untitled-4" src="https://github.com/user-attachments/assets/63c00a0e-a4dc-4714-88cd-5d2848ec4048" />
+<p align="center">
+  <sup>карта</sup>
+</p><br><br>
+
+
+<img width="1280" height="720" alt="Ballistics" src="https://github.com/user-attachments/assets/57d4a7b8-c91f-484b-a18a-a94e163f0f51" />
+<p align="center">
+  <sup>демонстрация баллистики и дальней стрельбы</sup>
+</p><br><br>
+
+
+
+
+
+
+
+
+
+
 # TT (Player pov):
 
 -Лобби (шаблон). <br><br>
